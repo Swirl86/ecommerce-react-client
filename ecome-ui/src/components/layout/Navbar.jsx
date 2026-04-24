@@ -3,68 +3,54 @@ import ThemeToggle from "../ui/ThemeToggle";
 
 export default function Navbar() {
     return (
-        <header className="border-b bg-white dark:bg-gray-800 dark:border-gray-700 transition-colors duration-300">
+        <header className="backdrop-blur bg-neutral-50/80 dark:bg-gray-800/80 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
                 {/* Logo */}
-                <Link to="/" className="text-xl font-semibold tracking-wide">
+                <Link
+                    to="/"
+                    className="text-xl font-semibold tracking-wide text-gray-900 dark:text-gray-100"
+                >
                     E‑ComE
                 </Link>
 
                 {/* Navigation */}
                 <nav className="hidden md:flex gap-6 text-sm font-medium">
-                    <Link
-                        to="/products"
-                        className="text-gray-900 dark:text-gray-100 hover:text-gray-500 dark:hover:text-gray-300"
-                    >
-                        Shop
-                    </Link>
-
-                    <Link
-                        to="/new"
-                        className="text-gray-900 dark:text-gray-100 hover:text-gray-500 dark:hover:text-gray-300"
-                    >
-                        New Arrivals
-                    </Link>
-
-                    <Link
-                        to="/bestsellers"
-                        className="text-gray-900 dark:text-gray-100 hover:text-gray-500 dark:hover:text-gray-300"
-                    >
-                        Best Sellers
-                    </Link>
-
-                    <Link
-                        to="/collections"
-                        className="text-gray-900 dark:text-gray-100 hover:text-gray-500 dark:hover:text-gray-300"
-                    >
-                        Collections
-                    </Link>
-
-                    <Link
-                        to="/deals"
-                        className="text-gray-900 dark:text-gray-100 hover:text-gray-500 dark:hover:text-gray-300"
-                    >
-                        Deals
-                    </Link>
-
-                    <Link
-                        to="/about"
-                        className="text-gray-900 dark:text-gray-100 hover:text-gray-500 dark:hover:text-gray-300"
-                    >
-                        About
-                    </Link>
+                    {[
+                        ["Shop", "/products"],
+                        ["New Arrivals", "/new"],
+                        ["Best Sellers", "/bestsellers"],
+                        ["Collections", "/collections"],
+                        ["Deals", "/deals"],
+                        ["About", "/about"],
+                    ].map(([label, path]) => (
+                        <Link
+                            key={path}
+                            to={path}
+                            className="text-gray-700 dark:text-gray-300 hover:text-sky-500 dark:hover:text-sky-300 transition-colors"
+                        >
+                            {label}
+                        </Link>
+                    ))}
                 </nav>
 
                 {/* Icons */}
-                <div className="flex items-center gap-4">
-                    <span>🔍</span>
-                    <a href="/cart">🛒</a>
+                <div className="flex items-center gap-4 text-lg">
+                    <span className="hover:text-sky-500 dark:hover:text-sky-300 transition">
+                        🔍
+                    </span>
+                    <Link
+                        to="/cart"
+                        className="hover:text-sky-500 dark:hover:text-sky-300 transition"
+                    >
+                        🛒
+                    </Link>
                     <Link
                         to="/login"
-                        className="text-sm hover:text-gray-500 dark:hover:text-gray-300"
+                        className="text-sm hover:text-sky-500 dark:hover:text-sky-300 transition"
                     >
                         Login
                     </Link>
+
                     <ThemeToggle />
                 </div>
             </div>

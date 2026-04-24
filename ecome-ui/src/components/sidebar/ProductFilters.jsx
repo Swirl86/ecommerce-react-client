@@ -1,32 +1,37 @@
+import { Body, H3 } from "../typography";
+
 export default function ProductFilters() {
     return (
-        <div className="space-y-8">
+        <div className="space-y-10">
             <div>
-                <h3 className="font-semibold mb-3 text-gray-900 dark:text-gray-200">Apparels</h3>
-                <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-400">
-                    <li>Pants</li>
-                    <li>Jumpsuits</li>
-                    <li>Shorts</li>
-                    <li>Tops</li>
+                <H3>Apparels</H3>
+                <ul className="space-y-1 mt-3">
+                    <Body>Pants</Body>
+                    <Body>Jumpsuits</Body>
+                    <Body>Shorts</Body>
+                    <Body>Tops</Body>
                 </ul>
             </div>
 
             <div>
-                <h3 className="font-semibold mb-3 text-gray-900 dark:text-gray-200">Styles</h3>
-                <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-400">
-                    <li>Bold</li>
-                    <li>Monochrome</li>
-                    <li>Neutrals</li>
+                <H3>Styles</H3>
+                <ul className="space-y-1 mt-3">
+                    <Body>Bold</Body>
+                    <Body>Monochrome</Body>
+                    <Body>Neutrals</Body>
                 </ul>
             </div>
 
             <div>
-                <h3 className="font-semibold mb-3 text-gray-900 dark:text-gray-200">Size</h3>
-                <div className="flex gap-2">
+                <H3>Size</H3>
+                <div className="flex gap-2 mt-3">
                     {[1, 2, 3, 4].map((size) => (
                         <button
                             key={size}
-                            className="border px-3 py-1 rounded bg-white text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+                            className="border px-3 py-1 rounded bg-white text-gray-900 
+                                       hover:bg-sky-100 dark:hover:bg-gray-600
+                                       dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100
+                                       transition"
                         >
                             {size}
                         </button>

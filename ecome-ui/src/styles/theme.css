@@ -1,0 +1,82 @@
+/* =========================================================
+   E‑ComE Design Tokens — Tech + Soft Pastel Theme
+   ---------------------------------------------------------
+   This is where all colors are saved + info about which components use them.
+   Tailwind is still used for styling.
+   ========================================================= */
+
+/* ------------------------------
+   Light Mode (default)
+--------------------------------*/
+:root {
+    /* Brand Colors */
+    --color-primary: #7dd3fc; /* Buttons, highlights, ThemeToggle (light) */
+    --color-primary-dark: #0ea5e9; /* Hover states, links */
+
+    /* Accent Pastels */
+    --color-accent: #fbcfe8; /* Badges, small UI details */
+    --color-accent-dark: #ec4899; /* Hover, dark mode badges */
+
+    /* Pastel Utility Colors */
+    --color-mint: #a7f3d0; /* Success badges, tags */
+    --color-lavender: #ddd6fe; /* Info tags, filters */
+    --color-peach: #fecaca; /* Sale, alerts */
+    --color-sky: #bae6fd; /* Soft backgrounds */
+    --color-sand: #fde68a; /* Subtle highlights */
+
+    /* Neutrals (Light Mode) */
+    --color-bg: #ffffff; /* Page background */
+    --color-text: #111827; /* Primary text */
+    --color-text-muted: #4b5563; /* Secondary text */
+    --color-border: #e5e7eb; /* Borders, cards */
+}
+
+/* ------------------------------
+   Dark Mode
+--------------------------------*/
+.dark {
+    --color-primary: #0ea5e9; /* Buttons, highlights */
+    --color-primary-dark: #0284c7; /* Hover */
+
+    --color-accent: #ec4899; /* Badges */
+    --color-accent-dark: #be185d; /* Hover */
+
+    --color-mint: #34d399;
+    --color-lavender: #a78bfa;
+    --color-peach: #fb7185;
+    --color-sky: #38bdf8;
+    --color-sand: #fbbf24;
+
+    --color-bg: #111827; /* Page background */
+    --color-text: #f3f4f6; /* Primary text */
+    --color-text-muted: #9ca3af; /* Secondary text */
+    --color-border: #374151; /* Borders, cards */
+}
+
+/* =========================================================
+   Component Usage Notes
+   ---------------------------------------------------------
+   Navbar:
+     - Uses primary + neutrals
+     - Background: var(--color-bg)
+     - Text: var(--color-text)
+
+   Buttons:
+     - Primary: var(--color-primary)
+     - Hover: var(--color-primary-dark)
+
+   Product Cards:
+     - Border: var(--color-border)
+     - Background: var(--color-bg)
+
+   Badges:
+     - Accent: var(--color-accent)
+     - Dark: var(--color-accent-dark)
+
+   Filters:
+     - Pastels: mint, lavender, peach, sky, sand
+
+   ThemeToggle:
+     - Light: var(--color-primary)
+     - Dark: var(--color-primary-dark)
+========================================================= */

@@ -26,19 +26,14 @@ export default function ThemeToggle() {
         <button
             onClick={toggleTheme}
             className={[
-                "w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300",
-                "shadow-sm hover:shadow-md focus:outline-none focus:ring-2",
+                "w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 shadow-sm hover:shadow-md focus:outline-none focus:ring-2",
                 theme === "light"
-                    ? "bg-yellow-300 text-yellow-900 hover:bg-yellow-400 focus:ring-yellow-500"
-                    : "bg-gray-700 text-gray-100 hover:bg-gray-600 focus:ring-gray-400",
+                    ? "bg-sky-200 text-sky-800 hover:bg-sky-300 focus:ring-sky-400"
+                    : "bg-gray-700 text-sky-200 hover:bg-gray-600 focus:ring-sky-500",
             ].join(" ")}
             title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
         >
-            {theme === "light" ? (
-                <span className="text-xl">🌞</span>
-            ) : (
-                <span className="text-xl">🌙</span>
-            )}
+            <span className="text-xl">{theme === "light" ? "🌞" : "🌙"}</span>
         </button>
     );
 }
