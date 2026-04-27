@@ -1,9 +1,9 @@
 import { useState } from "react";
 import PageLayout from "../components/layout/PageLayout";
 import ProductCard from "../components/products/ProductCard";
-import SkeletonCard from "../components/products/SkeletonCard";
 import ProductFilters from "../components/sidebar/ProductFilters";
 import { H2 } from "../components/typography";
+import SkeletonCard from "../components/ui/SkeletonCard";
 import { useProducts } from "../hooks/useProducts";
 
 export default function Products() {
