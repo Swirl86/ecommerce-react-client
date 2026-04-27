@@ -8,12 +8,20 @@ export default function Navbar() {
     return (
         <header className="backdrop-blur bg-neutral-50/80 dark:bg-gray-800/80 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-                {/* Logo */}
-                <Link
-                    to="/"
-                    className="text-xl font-semibold tracking-wide text-gray-900 dark:text-gray-100"
-                >
-                    E‑ComE
+                <Link to="/" className="flex items-center">
+                    {/* Light mode logo */}
+                    <img
+                        src="/images/logo-dark.png"
+                        alt="E‑ComE logo"
+                        className="h-14 w-auto dark:hidden"
+                    />
+
+                    {/* Dark mode logo */}
+                    <img
+                        src="/images/logo-light.png"
+                        alt="E‑ComE logo"
+                        className="h-14 w-auto hidden dark:block"
+                    />
                 </Link>
 
                 {/* Navigation */}
