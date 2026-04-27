@@ -1,24 +1,48 @@
+import { IMAGE_PLACEHOLDER } from "../../config/constants";
 import { H3, Muted } from "../typography";
 
-export default function ProductCard() {
+export default function ProductCard({ product }) {
     return (
-        <div className="space-y-2 group cursor-pointer">
-            <div className="relative overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+        <div
+            className="
+                group cursor-pointer text-center
+                border border-gray-200 dark:border-gray-700
+                rounded-xl p-4
+                bg-white dark:bg-gray-800
+                shadow-sm
+                hover:shadow-lg
+                hover:-translate-y-1
+                transition-all duration-300
+                animate-fadeIn
+            "
+        >
+            {/* Product image */}
+            <div
+                className="
+                    relative overflow-hidden
+                    rounded-lg
+                    border border-gray-200 dark:border-gray-700
+                    mb-3
+                "
+            >
                 <img
-                    src="https://via.placeholder.com/400"
-                    className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                    src={product?.imageUrls?.[0] || IMAGE_PLACEHOLDER}
+                    alt={"Image of " + product?.name}
+                    className="
+                        w-full h-48 object-cover
+                        transition-transform duration-300
+                        group-hover:scale-105
+                        fade-in
+                    "
                 />
-
-                <span className="absolute top-2 left-2 bg-rose-200 text-rose-800 dark:bg-rose-500 dark:text-white text-xs px-2 py-1 rounded">
-                    NEW
-                </span>
             </div>
 
-            {/* Produktnamn */}
-            <H3>Product Name</H3>
+            {/* Product name */}
+            <H3>{product?.name || "Unnamed Product"}</H3>
 
-            {/* Pris */}
-            <Muted>$599.00</Muted>
+            {/* Price */}
+            <Muted>{product?.price ? `$${product.price}` : "No price available"}</Muted>
         </div>
     );
 }
