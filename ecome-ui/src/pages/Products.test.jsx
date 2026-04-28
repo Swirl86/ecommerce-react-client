@@ -1,13 +1,23 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
+import { useProducts } from "../hooks/useProducts";
 import Products from "./Products";
 
-// Mock the useProducts hook so we can control its return values
+// Mock router hooks
+vi.mock("react-router-dom", async () => {
+    const actual = await vi.importActual("react-router-dom");
+    return {
+        ...actual,
+        useSearchParams: () => [new URLSearchParams(), vi.fn()],
+        useNavigate: () => vi.fn(),
+    };
+});
+
+// Mock useProducts
 vi.mock("../hooks/useProducts", () => ({
     useProducts: vi.fn(),
 }));
-
-import { useProducts } from "../hooks/useProducts";
 
 describe("Products page", () => {
     test("shows skeletons when loading is true", () => {
@@ -18,10 +28,12 @@ describe("Products page", () => {
             error: false,
         });
 
-        // Render the Products page
-        render(<Products />);
+        render(
+            <MemoryRouter>
+                <Products />
+            </MemoryRouter>
+        );
 
-        // SkeletonCard components do not have text, so we look for generic roles
         const skeletons = screen.getAllByRole("generic", { hidden: true });
 
         // Expect at least one skeleton to be rendered
@@ -39,9 +51,12 @@ describe("Products page", () => {
             error: false,
         });
 
-        render(<Products />);
+        render(
+            <MemoryRouter>
+                <Products />
+            </MemoryRouter>
+        );
 
-        // Both product names should be visible in the UI
         expect(screen.getByText("Product A")).toBeInTheDocument();
         expect(screen.getByText("Product B")).toBeInTheDocument();
     });
@@ -54,9 +69,12 @@ describe("Products page", () => {
             error: true,
         });
 
-        render(<Products />);
+        render(
+            <MemoryRouter>
+                <Products />
+            </MemoryRouter>
+        );
 
-        // The error message should be displayed
         expect(
             screen.getByText("Could not connect to backend. Please try again later.")
         ).toBeInTheDocument();
