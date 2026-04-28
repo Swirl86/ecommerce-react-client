@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { getProductById } from "../api/productsApi";
 import PageLayout from "../components/layout/PageLayout";
+import ProductImageViewer from "../components/products/ProductImageViewer";
 import { H2, H3, Muted } from "../components/typography";
 import BackButtonFloating from "../components/ui/BackButtonFloating";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
+import QuantitySelector from "../components/ui/QuantitySelector";
 import SkeletonCard from "../components/ui/SkeletonCard";
 import { IMAGE_PLACEHOLDER } from "../config/constants";
 import { useCategories } from "../hooks/useCategories";
@@ -82,36 +84,12 @@ export default function ProductDetail() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 animate-fadeIn">
                 {/* LEFT: Main image + thumbnails */}
-                <div className="relative">
-                    {/* Main image */}
-                    <img
-                        src={selectedImage}
-                        alt={product.name}
-                        className="w-full h-[480px] object-cover rounded-xl shadow mb-4"
-                    />
-
-                    {/* Thumbnails */}
-                    {product.imageUrls?.length > 1 && (
-                        <div className="flex gap-3">
-                            {product.imageUrls.map((img, i) => (
-                                <img
-                                    key={i}
-                                    src={img}
-                                    alt="Thumbnail"
-                                    onClick={() => setSelectedImage(img)}
-                                    className={`
-                                        w-20 h-20 object-cover rounded-lg cursor-pointer border
-                                        ${
-                                            selectedImage === img
-                                                ? "border-sky-500"
-                                                : "border-gray-300 dark:border-gray-700"
-                                        }
-                                    `}
-                                />
-                            ))}
-                        </div>
-                    )}
-                </div>
+                <ProductImageViewer
+                    images={product.imageUrls}
+                    showThumbnails={true}
+                    height="h-[480px]"
+                    hoverZoom={false}
+                />
 
                 {/* RIGHT: Product info */}
                 <div className="flex flex-col gap-6">
@@ -126,23 +104,7 @@ export default function ProductDetail() {
                     {/* Quantity selector */}
                     <div>
                         <H3>Quantity</H3>
-                        <div className="flex items-center gap-3 mt-2">
-                            <button
-                                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded"
-                            >
-                                -
-                            </button>
-
-                            <span className="text-lg">{quantity}</span>
-
-                            <button
-                                onClick={() => setQuantity(quantity + 1)}
-                                className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded"
-                            >
-                                +
-                            </button>
-                        </div>
+                        <QuantitySelector value={quantity} onChange={setQuantity} />
                     </div>
 
                     {/* CTA buttons */}
@@ -179,18 +141,6 @@ export default function ProductDetail() {
                             </svg>
                         </button>
                     </div>
-
-                    {/* Features */}
-                    {product.features?.length > 0 && (
-                        <div className="mt-6">
-                            <H3>Features</H3>
-                            <ul className="list-disc ml-6 mt-2 text-gray-700 dark:text-gray-300">
-                                {product.features.map((f, i) => (
-                                    <li key={i}>{f}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
                 </div>
             </div>
         </PageLayout>

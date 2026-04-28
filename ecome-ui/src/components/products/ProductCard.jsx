@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { IMAGE_PLACEHOLDER } from "../../config/constants";
+import ProductImageViewer from "../products/ProductImageViewer";
 import { H3, Muted } from "../typography";
 
 export default function ProductCard({ product, selectedCategory, sort }) {
@@ -32,16 +32,13 @@ export default function ProductCard({ product, selectedCategory, sort }) {
                     mb-3
                 "
                 >
-                    <img
-                        loading="lazy"
-                        src={product?.imageUrls?.[0] || IMAGE_PLACEHOLDER}
-                        alt={"Image of " + product?.name}
-                        className="
-                        w-full h-48 object-cover
-                        transition-transform duration-300
-                        group-hover:scale-105
-                        fade-in
-                    "
+                    <ProductImageViewer
+                        images={product.imageUrls}
+                        showThumbnails={false}
+                        height="h-48"
+                        hoverZoom={true}
+                        rounded="rounded-lg"
+                        initialImage={product.imageUrls?.[0]}
                     />
                 </div>
 
