@@ -48,7 +48,13 @@ export default function Navbar() {
                 <div className="flex items-center gap-4 text-lg">
                     {/* Backend offline badge */}
                     {!backendOnline && (
-                        <span className="text-xs bg-rose-600 text-white px-2 py-1 rounded shadow">
+                        <span
+                            className="
+                                text-xs px-2 py-1 rounded-md shadow-sm
+                                bg-rose-600/90 text-white
+                                animate-pulse
+                            "
+                        >
                             Backend offline
                         </span>
                     )}

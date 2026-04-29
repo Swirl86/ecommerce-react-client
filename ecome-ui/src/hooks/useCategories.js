@@ -1,22 +1,17 @@
-import { useEffect, useState } from "react";
 import { getCategories } from "../api/categoriesApi";
+import { API_BASE_URL } from "../config/api";
+import { useCachedFetch } from "../hooks/useCachedFetch";
 
 export function useCategories() {
-    const [categories, setCategories] = useState([]);
-    const [error, setError] = useState(null);
+    const url = `${API_BASE_URL}/categories`;
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const data = await getCategories();
-                setCategories(data.content);
-            } catch {
-                setError("Could not load categories");
-            }
-        }
+    const { data, loading, error } = useCachedFetch(url, {
+        fetcher: () => getCategories(),
+    });
 
-        fetchData();
-    }, []);
-
-    return categories;
+    return {
+        categories: data?.content || [],
+        loading,
+        error,
+    };
 }

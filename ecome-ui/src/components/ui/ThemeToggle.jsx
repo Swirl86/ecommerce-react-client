@@ -33,7 +33,9 @@ export default function ThemeToggle() {
             ].join(" ")}
             title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
         >
-            <span className="text-xl">{theme === "light" ? "🌞" : "🌙"}</span>
+            <span className={theme === "light" ? "animate-sun" : "animate-moon"}>
+                {theme === "light" ? "🌞" : "🌙"}
+            </span>
         </button>
     );
 }

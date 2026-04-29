@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IMAGE_PLACEHOLDER } from "../../config/constants";
 import ProductThumbnails from "./ProductThumbnails";
 
@@ -12,10 +12,20 @@ export default function ProductImageViewer({
 }) {
     const validImages = images.length > 0 ? images : [IMAGE_PLACEHOLDER];
 
-    const [selected, setSelected] = useState(initialImage || validImages[0]);
+    const safeInitial =
+        initialImage && validImages.includes(initialImage) ? initialImage : validImages[0];
+
+    const [selected, setSelected] = useState(safeInitial);
+
+    useEffect(() => {
+        const nextInitial =
+            initialImage && validImages.includes(initialImage) ? initialImage : validImages[0];
+
+        setSelected(nextInitial);
+    }, [initialImage, images]);
 
     return (
-        <div className="relative">
+        <div className="relative group">
             <img
                 src={selected}
                 alt="Product image"

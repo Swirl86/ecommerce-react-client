@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { getProductById } from "../api/productsApi";
 import PageLayout from "../components/layout/PageLayout";
 import ProductImageViewer from "../components/products/ProductImageViewer";
 import { H2, H3, Muted } from "../components/typography";
@@ -8,42 +7,31 @@ import BackButtonFloating from "../components/ui/BackButtonFloating";
 import Breadcrumbs from "../components/ui/Breadcrumbs";
 import QuantitySelector from "../components/ui/QuantitySelector";
 import SkeletonCard from "../components/ui/SkeletonCard";
-import { IMAGE_PLACEHOLDER } from "../config/constants";
 import { useCategories } from "../hooks/useCategories";
+import { useProduct } from "../hooks/useProduct";
 
 export default function ProductDetail() {
     const { id } = useParams();
-    const [product, setProduct] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [quantity, setQuantity] = useState(1);
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
-    const navigate = useNavigate();
+    // Load product via cached hook
+    const { product, selectedImage, loading, error } = useProduct(id);
 
-    const categories = useCategories();
-    const categoryName =
-        categories.find((c) => c.id === product?.categoryId)?.name || product?.name || "?";
-    const categoryId = product?.categoryId;
+    // Load categories via cached hook
+    const { categories } = useCategories();
+
+    const [quantity, setQuantity] = useState(1);
+
+    // Sorting from URL (for breadcrumbs)
     const sortFromUrl = searchParams.get("sort");
     const sortParam = sortFromUrl ? `&sort=${sortFromUrl}` : "";
 
-    useEffect(() => {
-        async function loadProduct() {
-            try {
-                const data = await getProductById(id);
-                setProduct(data);
-                setSelectedImage(data.imageUrls?.[0] || IMAGE_PLACEHOLDER);
-            } catch (err) {
-                setError(true);
-            } finally {
-                setLoading(false);
-            }
-        }
+    // Resolve category name for breadcrumbs
+    const categoryName =
+        categories?.find((c) => c.id === product?.categoryId)?.name || product?.name || "?";
 
-        loadProduct();
-    }, [id]);
+    const categoryId = product?.categoryId;
 
     if (error) {
         return (
@@ -55,7 +43,7 @@ export default function ProductDetail() {
         );
     }
 
-    if (loading) {
+    if (loading || !product) {
         return (
             <PageLayout>
                 <SkeletonCard />

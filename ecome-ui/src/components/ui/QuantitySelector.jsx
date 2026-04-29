@@ -1,19 +1,33 @@
-// components/ui/QuantitySelector.jsx
-export default function QuantitySelector({ value, onChange }) {
+export default function QuantitySelector({ value, onChange, min = 1, max = 99 }) {
+    const decrease = () => onChange(Math.max(min, value - 1));
+    const increase = () => onChange(Math.min(max, value + 1));
+
     return (
         <div className="flex items-center gap-3 mt-2">
             <button
-                onClick={() => onChange(Math.max(1, value - 1))}
-                className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded"
+                aria-label="Decrease quantity"
+                onClick={decrease}
+                disabled={value <= min}
+                className="
+                    px-3 py-1 rounded
+                    bg-gray-200 dark:bg-gray-700
+                    disabled:opacity-50 disabled:cursor-not-allowed
+                "
             >
                 -
             </button>
 
-            <span className="text-lg">{value}</span>
+            <span className="text-lg w-6 text-center">{value}</span>
 
             <button
-                onClick={() => onChange(value + 1)}
-                className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded"
+                aria-label="Increase quantity"
+                onClick={increase}
+                disabled={value >= max}
+                className="
+                    px-3 py-1 rounded
+                    bg-gray-200 dark:bg-gray-700
+                    disabled:opacity-50 disabled:cursor-not-allowed
+                "
             >
                 +
             </button>

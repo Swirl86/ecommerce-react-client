@@ -1,28 +1,17 @@
-import { useEffect, useState } from "react";
 import { getProducts } from "../api/productsApi";
+import { API_BASE_URL } from "../config/api";
+import { useCachedFetch } from "../hooks/useCachedFetch";
 
 export function useProducts({ categoryId, sort }) {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const url = `${API_BASE_URL}/products/search?categoryId=${categoryId || ""}&sort=${sort || ""}`;
 
-    useEffect(() => {
-        async function fetchData() {
-            setLoading(true);
-            setError(null);
+    const { data, loading, error } = useCachedFetch(url, {
+        fetcher: () => getProducts({ categoryId, sort }),
+    });
 
-            try {
-                const data = await getProducts({ categoryId, sort });
-                setProducts(data.content);
-            } catch {
-                setError("Could not connect to backend");
-            }
-
-            setLoading(false);
-        }
-
-        fetchData();
-    }, [categoryId, sort]);
-
-    return { products, loading, error };
+    return {
+        products: data?.content || [],
+        loading,
+        error,
+    };
 }

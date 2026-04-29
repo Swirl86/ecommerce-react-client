@@ -9,7 +9,7 @@ vi.mock("react-router-dom", async () => {
     const actual = await vi.importActual("react-router-dom");
     return {
         ...actual,
-        useSearchParams: () => [new URLSearchParams(), vi.fn()],
+        useSearchParams: () => [new URLSearchParams(""), vi.fn()],
         useNavigate: () => vi.fn(),
     };
 });
@@ -21,7 +21,6 @@ vi.mock("../hooks/useProducts", () => ({
 
 describe("Products page", () => {
     test("shows skeletons when loading is true", () => {
-        // Mock the hook to simulate loading state
         useProducts.mockReturnValue({
             products: [],
             loading: true,
@@ -35,13 +34,10 @@ describe("Products page", () => {
         );
 
         const skeletons = screen.getAllByRole("generic", { hidden: true });
-
-        // Expect at least one skeleton to be rendered
         expect(skeletons.length).toBeGreaterThan(0);
     });
 
     test("shows products when loading is false", () => {
-        // Mock the hook to return two products
         useProducts.mockReturnValue({
             products: [
                 { id: 1, name: "Product A", price: 100, imageUrls: [] },
@@ -62,7 +58,6 @@ describe("Products page", () => {
     });
 
     test("shows error message when error is true", () => {
-        // Mock the hook to simulate an error state
         useProducts.mockReturnValue({
             products: [],
             loading: false,

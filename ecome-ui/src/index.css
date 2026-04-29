@@ -1,42 +1,51 @@
 @import "/src/styles/theme.css";
+/* Tailwind v4 custom variant */
 @custom-variant dark (&:where(.dark, .dark *));
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-// Custom animations for theme toggle
-@keyframes sun-bounce {
-    0%,
-    100% {
-        transform: translateY(0);
+/* Custom animations for theme toggle */
+@layer base {
+    @keyframes sun-glow-bounce {
+        0%,
+        100% {
+            transform: translateY(0) scale(1);
+            filter: drop-shadow(0 0 0px rgba(255, 200, 0, 0.4));
+        }
+        50% {
+            transform: translateY(-2px) scale(1.05);
+            filter: drop-shadow(0 0 6px rgba(255, 200, 0, 0.7));
+        }
     }
-    50% {
-        transform: translateY(-3px);
+
+    @keyframes moon-glow-spin {
+        0% {
+            transform: rotate(0deg) scale(1);
+            filter: drop-shadow(0 0 0px rgba(150, 200, 255, 0.3));
+        }
+        50% {
+            transform: rotate(15deg) scale(1.05);
+            filter: drop-shadow(0 0 6px rgba(150, 200, 255, 0.6));
+        }
+        100% {
+            transform: rotate(0deg) scale(1);
+            filter: drop-shadow(0 0 0px rgba(150, 200, 255, 0.3));
+        }
     }
 }
 
-@keyframes moon-spin {
-    0% {
-        transform: rotate(0deg);
+@layer utilities {
+    .animate-sun {
+        animation: sun-glow-bounce 1.2s ease-in-out infinite;
     }
-    50% {
-        transform: rotate(20deg);
-    }
-    100% {
-        transform: rotate(0deg);
+
+    .animate-moon {
+        animation: moon-glow-spin 1.4s ease-in-out infinite;
     }
 }
 
-// Theme toggle animations
-.animate-sun {
-    animation: sun-bounce 1s ease-in-out infinite;
-}
-
-.animate-moon {
-    animation: moon-spin 1s ease-in-out infinite;
-}
-
-// Fade-in animation for product cards
+/* Fade-in animation for product cards */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -52,7 +61,7 @@
     animation: fadeIn 0.4s ease-out;
 }
 
-// Fade-in class for images to prevent flickering when loading
+/* Fade-in class for images to prevent flickering when loading */
 .fade-in {
     opacity: 0;
     animation: fadeInImage 0.4s ease-out forwards;

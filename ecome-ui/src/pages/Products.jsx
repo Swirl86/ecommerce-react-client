@@ -11,25 +11,33 @@ export default function Products() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
-    // Load initial values from URL
+    // Read URL params
     const categoryFromUrl = searchParams.get("category");
     const sortFromUrl = searchParams.get("sort");
 
+    // Local state synced with URL
     const [categoryId, setCategoryId] = useState(categoryFromUrl ? Number(categoryFromUrl) : null);
     const [sort, setSort] = useState(sortFromUrl || "");
 
-    // Sync state from URL
+    // Sync state when URL changes (e.g. back button)
     useEffect(() => {
-        if (categoryFromUrl) {
-            setCategoryId(Number(categoryFromUrl));
-        }
-        if (sortFromUrl) {
-            setSort(sortFromUrl);
-        }
+        setCategoryId(categoryFromUrl ? Number(categoryFromUrl) : null);
+        setSort(sortFromUrl || "");
     }, [categoryFromUrl, sortFromUrl]);
 
-    // Fetch products
+    // Fetch products with cached hook
     const { products, loading, error } = useProducts({ categoryId, sort });
+
+    // URL helper
+    const updateUrl = (newCategory, newSort) => {
+        const params = new URLSearchParams();
+
+        if (newCategory !== null) params.set("category", newCategory);
+        if (newSort) params.set("sort", newSort);
+
+        const query = params.toString();
+        navigate(query ? `/products?${query}` : "/products");
+    };
 
     if (error) {
         return (
@@ -40,17 +48,6 @@ export default function Products() {
             </PageLayout>
         );
     }
-
-    // Helper to update URL
-    const updateUrl = (newCategory, newSort) => {
-        const params = new URLSearchParams();
-
-        if (newCategory !== null) params.set("category", newCategory);
-        if (newSort) params.set("sort", newSort);
-
-        const query = params.toString();
-        navigate(query ? `/products?${query}` : "/products");
-    };
 
     return (
         <PageLayout
