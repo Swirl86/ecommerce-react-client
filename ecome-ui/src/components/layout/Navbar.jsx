@@ -1,31 +1,27 @@
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useBackendBadge } from "../../hooks/useBackendBadge";
 import { useBackendStatus } from "../../hooks/useBackendStatus";
+import BackendStatusBadge from "../ui/BackendStatusBadge";
+import LogoSwitcher from "../ui/LogoSwitcher";
 import ThemeToggle from "../ui/ThemeToggle";
 
 export default function Navbar() {
-    const backendOnline = useBackendStatus();
+    const { online } = useBackendStatus();
+    const { showOffline, showRestored } = useBackendBadge(online);
+
+    const navRef = useRef(null);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     return (
         <header className="backdrop-blur bg-neutral-50/80 dark:bg-gray-800/80 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
-            <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-                <Link to="/" className="flex items-center">
-                    {/* Light mode logo */}
-                    <img
-                        src="/images/logo-dark.png"
-                        alt="E‑ComE logo"
-                        className="h-14 w-auto dark:hidden"
-                    />
+            {/* TOP BAR */}
+            <div className="max-w-7xl mx-auto px-4 py-4 relative flex items-center justify-between">
+                {/* LEFT: Logo */}
+                <LogoSwitcher />
 
-                    {/* Dark mode logo */}
-                    <img
-                        src="/images/logo-light.png"
-                        alt="E‑ComE logo"
-                        className="h-14 w-auto hidden dark:block"
-                    />
-                </Link>
-
-                {/* Navigation */}
-                <nav className="hidden md:flex gap-6 text-sm font-medium">
+                {/* CENTER: Desktop navigation */}
+                <nav ref={navRef} className="hidden md:flex gap-6 text-sm font-medium">
                     {[
                         ["Shop", "/products"],
                         ["New Arrivals", "/new"],
@@ -44,21 +40,8 @@ export default function Navbar() {
                     ))}
                 </nav>
 
-                {/* Icons + Backend status */}
-                <div className="flex items-center gap-4 text-lg">
-                    {/* Backend offline badge */}
-                    {!backendOnline && (
-                        <span
-                            className="
-                                text-xs px-2 py-1 rounded-md shadow-sm
-                                bg-rose-600/90 text-white
-                                animate-pulse
-                            "
-                        >
-                            Backend offline
-                        </span>
-                    )}
-
+                {/* RIGHT: Desktop icon bar */}
+                <div className="hidden sm:flex items-center gap-4 text-lg">
                     <span className="hover:text-sky-500 dark:hover:text-sky-300 transition">
                         🔍
                     </span>
@@ -78,6 +61,75 @@ export default function Navbar() {
                     </Link>
 
                     <ThemeToggle />
+                </div>
+
+                {/* MOBILE: Hamburger button */}
+                <button
+                    className="md:hidden text-3xl transition-transform duration-300 active:scale-90"
+                    onClick={() => setMenuOpen((o) => !o)}
+                >
+                    {menuOpen ? "✕" : "☰"}
+                </button>
+            </div>
+
+            {/* BADGE */}
+            <BackendStatusBadge
+                showOffline={showOffline}
+                showRestored={showRestored}
+                navRef={navRef}
+            />
+
+            {/* MOBILE MENU PANEL */}
+            <div
+                className={`
+                    md:hidden
+                    overflow-hidden
+                    transition-all duration-300 ease-out
+                    ${menuOpen ? "max-h-96 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-2"}
+                `}
+            >
+                <div className="px-4 pb-4 flex flex-col gap-4 text-lg bg-neutral-50/90 dark:bg-gray-800/90 border-t border-gray-200 dark:border-gray-700 backdrop-blur">
+                    {/* Mobile nav links */}
+                    {[
+                        ["Shop", "/products"],
+                        ["New Arrivals", "/new"],
+                        ["Best Sellers", "/bestsellers"],
+                        ["Collections", "/collections"],
+                        ["Deals", "/deals"],
+                        ["About", "/about"],
+                    ].map(([label, path]) => (
+                        <Link
+                            key={path}
+                            to={path}
+                            className="text-gray-700 dark:text-gray-300 hover:text-sky-500 dark:hover:text-sky-300 transition-colors"
+                            onClick={() => setMenuOpen(false)}
+                        >
+                            {label}
+                        </Link>
+                    ))}
+
+                    {/* Mobile icon bar */}
+                    <div className="flex items-center gap-4 text-xl pt-2">
+                        <span className="hover:text-sky-500 dark:hover:text-sky-300 transition">
+                            🔍
+                        </span>
+
+                        <Link
+                            to="/cart"
+                            className="hover:text-sky-500 dark:hover:text-sky-300 transition"
+                        >
+                            🛒
+                        </Link>
+
+                        <Link
+                            to="/login"
+                            className="text-sm hover:text-sky-500 dark:hover:text-sky-300 transition"
+                        >
+                            Login
+                        </Link>
+
+                        <ThemeToggle />
+                    </div>
                 </div>
             </div>
         </header>

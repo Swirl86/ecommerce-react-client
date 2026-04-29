@@ -2,52 +2,76 @@ import { useEffect, useRef, useState } from "react";
 import { API_BASE_URL } from "../config/api";
 
 export function useBackendStatus() {
-    const [online, setOnline] = useState(true);
-    const [checking, setChecking] = useState(true);
+    const [online, setOnline] = useState(null); // Backend status: true / false / null (unknown)
+    const [checking, setChecking] = useState(true); // Indicates if initial check is running
 
-    const controllerRef = useRef(null);
+    const controllerRef = useRef(null); // Stores active AbortController
 
-    useEffect(() => {
-        async function check() {
-            setChecking(true);
-
-            // Abort previous request if still running
-            if (controllerRef.current) {
-                controllerRef.current.abort();
-            }
-
-            const controller = new AbortController();
-            controllerRef.current = controller;
-
-            const timeout = setTimeout(() => controller.abort(), 3000);
-
-            try {
-                const res = await fetch(`${API_BASE_URL}/health`, {
-                    method: "GET",
-                    signal: controller.signal,
-                });
-
-                setOnline(res.ok);
-            } catch {
-                // If fetch fails (timeout, abort, network error)
-                setOnline(false);
-            } finally {
-                clearTimeout(timeout);
-                setChecking(false);
-            }
+    async function doHealthCheck() {
+        // Abort any previous request to avoid overlapping fetches
+        if (controllerRef.current) {
+            controllerRef.current.abort();
         }
 
-        // Initial check
-        check();
+        const controller = new AbortController();
+        controllerRef.current = controller;
 
-        // Poll every 30 seconds
-        const interval = setInterval(check, 30000);
+        // Safety timeout: abort request after 3 seconds
+        const timeout = setTimeout(() => controller.abort(), 3000);
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/health`, {
+                method: "GET",
+                signal: controller.signal,
+            });
+
+            clearTimeout(timeout);
+            return res.ok; // true if backend responds with 2xx
+        } catch {
+            clearTimeout(timeout);
+            return false; // Treat any error as offline
+        }
+    }
+
+    useEffect(() => {
+        async function runInitialCheck() {
+            setChecking(true);
+
+            // First check — may fail due to slow startup or network hiccup
+            const first = await doHealthCheck();
+
+            if (first) {
+                setOnline(true);
+                setChecking(false);
+                return;
+            }
+
+            // Second check — avoids false offline blink on page load
+            const second = await doHealthCheck();
+
+            if (!second) {
+                setOnline(false);
+                setChecking(false);
+                return;
+            }
+
+            // Backend came online between checks
+            setOnline(true);
+            setChecking(false);
+        }
+
+        // Run initial check immediately
+        runInitialCheck();
+
+        // Poll backend every 30 seconds
+        const interval = setInterval(async () => {
+            const ok = await doHealthCheck();
+            setOnline(ok);
+        }, 30000);
 
         return () => {
             clearInterval(interval);
-            if (controllerRef.current) {
-                controllerRef.current.abort();
-            }
+            if (controllerRef.current) controllerRef.current.abort();
         };
     }, []);
 
