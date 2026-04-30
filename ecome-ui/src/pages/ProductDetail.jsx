@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import PageLayout from "../components/layout/PageLayout";
+import CollapsibleDescription from "../components/products/CollapsibleDescription";
 import ProductImageViewer from "../components/products/ProductImageViewer";
 import { H2, H3, Muted } from "../components/typography";
 import BackButtonFloating from "../components/ui/BackButtonFloating";
@@ -15,10 +16,10 @@ export default function ProductDetail() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
-    // Load product via cached hook
+    // Load product by cached hook
     const { product, selectedImage, loading, error } = useProduct(id);
 
-    // Load categories via cached hook
+    // Load categories by cached hook
     const { categories } = useCategories();
 
     const [quantity, setQuantity] = useState(1);
@@ -70,12 +71,11 @@ export default function ProductDetail() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 animate-fadeIn">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 animate-fadeIn">
                 {/* LEFT: Main image + thumbnails */}
                 <ProductImageViewer
                     images={product.imageUrls}
                     showThumbnails={true}
-                    height="h-[480px]"
                     hoverZoom={false}
                 />
 
@@ -85,9 +85,7 @@ export default function ProductDetail() {
                     <Muted className="text-xl">${product.price}</Muted>
 
                     {/* Description */}
-                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                        {product.description || "No description available."}
-                    </p>
+                    <CollapsibleDescription text={product.description} />
 
                     {/* Quantity selector */}
                     <div>

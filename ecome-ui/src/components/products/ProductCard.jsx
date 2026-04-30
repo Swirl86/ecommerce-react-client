@@ -25,6 +25,7 @@ export default function ProductCard({ product, selectedCategory, sort }) {
                     hover:-translate-y-1
                     transition-all duration-300
                     animate-fadeIn
+                    w-full
                 "
             >
                 {/* Product image */}
@@ -34,12 +35,12 @@ export default function ProductCard({ product, selectedCategory, sort }) {
                         rounded-lg
                         border border-gray-200 dark:border-gray-700
                         mb-3
+                        aspect-[4/3] sm:aspect-[3/2] lg:aspect-[4/3]
                     "
                 >
                     <ProductImageViewer
                         images={product.imageUrls}
                         showThumbnails={false}
-                        height="h-48"
                         hoverZoom={true}
                         initialImage={product.imageUrls?.[0] || IMAGE_PLACEHOLDER}
                     />

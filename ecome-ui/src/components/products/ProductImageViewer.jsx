@@ -5,9 +5,8 @@ import ProductThumbnails from "./ProductThumbnails";
 export default function ProductImageViewer({
     images = [],
     showThumbnails = true,
-    height = "h-[480px]",
     hoverZoom = false,
-    rounded = "rounded-xl",
+    rounded = "rounded-lg sm:rounded-xl",
     initialImage = null,
 }) {
     const validImages = images.length > 0 ? images : [IMAGE_PLACEHOLDER];
@@ -25,13 +24,12 @@ export default function ProductImageViewer({
     }, [initialImage, images]);
 
     return (
-        <div className="relative group">
+        <div className="relative group aspect-[4/3] sm:aspect-[3/2] lg:aspect-[4/3]">
             <img
                 src={selected}
                 alt="Product image"
                 className={`
-                    w-full object-cover shadow mb-4
-                    ${height}
+                    w-full h-full object-cover shadow
                     ${rounded}
                     ${hoverZoom ? "transition-transform duration-300 group-hover:scale-105" : ""}
                 `}

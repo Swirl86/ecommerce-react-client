@@ -10,10 +10,17 @@ export default function SkeletonCard() {
             "
         >
             {/* Image skeleton */}
-            <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-lg mb-3"></div>
+            <div
+                className="
+                    w-full 
+                    h-40 sm:h-48 md:h-56
+                    bg-gray-200 dark:bg-gray-700
+                    rounded-lg mb-4
+                "
+            ></div>
 
             {/* Text skeleton */}
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mx-auto mb-2"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mx-auto mb-3"></div>
             <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto"></div>
         </div>
     );
