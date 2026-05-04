@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useAuthActions } from "../../hooks/useAuthActions";
 
 export default function AuthButton({ onClick }) {
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
+    const { logout, loading } = useAuthActions();
 
     const baseClasses = `
         flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium
@@ -12,19 +14,22 @@ export default function AuthButton({ onClick }) {
         transition-all duration-200
         hover:bg-[var(--color-primary)] hover:text-white dark:hover:text-gray-900
         active:scale-[0.97]
+        disabled:opacity-50 disabled:cursor-not-allowed
     `;
 
     if (user) {
         return (
             <button
-                onClick={() => {
-                    logout();
+                type="button"
+                disabled={loading}
+                onClick={async () => {
+                    await logout();
                     onClick?.();
                 }}
                 className={baseClasses}
             >
                 <span className="material-symbols-outlined text-base">lock</span>
-                Logout
+                {loading ? "Logging out..." : "Logout"}
             </button>
         );
     }

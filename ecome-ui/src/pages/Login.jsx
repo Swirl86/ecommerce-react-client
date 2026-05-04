@@ -4,7 +4,7 @@ import PageContainer from "../components/layout/PageContainer";
 import CheckboxField from "../components/ui/CheckboxField";
 import InputField from "../components/ui/InputField";
 import { useAuth } from "../context/AuthContext";
-import { useLogin } from "../hooks/useLogin";
+import { useAuthActions } from "../hooks/useAuthActions";
 
 export default function Login() {
     const {
@@ -24,11 +24,12 @@ export default function Login() {
         handlePasswordChange,
         handlePasswordBlur,
         handleSubmit,
-    } = useLogin();
+    } = useAuthActions();
 
     const { accessToken } = useAuth();
     const navigate = useNavigate();
 
+    // Redirect if already logged in
     useEffect(() => {
         if (accessToken) {
             navigate("/profile");

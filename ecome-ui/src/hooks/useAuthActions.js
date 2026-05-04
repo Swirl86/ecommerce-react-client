@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../context/AuthContext";
 
-export function useLogin() {
-    const { login } = useAuth();
+export function useAuthActions() {
+    const { login: authLogin, logout: authLogout } = useAuth();
 
     // -----------------------------------------------------
     // FORM STATE
@@ -75,16 +75,15 @@ export function useLogin() {
     const isFormValid = validateEmail(email) === "" && validatePassword(password) === "";
 
     // -----------------------------------------------------
-    // SUBMIT HANDLER
+    // LOGIN ACTION
     // -----------------------------------------------------
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const login = async () => {
         setError("");
         setLoading(true);
 
         if (!isFormValid) {
             setLoading(false);
-            return;
+            return false;
         }
 
         try {
@@ -97,39 +96,61 @@ export function useLogin() {
             if (res.status === 401) {
                 setError("Invalid email or password");
                 setLoading(false);
-                return;
+                return false;
             }
 
             if (!res.ok) {
                 setError("Unexpected error");
                 setLoading(false);
-                return;
+                return false;
             }
 
             const data = await res.json();
-            localStorage.setItem("remember", remember);
 
-            login(
+            authLogin(
                 {
-                    token: data.accessToken,
+                    accessToken: data.accessToken,
                     refreshToken: data.refreshToken,
-                    id: data.userId,
-                    email: data.email,
-                    role: data.role,
+                    user: {
+                        id: data.userId,
+                        email: data.email,
+                        role: data.role,
+                    },
                 },
                 remember
             );
+
+            return true;
         } catch {
             setError("Network error");
+            return false;
         } finally {
             setLoading(false);
         }
     };
 
     // -----------------------------------------------------
+    // LOGOUT ACTION
+    // -----------------------------------------------------
+    const logout = async () => {
+        setLoading(true);
+        await authLogout();
+        setLoading(false);
+    };
+
+    // -----------------------------------------------------
+    // SUBMIT HANDLER (for forms)
+    // -----------------------------------------------------
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        return await login();
+    };
+
+    // -----------------------------------------------------
     // RETURN API
     // -----------------------------------------------------
     return {
+        // state
         email,
         emailError,
         password,
@@ -140,11 +161,16 @@ export function useLogin() {
         loading,
         isFormValid,
 
+        // setters
         setRemember,
         handleEmailChange,
         handleEmailBlur,
         handlePasswordChange,
         handlePasswordBlur,
+
+        // actions
         handleSubmit,
+        login,
+        logout,
     };
 }
