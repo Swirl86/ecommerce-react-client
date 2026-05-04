@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useBackendBadge } from "../../hooks/useBackendBadge";
 import { useBackendStatus } from "../../hooks/useBackendStatus";
+import AuthButton from "../auth/AuthButton";
 import BackendStatusBadge from "../ui/BackendStatusBadge";
 import LogoSwitcher from "../ui/LogoSwitcher";
 import ThemeToggle from "../ui/ThemeToggle";
@@ -53,12 +54,8 @@ export default function Navbar() {
                         🛒
                     </Link>
 
-                    <Link
-                        to="/login"
-                        className="text-sm hover:text-sky-500 dark:hover:text-sky-300 transition"
-                    >
-                        Login
-                    </Link>
+                    {/* Login/Logout button */}
+                    <AuthButton />
 
                     <ThemeToggle />
                 </div>
@@ -121,12 +118,7 @@ export default function Navbar() {
                             🛒
                         </Link>
 
-                        <Link
-                            to="/login"
-                            className="text-sm hover:text-sky-500 dark:hover:text-sky-300 transition"
-                        >
-                            Login
-                        </Link>
+                        <AuthButton onClick={() => setMenuOpen(false)} />
 
                         <ThemeToggle />
                     </div>

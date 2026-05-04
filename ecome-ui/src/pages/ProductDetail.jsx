@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import PageLayout from "../components/layout/PageLayout";
+import PageContainer from "../components/layout/PageContainer";
 import CollapsibleDescription from "../components/products/CollapsibleDescription";
 import ProductImageViewer from "../components/products/ProductImageViewer";
 import { H2, H3, Muted } from "../components/typography";
@@ -36,24 +36,24 @@ export default function ProductDetail() {
 
     if (error) {
         return (
-            <PageLayout>
+            <PageContainer>
                 <div className="p-6 bg-rose-100 text-rose-800 rounded">
                     Could not load product. Please try again later.
                 </div>
-            </PageLayout>
+            </PageContainer>
         );
     }
 
     if (loading || !product) {
         return (
-            <PageLayout>
+            <PageContainer>
                 <SkeletonCard />
-            </PageLayout>
+            </PageContainer>
         );
     }
 
     return (
-        <PageLayout>
+        <PageContainer>
             <div className="relative mb-6">
                 <Breadcrumbs
                     items={[
@@ -129,6 +129,6 @@ export default function ProductDetail() {
                     </div>
                 </div>
             </div>
-        </PageLayout>
+        </PageContainer>
     );
 }

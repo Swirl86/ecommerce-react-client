@@ -72,3 +72,50 @@
         opacity: 1;
     }
 }
+
+.error-fade {
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+
+.error-fade-enter {
+    opacity: 0;
+    transform: translateY(-4px);
+}
+
+.error-fade-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.error-fade-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.error-fade-exit-active {
+    opacity: 0;
+    transform: translateY(-4px);
+}
+
+/* Remove WebKit input highlight flash */
+input {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-focus-ring-color: transparent;
+    outline: none;
+}
+
+/* Remove the white border flash on focus */
+input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.material-symbols-outlined {
+    font-variation-settings:
+        "FILL" 0,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 24;
+}
