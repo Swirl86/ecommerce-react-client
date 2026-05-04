@@ -16,19 +16,26 @@ export default function InputField({
     const isPassword = type === "password";
     const inputType = isPassword && showPassword ? "text" : type;
 
+    // Generate stable id from label
+    const inputId = label ? label.toLowerCase().replace(/\s+/g, "-") : undefined;
+
     return (
         <div className="flex flex-col gap-1 w-full">
             {label && (
-                <label className="text-sm font-medium text-[var(--color-text)]">{label}</label>
+                <label htmlFor={inputId} className="text-sm font-medium text-[var(--color-text)]">
+                    {label}
+                </label>
             )}
 
             <div className="relative">
                 <input
+                    id={inputId}
                     type={inputType}
                     placeholder={placeholder}
                     value={value}
                     onChange={onChange}
                     onBlur={onBlur}
+                    aria-invalid={!!error}
                     className={`
                         w-full p-3 pr-12 rounded-lg
                         border bg-[var(--color-bg)] text-[var(--color-text)]
@@ -55,7 +62,7 @@ export default function InputField({
                         focus-visible:outline-none
                         focus:ring-offset-0
                         focus:shadow-none
-                        `}
+                    `}
                 />
 
                 {/* Password toggle */}

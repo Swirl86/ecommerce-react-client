@@ -47,7 +47,11 @@ export default function Login() {
                         Log in to your account to continue.
                     </p>
 
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                    <form
+                        onSubmit={handleSubmit}
+                        data-testid="login-form"
+                        className="flex flex-col gap-5"
+                    >
                         <InputField
                             label="Email"
                             type="email"

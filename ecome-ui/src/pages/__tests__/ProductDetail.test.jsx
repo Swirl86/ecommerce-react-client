@@ -3,31 +3,31 @@ import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 
 // --- MOCKS (HAVE TO BE BEFORE IMPORTS) ---
-vi.mock("../hooks/useProduct", () => ({
+vi.mock("../../hooks/useProduct", () => ({
     useProduct: vi.fn(),
 }));
 
-vi.mock("../hooks/useCategories", () => ({
+vi.mock("../../hooks/useCategories", () => ({
     useCategories: vi.fn(),
 }));
 
-vi.mock("../components/products/ProductImageViewer", () => ({
+vi.mock("../../components/products/ProductImageViewer", () => ({
     default: () => <div>IMAGE</div>,
 }));
 
-vi.mock("../components/ui/SkeletonCard", () => ({
+vi.mock("../../components/ui/SkeletonCard", () => ({
     default: () => <div data-testid="skeleton-card">SKELETON</div>,
 }));
 
-vi.mock("../components/ui/Breadcrumbs", () => ({
+vi.mock("../../components/ui/Breadcrumbs", () => ({
     default: () => <div>BREADCRUMBS</div>,
 }));
 
-vi.mock("../components/ui/BackButtonFloating", () => ({
+vi.mock("../../components/ui/BackButtonFloating", () => ({
     default: () => <div>BACK</div>,
 }));
 
-vi.mock("../components/layout/PageLayout", () => ({
+vi.mock("../../components/layout/PageLayout", () => ({
     default: ({ children }) => <div>{children}</div>,
 }));
 
@@ -42,9 +42,9 @@ vi.mock("react-router-dom", async () => {
 });
 
 // --- IMPORT AFTER MOCKS ---
-import { useCategories } from "../hooks/useCategories";
-import { useProduct } from "../hooks/useProduct";
-import ProductDetail from "./ProductDetail";
+import { useCategories } from "../../hooks/useCategories";
+import { useProduct } from "../../hooks/useProduct";
+import ProductDetail from "../ProductDetail";
 
 describe("ProductDetail (minimal version)", () => {
     beforeEach(() => {
