@@ -1,5 +1,5 @@
+import { useUI } from "@context/UIContext";
 import { useEffect, useRef } from "react";
-import { useUI } from "../context/UIContext";
 
 export function useBackendBadge(online) {
     const { showBackendOffline, showBackendRestored } = useUI();

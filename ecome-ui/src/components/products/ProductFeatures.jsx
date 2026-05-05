@@ -1,4 +1,4 @@
-import { H3 } from "../typography";
+import { H3 } from "@typography";
 
 export default function ProductFeatures({ features = [] }) {
     if (!features.length) return null;

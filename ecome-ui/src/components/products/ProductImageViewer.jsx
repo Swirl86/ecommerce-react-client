@@ -1,5 +1,5 @@
+import { IMAGE_PLACEHOLDER } from "@config/constants";
 import { useEffect, useState } from "react";
-import { IMAGE_PLACEHOLDER } from "../../config/constants";
 import ProductThumbnails from "./ProductThumbnails";
 
 export default function ProductImageViewer({

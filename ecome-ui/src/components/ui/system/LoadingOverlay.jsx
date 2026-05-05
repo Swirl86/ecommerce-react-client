@@ -1,4 +1,4 @@
-import { useUI } from "../../../context/UIContext";
+import { useUI } from "@context/UIContext";
 
 export default function LoadingOverlay() {
     const { loading } = useUI();

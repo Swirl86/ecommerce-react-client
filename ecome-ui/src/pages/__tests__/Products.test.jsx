@@ -1,7 +1,7 @@
+import { useProducts } from "@hooks/useProducts";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
-import { useProducts } from "../../hooks/useProducts";
 import Products from "../Products";
 
 // Mock router hooks
@@ -15,7 +15,7 @@ vi.mock("react-router-dom", async () => {
 });
 
 // Mock useProducts
-vi.mock("../../hooks/useProducts", () => ({
+vi.mock("@hooks/useProducts", () => ({
     useProducts: vi.fn(),
 }));
 

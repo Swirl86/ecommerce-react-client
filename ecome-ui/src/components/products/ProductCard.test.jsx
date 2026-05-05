@@ -1,7 +1,7 @@
+import { IMAGE_PLACEHOLDER } from "@config/constants";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
-import { IMAGE_PLACEHOLDER } from "../../config/constants";
 import ProductCard from "./ProductCard";
 
 // Mock ProductImageViewer to make tests stable and predictable

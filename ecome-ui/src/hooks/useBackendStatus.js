@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import { API_BASE_URL } from "../config/api";
+import { API_BASE_URL } from "@config/api";
 import {
     HEALTHCHECK_INITIAL_RETRY,
     HEALTHCHECK_INTERVAL_OFFLINE,
     HEALTHCHECK_INTERVAL_ONLINE,
     HEALTHCHECK_TIMEOUT,
-} from "../config/constants";
-import { useUI } from "../context/UIContext";
+} from "@config/constants";
+import { useUI } from "@context/UIContext";
+import { useEffect, useRef, useState } from "react";
 
 export function useBackendStatus() {
     const [online, setOnline] = useState(null);

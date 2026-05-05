@@ -1,5 +1,5 @@
-import { useCategories } from "../../hooks/useCategories";
-import { Body, H3 } from "../typography";
+import { useCategories } from "@hooks/useCategories";
+import { Body, H3 } from "@typography";
 
 export default function ProductFilters({ selectedCategory, onSelectCategory }) {
     const { categories, loading, error } = useCategories();

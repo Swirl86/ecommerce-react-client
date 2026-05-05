@@ -1,6 +1,6 @@
+import GuestRoute from "@components/auth/GuestRoute";
+import ProtectedRoute from "@components/auth/ProtectedRoute";
 import { Route, Routes } from "react-router-dom";
-import GuestRoute from "../components/auth/GuestRoute";
-import ProtectedRoute from "../components/auth/ProtectedRoute";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import ProductDetail from "../pages/ProductDetail";

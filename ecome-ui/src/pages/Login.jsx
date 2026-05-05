@@ -1,10 +1,10 @@
+import { useAuth } from "@context/AuthContext";
+import { useAuthActions } from "@hooks/useAuthActions";
+import PageContainer from "@layout/PageContainer";
+import CheckboxField from "@ui/CheckboxField";
+import InputField from "@ui/InputField";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import PageContainer from "../components/layout/PageContainer";
-import CheckboxField from "../components/ui/CheckboxField";
-import InputField from "../components/ui/InputField";
-import { useAuth } from "../context/AuthContext";
-import { useAuthActions } from "../hooks/useAuthActions";
 
 export default function Login() {
     const {

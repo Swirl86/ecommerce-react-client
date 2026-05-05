@@ -1,5 +1,5 @@
+import { SESSION_DURATION } from "@config/constants";
 import { useEffect } from "react";
-import { SESSION_DURATION } from "../config/constants";
 
 export function useTokenRefresh(refreshToken, refreshFn, setAuthLoading) {
     // AUTO REFRESH

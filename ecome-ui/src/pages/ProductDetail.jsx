@@ -1,15 +1,15 @@
+import { useCategories } from "@hooks/useCategories";
+import { useProduct } from "@hooks/useProduct";
+import PageContainer from "@layout/PageContainer";
+import CollapsibleDescription from "@products/CollapsibleDescription";
+import ProductImageViewer from "@products/ProductImageViewer";
+import { H2, H3, Muted } from "@typography";
+import BackButtonFloating from "@ui/BackButtonFloating";
+import Breadcrumbs from "@ui/Breadcrumbs";
+import QuantitySelector from "@ui/QuantitySelector";
+import SkeletonCard from "@ui/SkeletonCard";
 import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import PageContainer from "../components/layout/PageContainer";
-import CollapsibleDescription from "../components/products/CollapsibleDescription";
-import ProductImageViewer from "../components/products/ProductImageViewer";
-import { H2, H3, Muted } from "../components/typography";
-import BackButtonFloating from "../components/ui/BackButtonFloating";
-import Breadcrumbs from "../components/ui/Breadcrumbs";
-import QuantitySelector from "../components/ui/QuantitySelector";
-import SkeletonCard from "../components/ui/SkeletonCard";
-import { useCategories } from "../hooks/useCategories";
-import { useProduct } from "../hooks/useProduct";
 
 export default function ProductDetail() {
     const { id } = useParams();

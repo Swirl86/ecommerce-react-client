@@ -1,10 +1,10 @@
+import { AuthProvider } from "@context/AuthContext";
+import { UIProvider } from "@context/UIContext";
+import Layout from "@layout/Layout";
+import BackendStatusBadge from "@ui/system/BackendStatusBadge";
+import LoadingOverlay from "@ui/system/LoadingOverlay";
+import SystemMessage from "@ui/system/SystemMessage";
 import { BrowserRouter } from "react-router-dom";
-import Layout from "./components/layout/Layout";
-import BackendStatusBadge from "./components/ui/system/BackendStatusBadge";
-import LoadingOverlay from "./components/ui/system/LoadingOverlay";
-import SystemMessage from "./components/ui/system/SystemMessage";
-import { AuthProvider } from "./context/AuthContext";
-import { UIProvider } from "./context/UIContext";
 import AppRoutes from "./routes/AppRoutes";
 
 export default function App() {

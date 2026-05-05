@@ -1,5 +1,5 @@
+import { SESSION_DURATION, WARNING_BEFORE } from "@config/constants";
 import { useEffect, useRef, useState } from "react";
-import { SESSION_DURATION, WARNING_BEFORE } from "../config/constants";
 
 export function useSessionTimers(refreshToken, remember, refreshFn, logoutFn) {
     const [showSessionWarning, setShowSessionWarning] = useState(false);

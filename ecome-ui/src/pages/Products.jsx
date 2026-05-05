@@ -1,11 +1,11 @@
+import { useProducts } from "@hooks/useProducts";
+import PageLayout from "@layout/PageLayout";
+import ProductCard from "@products/ProductCard";
+import ProductFilters from "@sidebar/ProductFilters";
+import { H2 } from "@typography";
+import SkeletonCard from "@ui/SkeletonCard";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import PageLayout from "../components/layout/PageLayout";
-import ProductCard from "../components/products/ProductCard";
-import ProductFilters from "../components/sidebar/ProductFilters";
-import { H2 } from "../components/typography";
-import SkeletonCard from "../components/ui/SkeletonCard";
-import { useProducts } from "../hooks/useProducts";
 
 export default function Products() {
     const navigate = useNavigate();

@@ -1,16 +1,16 @@
+import { useAuth } from "@context/AuthContext";
+import { useAuthActions } from "@hooks/useAuthActions";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { vi } from "vitest";
-import { useAuth } from "../../context/AuthContext";
-import { useAuthActions } from "../../hooks/useAuthActions";
 import Login from "../Login";
 
 // Mock hooks
-vi.mock("../../context/AuthContext", () => ({
+vi.mock("@context/AuthContext", () => ({
     useAuth: vi.fn(),
 }));
 
-vi.mock("../../hooks/useAuthActions", () => ({
+vi.mock("@hooks/useAuthActions", () => ({
     useAuthActions: vi.fn(),
 }));
 

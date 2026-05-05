@@ -1,4 +1,4 @@
-import { getCached, saveCached } from "../utils/etagCache";
+import { getCached, saveCached } from "@utils/etagCache";
 
 export async function fetchWithEtag(url) {
     const cached = getCached(url);

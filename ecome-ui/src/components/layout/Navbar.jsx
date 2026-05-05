@@ -1,8 +1,8 @@
+import LogoSwitcher from "@ui/LogoSwitcher";
+import ThemeToggle from "@ui/ThemeToggle";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import AuthButton from "../auth/AuthButton";
-import LogoSwitcher from "../ui/LogoSwitcher";
-import ThemeToggle from "../ui/ThemeToggle";
 
 export default function Navbar() {
     const navRef = useRef(null);

@@ -1,6 +1,6 @@
+import { API_BASE_URL } from "@config/api";
+import { useAuth } from "@context/AuthContext";
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../config/api";
-import { useAuth } from "../context/AuthContext";
 
 export function useAuthActions() {
     const { login: authLogin, logout: authLogout } = useAuth();

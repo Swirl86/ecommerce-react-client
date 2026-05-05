@@ -1,7 +1,7 @@
-import { useAuth } from "../../context/AuthContext";
-import { useBackendBadge } from "../../hooks/useBackendBadge";
-import { useBackendStatus } from "../../hooks/useBackendStatus";
-import SessionWarningPopup from "../ui/system/SessionWarningPopup";
+import { useAuth } from "@context/AuthContext";
+import { useBackendBadge } from "@hooks/useBackendBadge";
+import { useBackendStatus } from "@hooks/useBackendStatus";
+import SessionWarningPopup from "@ui/system/SessionWarningPopup";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 

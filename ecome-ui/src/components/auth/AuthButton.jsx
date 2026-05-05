@@ -1,6 +1,6 @@
+import { useAuth } from "@context/AuthContext";
+import { useAuthActions } from "@hooks/useAuthActions";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import { useAuthActions } from "../../hooks/useAuthActions";
 
 export default function AuthButton({ onClick }) {
     const { user } = useAuth();

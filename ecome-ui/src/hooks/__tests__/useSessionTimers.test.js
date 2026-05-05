@@ -1,6 +1,6 @@
+import { SESSION_DURATION, WARNING_BEFORE } from "@config/constants";
 import { act, renderHook } from "@testing-library/react";
 import { vi } from "vitest";
-import { SESSION_DURATION, WARNING_BEFORE } from "../../config/constants";
 import { useSessionTimers } from "../useSessionTimers";
 
 vi.useFakeTimers();

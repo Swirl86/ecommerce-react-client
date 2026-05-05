@@ -1,4 +1,4 @@
-import { Body, H1, Muted } from "../components/typography";
+import { Body, H1, Muted } from "@typography";
 
 export default function Home() {
     return (

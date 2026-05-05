@@ -1,6 +1,6 @@
+import { getCached, saveCached } from "@utils/etagCache";
+import { getLocalCache, setLocalCache } from "@utils/localCache";
 import { useEffect, useState } from "react";
-import { getCached, saveCached } from "../utils/etagCache";
-import { getLocalCache, setLocalCache } from "../utils/localCache";
 
 export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher } = {}) {
     const [data, setData] = useState(null);

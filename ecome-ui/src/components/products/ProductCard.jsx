@@ -1,7 +1,7 @@
+import { IMAGE_PLACEHOLDER } from "@config/constants";
+import ProductImageViewer from "@products/ProductImageViewer";
+import { H3, Muted } from "@typography";
 import { Link } from "react-router-dom";
-import { IMAGE_PLACEHOLDER } from "../../config/constants";
-import ProductImageViewer from "../products/ProductImageViewer";
-import { H3, Muted } from "../typography";
 
 export default function ProductCard({ product, selectedCategory, sort }) {
     const params = new URLSearchParams();

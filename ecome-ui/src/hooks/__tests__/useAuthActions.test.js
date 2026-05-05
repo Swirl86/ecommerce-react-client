@@ -1,9 +1,9 @@
+import { useAuth } from "@context/AuthContext";
 import { act, renderHook } from "@testing-library/react";
 import { vi } from "vitest";
-import { useAuth } from "../../context/AuthContext";
 import { useAuthActions } from "../useAuthActions";
 
-vi.mock("../../context/AuthContext", () => ({
+vi.mock("@context/AuthContext", () => ({
     useAuth: vi.fn(),
 }));
 

@@ -1,8 +1,8 @@
+import { logoutRequest, refreshTokenRequest } from "@api/authApi";
+import { useAuthStorage } from "@hooks/useAuthStorage";
+import { useSessionTimers } from "@hooks/useSessionTimers";
+import { useTokenRefresh } from "@hooks/useTokenRefresh";
 import { createContext, useContext, useState } from "react";
-import { logoutRequest, refreshTokenRequest } from "../api/authApi";
-import { useAuthStorage } from "../hooks/useAuthStorage";
-import { useSessionTimers } from "../hooks/useSessionTimers";
-import { useTokenRefresh } from "../hooks/useTokenRefresh";
 
 const AuthContext = createContext(null);
 
