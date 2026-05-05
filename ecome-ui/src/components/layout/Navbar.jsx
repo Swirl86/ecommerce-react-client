@@ -1,16 +1,10 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useBackendBadge } from "../../hooks/useBackendBadge";
-import { useBackendStatus } from "../../hooks/useBackendStatus";
 import AuthButton from "../auth/AuthButton";
-import BackendStatusBadge from "../ui/BackendStatusBadge";
 import LogoSwitcher from "../ui/LogoSwitcher";
 import ThemeToggle from "../ui/ThemeToggle";
 
 export default function Navbar() {
-    const { online } = useBackendStatus();
-    const { showOffline, showRestored } = useBackendBadge(online);
-
     const navRef = useRef(null);
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -54,9 +48,7 @@ export default function Navbar() {
                         🛒
                     </Link>
 
-                    {/* Login/Logout button */}
                     <AuthButton />
-
                     <ThemeToggle />
                 </div>
 
@@ -69,13 +61,6 @@ export default function Navbar() {
                 </button>
             </div>
 
-            {/* BADGE */}
-            <BackendStatusBadge
-                showOffline={showOffline}
-                showRestored={showRestored}
-                navRef={navRef}
-            />
-
             {/* MOBILE MENU PANEL */}
             <div
                 className={`
@@ -86,7 +71,6 @@ export default function Navbar() {
                 `}
             >
                 <div className="px-4 pb-4 flex flex-col gap-4 text-lg bg-neutral-50/90 dark:bg-gray-800/90 border-t border-gray-200 dark:border-gray-700 backdrop-blur">
-                    {/* Mobile nav links */}
                     {[
                         ["Shop", "/products"],
                         ["New Arrivals", "/new"],
@@ -105,7 +89,6 @@ export default function Navbar() {
                         </Link>
                     ))}
 
-                    {/* Mobile icon bar */}
                     <div className="flex items-center gap-4 text-xl pt-2">
                         <span className="hover:text-sky-500 dark:hover:text-sky-300 transition">
                             🔍
@@ -119,7 +102,6 @@ export default function Navbar() {
                         </Link>
 
                         <AuthButton onClick={() => setMenuOpen(false)} />
-
                         <ThemeToggle />
                     </div>
                 </div>

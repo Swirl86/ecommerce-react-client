@@ -1,14 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { API_BASE_URL } from "../config/api";
+import {
+    HEALTHCHECK_INITIAL_RETRY,
+    HEALTHCHECK_INTERVAL_OFFLINE,
+    HEALTHCHECK_INTERVAL_ONLINE,
+    HEALTHCHECK_TIMEOUT,
+} from "../config/constants";
+import { useUI } from "../context/UIContext";
 
 export function useBackendStatus() {
-    const [online, setOnline] = useState(null); // Backend status: true / false / null (unknown)
-    const [checking, setChecking] = useState(true); // Indicates if initial check is running
+    const [online, setOnline] = useState(null);
+    const [checking, setChecking] = useState(true);
 
-    const controllerRef = useRef(null); // Stores active AbortController
+    const controllerRef = useRef(null);
+    const firstRun = useRef(true);
+    const intervalRef = useRef(null);
 
-    async function doHealthCheck() {
-        // Abort any previous request to avoid overlapping fetches
+    const { showBackendOffline, showBackendRestored } = useUI();
+
+    async function doHealthCheck(source = "unknown") {
         if (controllerRef.current) {
             controllerRef.current.abort();
         }
@@ -16,8 +26,7 @@ export function useBackendStatus() {
         const controller = new AbortController();
         controllerRef.current = controller;
 
-        // Safety timeout: abort request after 3 seconds
-        const timeout = setTimeout(() => controller.abort(), 3000);
+        const timeout = setTimeout(() => controller.abort(), HEALTHCHECK_TIMEOUT);
 
         try {
             const res = await fetch(`${API_BASE_URL}/health`, {
@@ -26,51 +35,66 @@ export function useBackendStatus() {
             });
 
             clearTimeout(timeout);
-            return res.ok; // true if backend responds with 2xx
+
+            return res.ok;
         } catch {
             clearTimeout(timeout);
-            return false; // Treat any error as offline
+
+            return false;
         }
+    }
+
+    function startPolling(isOnline) {
+        const interval = isOnline ? HEALTHCHECK_INTERVAL_ONLINE : HEALTHCHECK_INTERVAL_OFFLINE;
+
+        if (intervalRef.current) clearInterval(intervalRef.current);
+
+        intervalRef.current = setInterval(async () => {
+            const ok = await doHealthCheck("polling");
+
+            setOnline((prev) => {
+                if (!firstRun.current) {
+                    if (prev === true && !ok) {
+                        showBackendOffline();
+                        startPolling((isOnline = false)); // Change to faster interval when offline
+                    }
+                    if (prev === false && ok) {
+                        showBackendRestored();
+                        startPolling((isOnline = true)); // Change to slower interval when online
+                    }
+                }
+                return ok;
+            });
+        }, interval);
     }
 
     useEffect(() => {
         async function runInitialCheck() {
             setChecking(true);
 
-            // First check — may fail due to slow startup or network hiccup
-            const first = await doHealthCheck();
+            for (let attempt = 1; attempt <= HEALTHCHECK_INITIAL_RETRY; attempt++) {
+                const ok = await doHealthCheck(`initial-${attempt}`);
 
-            if (first) {
-                setOnline(true);
-                setChecking(false);
-                return;
+                if (ok) {
+                    setOnline(true);
+                    setChecking(false);
+                    firstRun.current = false;
+                    startPolling(true);
+                    return;
+                }
             }
 
-            // Second check — avoids false offline blink on page load
-            const second = await doHealthCheck();
-
-            if (!second) {
-                setOnline(false);
-                setChecking(false);
-                return;
-            }
-
-            // Backend came online between checks
-            setOnline(true);
+            setOnline(false);
             setChecking(false);
+            showBackendOffline();
+            firstRun.current = false;
+            startPolling(false);
         }
 
-        // Run initial check immediately
         runInitialCheck();
 
-        // Poll backend every 30 seconds
-        const interval = setInterval(async () => {
-            const ok = await doHealthCheck();
-            setOnline(ok);
-        }, 30000);
-
         return () => {
-            clearInterval(interval);
+            if (intervalRef.current) clearInterval(intervalRef.current);
             if (controllerRef.current) controllerRef.current.abort();
         };
     }, []);

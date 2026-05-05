@@ -5,8 +5,7 @@ export const DEFAULT_PAGE_SIZE = 20;
 export const SESSION_DURATION = 30 * 60 * 1000;
 export const WARNING_BEFORE = 1 * 60 * 1000;
 
-/* For testning */
-// 10 seconds
-//export const SESSION_DURATION = 10 * 1000;
-// Show warning 5 seconds before expiration
-//export const WARNING_BEFORE = 5 * 1000;
+export const HEALTHCHECK_INTERVAL_ONLINE = 30 * 1000; // 30 seconds
+export const HEALTHCHECK_INTERVAL_OFFLINE = 10 * 1000; // 10 seconds
+export const HEALTHCHECK_TIMEOUT = 3000; // 3 seconds
+export const HEALTHCHECK_INITIAL_RETRY = 2; // Number of initial retries before declaring backend offline
