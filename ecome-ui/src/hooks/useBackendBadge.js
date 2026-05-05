@@ -18,6 +18,7 @@ export function useBackendBadge(online) {
         // Backend online
         if (online === true && wasOffline.current) {
             showBackendRestored();
+            wasOffline.current = false;
         }
     }, [online, showBackendOffline, showBackendRestored]);
 }
