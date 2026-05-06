@@ -95,6 +95,7 @@ function AuthProvider({ children }) {
     );
 
     const value = {
+        authLoading,
         accessToken,
         refreshToken,
         user,
@@ -106,7 +107,6 @@ function AuthProvider({ children }) {
         declineSession,
         showSessionWarning,
         countdown,
-        authLoading,
         remember,
         setRemember,
     };

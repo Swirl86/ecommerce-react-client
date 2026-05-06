@@ -71,28 +71,6 @@ describe("ProductDetail (minimal version)", () => {
         expect(screen.getByTestId("skeleton-card")).toBeInTheDocument();
     });
 
-    test("shows error message when error is true", () => {
-        useProduct.mockReturnValue({
-            product: null,
-            loading: false,
-            error: true,
-        });
-
-        useCategories.mockReturnValue({
-            categories: [],
-        });
-
-        render(
-            <MemoryRouter>
-                <ProductDetail />
-            </MemoryRouter>
-        );
-
-        expect(
-            screen.getByText("Could not load product. Please try again later.")
-        ).toBeInTheDocument();
-    });
-
     test("renders product details when loaded", () => {
         useProduct.mockReturnValue({
             product: {

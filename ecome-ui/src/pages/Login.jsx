@@ -13,9 +13,6 @@ export default function Login() {
         password,
         passwordError,
         remember,
-        error,
-        showErrorAnim,
-        loading,
         isFormValid,
 
         setRemember,
@@ -85,18 +82,8 @@ export default function Login() {
                             </Link>
                         </div>
 
-                        <div
-                            className={`
-                                error-fade
-                                ${showErrorAnim ? "error-fade-enter-active" : "error-fade-exit-active"}
-                                text-red-500 text-sm h-5
-                            `}
-                        >
-                            {error}
-                        </div>
-
                         <button
-                            disabled={!isFormValid || loading}
+                            disabled={!isFormValid}
                             className="
                                 w-full py-3 rounded-lg text-white font-medium
                                 bg-[var(--color-primary)]
@@ -104,7 +91,7 @@ export default function Login() {
                                 transition disabled:opacity-50 disabled:cursor-not-allowed
                             "
                         >
-                            {loading ? "Logging in..." : "Log in"}
+                            Log in
                         </button>
                     </form>
 

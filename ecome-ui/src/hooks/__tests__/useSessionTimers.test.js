@@ -56,6 +56,8 @@ describe("useSessionTimers", () => {
     });
 
     test("extendSession resets timers", async () => {
+        mockRefresh.mockResolvedValue(true);
+
         const { result } = renderHook(() =>
             useSessionTimers("refreshToken", false, mockRefresh, mockLogout)
         );

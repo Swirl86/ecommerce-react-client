@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function AuthButton({ onClick }) {
     const { user } = useAuth();
-    const { logout, loading } = useAuthActions();
+    const { logout } = useAuthActions();
 
     const baseClasses = `
         flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium
@@ -14,14 +14,12 @@ export default function AuthButton({ onClick }) {
         transition-all duration-200
         hover:bg-[var(--color-primary)] hover:text-white dark:hover:text-gray-900
         active:scale-[0.97]
-        disabled:opacity-50 disabled:cursor-not-allowed
     `;
 
     if (user) {
         return (
             <button
                 type="button"
-                disabled={loading}
                 onClick={async () => {
                     await logout();
                     onClick?.();
@@ -29,7 +27,7 @@ export default function AuthButton({ onClick }) {
                 className={baseClasses}
             >
                 <span className="material-symbols-outlined text-base">lock</span>
-                {loading ? "Logging out..." : "Logout"}
+                Logout
             </button>
         );
     }

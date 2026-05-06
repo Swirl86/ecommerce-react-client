@@ -16,10 +16,10 @@ export default function ProductDetail() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
-    // Load product by cached hook
-    const { product, selectedImage, loading, error } = useProduct(id);
+    // Load product data (with caching)
+    const { product, loading } = useProduct(id);
 
-    // Load categories by cached hook
+    // Load categories for breadcrumbs
     const { categories } = useCategories();
 
     const [quantity, setQuantity] = useState(1);
@@ -30,19 +30,9 @@ export default function ProductDetail() {
 
     // Resolve category name for breadcrumbs
     const categoryName =
-        categories?.find((c) => c.id === product?.categoryId)?.name || product?.name || "?";
+        categories?.find((c) => c.id === product?.categoryId)?.name ?? product?.name ?? "Unknown";
 
     const categoryId = product?.categoryId;
-
-    if (error) {
-        return (
-            <PageContainer>
-                <div className="p-6 bg-rose-100 text-rose-800 rounded">
-                    Could not load product. Please try again later.
-                </div>
-            </PageContainer>
-        );
-    }
 
     if (loading || !product) {
         return (

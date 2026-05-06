@@ -13,20 +13,23 @@ export function useBackendStatus() {
     const [checking, setChecking] = useState(true);
 
     const controllerRef = useRef(null);
-    const firstRun = useRef(true);
     const intervalRef = useRef(null);
+    const initializedRef = useRef(false);
 
     const { showBackendOffline, showBackendRestored } = useUI();
 
-    async function doHealthCheck(source = "unknown") {
-        if (controllerRef.current) {
+    // -----------------------------------------------------
+    // HEALTH CHECK (safe fetch with timeout + abort)
+    // -----------------------------------------------------
+    async function doHealthCheck() {
+        if (controllerRef.current?.abort) {
             controllerRef.current.abort();
         }
 
         const controller = new AbortController();
         controllerRef.current = controller;
 
-        const timeout = setTimeout(() => controller.abort(), HEALTHCHECK_TIMEOUT);
+        const timeoutId = setTimeout(() => controller.abort(), HEALTHCHECK_TIMEOUT);
 
         try {
             const res = await fetch(`${API_BASE_URL}/health`, {
@@ -34,67 +37,75 @@ export function useBackendStatus() {
                 signal: controller.signal,
             });
 
-            clearTimeout(timeout);
-
             return res.ok;
         } catch {
-            clearTimeout(timeout);
-
             return false;
+        } finally {
+            clearTimeout(timeoutId);
         }
     }
 
+    // -----------------------------------------------------
+    // START POLLING
+    // -----------------------------------------------------
     function startPolling(isOnline) {
         const interval = isOnline ? HEALTHCHECK_INTERVAL_ONLINE : HEALTHCHECK_INTERVAL_OFFLINE;
 
-        if (intervalRef.current) clearInterval(intervalRef.current);
+        clearInterval(intervalRef.current);
 
         intervalRef.current = setInterval(async () => {
-            const ok = await doHealthCheck("polling");
-
-            setOnline((prev) => {
-                if (!firstRun.current) {
-                    if (prev === true && !ok) {
-                        showBackendOffline();
-                        startPolling((isOnline = false)); // Change to faster interval when offline
-                    }
-                    if (prev === false && ok) {
-                        showBackendRestored();
-                        startPolling((isOnline = true)); // Change to slower interval when online
-                    }
-                }
-                return ok;
-            });
+            const ok = await doHealthCheck();
+            setOnline(ok);
         }, interval);
     }
 
+    // -----------------------------------------------------
+    // REACT TO ONLINE STATE CHANGES (UI EVENTS)
+    // -----------------------------------------------------
+    useEffect(() => {
+        if (!initializedRef.current) return;
+        if (online === null) return;
+
+        if (online === false) {
+            showBackendOffline();
+            startPolling(false);
+        } else {
+            showBackendRestored();
+            startPolling(true);
+        }
+    }, [online]);
+
+    // -----------------------------------------------------
+    // INITIAL CHECK
+    // -----------------------------------------------------
     useEffect(() => {
         async function runInitialCheck() {
             setChecking(true);
 
             for (let attempt = 1; attempt <= HEALTHCHECK_INITIAL_RETRY; attempt++) {
-                const ok = await doHealthCheck(`initial-${attempt}`);
+                const ok = await doHealthCheck();
 
                 if (ok) {
                     setOnline(true);
                     setChecking(false);
-                    firstRun.current = false;
+                    initializedRef.current = true;
                     startPolling(true);
                     return;
                 }
             }
 
+            // All attempts failed
             setOnline(false);
             setChecking(false);
             showBackendOffline();
-            firstRun.current = false;
+            initializedRef.current = true;
             startPolling(false);
         }
 
         runInitialCheck();
 
         return () => {
-            if (intervalRef.current) clearInterval(intervalRef.current);
+            clearInterval(intervalRef.current);
             if (controllerRef.current) controllerRef.current.abort();
         };
     }, []);

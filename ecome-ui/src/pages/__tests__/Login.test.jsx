@@ -5,11 +5,12 @@ import { BrowserRouter } from "react-router-dom";
 import { vi } from "vitest";
 import Login from "../Login";
 
-// Mock hooks
+// Mock AuthContext
 vi.mock("@context/AuthContext", () => ({
     useAuth: vi.fn(),
 }));
 
+// Mock useAuthActions
 vi.mock("@hooks/useAuthActions", () => ({
     useAuthActions: vi.fn(),
 }));
@@ -28,7 +29,7 @@ function renderWithRouter(ui) {
     return render(<BrowserRouter>{ui}</BrowserRouter>);
 }
 
-describe("Login page", () => {
+describe("Login page (global UI version)", () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -41,9 +42,6 @@ describe("Login page", () => {
             password: "",
             passwordError: "",
             remember: false,
-            error: "",
-            showErrorAnim: false,
-            loading: false,
             isFormValid: false,
             setRemember: vi.fn(),
             handleEmailChange: vi.fn(),
@@ -67,9 +65,6 @@ describe("Login page", () => {
             password: "",
             passwordError: "",
             remember: false,
-            error: "",
-            showErrorAnim: false,
-            loading: false,
             isFormValid: false,
             setRemember: vi.fn(),
             handleEmailChange: vi.fn(),
@@ -95,9 +90,6 @@ describe("Login page", () => {
             password: "password123",
             passwordError: "",
             remember: false,
-            error: "",
-            showErrorAnim: false,
-            loading: false,
             isFormValid: true,
             setRemember: vi.fn(),
             handleEmailChange: vi.fn(),
@@ -124,9 +116,6 @@ describe("Login page", () => {
             password: "",
             passwordError: "",
             remember: false,
-            error: "",
-            showErrorAnim: false,
-            loading: false,
             isFormValid: false,
             setRemember: vi.fn(),
             handleEmailChange: vi.fn(),
@@ -139,31 +128,5 @@ describe("Login page", () => {
         renderWithRouter(<Login />);
 
         expect(mockNavigate).toHaveBeenCalledWith("/profile");
-    });
-
-    test("shows error message when error exists", () => {
-        useAuth.mockReturnValue({ accessToken: null });
-
-        useAuthActions.mockReturnValue({
-            email: "",
-            emailError: "",
-            password: "",
-            passwordError: "",
-            remember: false,
-            error: "Invalid email or password",
-            showErrorAnim: true,
-            loading: false,
-            isFormValid: false,
-            setRemember: vi.fn(),
-            handleEmailChange: vi.fn(),
-            handleEmailBlur: vi.fn(),
-            handlePasswordChange: vi.fn(),
-            handlePasswordBlur: vi.fn(),
-            handleSubmit: vi.fn(),
-        });
-
-        renderWithRouter(<Login />);
-
-        expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument();
     });
 });

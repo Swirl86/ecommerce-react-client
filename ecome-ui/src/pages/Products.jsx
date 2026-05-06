@@ -42,16 +42,6 @@ export default function Products() {
         navigate(query ? `/products?${query}` : "/products");
     };
 
-    if (error) {
-        return (
-            <PageLayout sidebar={<ProductFilters />}>
-                <div className="p-6 bg-rose-100 text-rose-800 rounded">
-                    Could not connect to backend. Please try again later.
-                </div>
-            </PageLayout>
-        );
-    }
-
     return (
         <PageLayout
             sidebar={
@@ -86,7 +76,6 @@ export default function Products() {
                     </div>
                 </div>
             )}
-
             {/* Header + sorting + mobile filter button */}
             <div className="flex justify-between items-center mb-6">
                 <H2>Products</H2>
@@ -122,7 +111,6 @@ export default function Products() {
                     </select>
                 </div>
             </div>
-
             {/* Product grid */}
             {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">

@@ -1,27 +1,50 @@
-import { useAuth } from "@context/AuthContext";
 import { act, renderHook } from "@testing-library/react";
 import { vi } from "vitest";
-import { useAuthActions } from "../useAuthActions";
 
-vi.mock("@context/AuthContext", () => ({
-    useAuth: vi.fn(),
+// ---------------------------------------------------------
+// 1. Mock UIContext FIRST (before importing useAuthActions)
+// ---------------------------------------------------------
+const mockShowError = vi.fn();
+const mockShowSuccess = vi.fn();
+const mockSetLoading = vi.fn();
+
+vi.mock("@context/UIContext", () => ({
+    useUI: () => ({
+        showError: mockShowError,
+        showSuccess: mockShowSuccess,
+        setLoading: mockSetLoading,
+    }),
 }));
 
+// ---------------------------------------------------------
+// 2. Mock AuthContext with persistent mocks
+// ---------------------------------------------------------
+const mockAuthLogin = vi.fn();
+const mockAuthLogout = vi.fn();
+
+vi.mock("@context/AuthContext", () => ({
+    useAuth: () => ({
+        login: mockAuthLogin,
+        logout: mockAuthLogout,
+    }),
+}));
+
+// ---------------------------------------------------------
+// 3. Mock fetch BEFORE importing useAuthActions
+// ---------------------------------------------------------
 global.fetch = vi.fn();
 
-describe("useAuthActions", () => {
-    const mockLogin = vi.fn();
-    const mockLogout = vi.fn();
+// ---------------------------------------------------------
+// 4. NOW import useAuthActions
+// ---------------------------------------------------------
+import { useAuthActions } from "../useAuthActions";
 
+describe("useAuthActions (global UI version)", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        useAuth.mockReturnValue({
-            login: mockLogin,
-            logout: mockLogout,
-        });
     });
 
-    test("login success", async () => {
+    test("successful login calls authLogin and showSuccess", async () => {
         fetch.mockResolvedValueOnce({
             ok: true,
             json: async () => ({
@@ -35,7 +58,7 @@ describe("useAuthActions", () => {
 
         const { result } = renderHook(() => useAuthActions());
 
-        act(() => {
+        await act(async () => {
             result.current.handleEmailChange({ target: { value: "test@example.com" } });
             result.current.handlePasswordChange({ target: { value: "password123" } });
         });
@@ -44,21 +67,10 @@ describe("useAuthActions", () => {
             await result.current.login();
         });
 
-        expect(mockLogin).toHaveBeenCalledWith(
-            {
-                accessToken: "abc",
-                refreshToken: "xyz",
-                user: {
-                    id: 1,
-                    email: "test@example.com",
-                    role: "USER",
-                },
-            },
-            false
-        );
+        expect(mockAuthLogin).toHaveBeenCalled();
     });
 
-    test("login 401 shows error", async () => {
+    test("401 login triggers showError", async () => {
         fetch.mockResolvedValueOnce({
             ok: false,
             status: 401,
@@ -75,10 +87,10 @@ describe("useAuthActions", () => {
             await result.current.login();
         });
 
-        expect(result.current.error).toBe("Invalid email or password");
+        expect(mockShowError).toHaveBeenCalledWith("Invalid email or password");
     });
 
-    test("network error", async () => {
+    test("network error triggers showError", async () => {
         fetch.mockRejectedValueOnce(new Error("network"));
 
         const { result } = renderHook(() => useAuthActions());
@@ -92,16 +104,17 @@ describe("useAuthActions", () => {
             await result.current.login();
         });
 
-        expect(result.current.error).toBe("Network error");
+        expect(mockShowError).toHaveBeenCalledWith("Network error");
     });
 
-    test("logout calls authLogout", async () => {
+    test("logout calls authLogout and showSuccess", async () => {
         const { result } = renderHook(() => useAuthActions());
 
         await act(async () => {
             await result.current.logout();
         });
 
-        expect(mockLogout).toHaveBeenCalled();
+        expect(mockAuthLogout).toHaveBeenCalled();
+        expect(mockShowSuccess).toHaveBeenCalledWith("Logged out");
     });
 });

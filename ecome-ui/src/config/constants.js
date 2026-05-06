@@ -10,5 +10,5 @@ export const HEALTHCHECK_INTERVAL_OFFLINE = 10 * 1000; // 10 seconds
 export const HEALTHCHECK_TIMEOUT = 3000; // 3 seconds
 export const HEALTHCHECK_INITIAL_RETRY = 2; // Number of initial retries before declaring backend offline
 
-export const MESSAGE_DURATION = 4000; // 4 seconds
+export const MESSAGE_DURATION = 8000; // 8 seconds
 export const BACKEND_RESTORED_DURATION = 3000; // 3 seconds

@@ -2,7 +2,7 @@ import { useCategories } from "@hooks/useCategories";
 import { Body, H3 } from "@typography";
 
 export default function ProductFilters({ selectedCategory, onSelectCategory }) {
-    const { categories, loading, error } = useCategories();
+    const { categories, loading } = useCategories();
 
     return (
         <div className="space-y-8 sm:space-y-10">
@@ -30,16 +30,8 @@ export default function ProductFilters({ selectedCategory, onSelectCategory }) {
                         </li>
                     )}
 
-                    {/* ERROR */}
-                    {error && (
-                        <li className="text-rose-600 dark:text-rose-400 px-3 py-2">
-                            <Body>Could not load categories</Body>
-                        </li>
-                    )}
-
                     {/* DYNAMIC CATEGORIES */}
                     {!loading &&
-                        !error &&
                         categories.map((cat) => {
                             const isActive = selectedCategory === cat.id;
 

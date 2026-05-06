@@ -1,9 +1,11 @@
 import { API_BASE_URL } from "@config/api";
 import { useAuth } from "@context/AuthContext";
-import { useEffect, useState } from "react";
+import { useUI } from "@context/UIContext";
+import { useState } from "react";
 
 export function useAuthActions() {
     const { login: authLogin, logout: authLogout } = useAuth();
+    const { showError, showSuccess, setLoading } = useUI();
 
     // -----------------------------------------------------
     // FORM STATE
@@ -16,18 +18,7 @@ export function useAuthActions() {
 
     const [remember, setRemember] = useState(false);
 
-    const [error, setError] = useState("");
-    const [showErrorAnim, setShowErrorAnim] = useState(false);
-    const [loading, setLoading] = useState(false);
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    // -----------------------------------------------------
-    // EFFECT: ERROR FADE ANIMATION
-    // -----------------------------------------------------
-    useEffect(() => {
-        setShowErrorAnim(Boolean(error));
-    }, [error]);
 
     // -----------------------------------------------------
     // EMAIL VALIDATION
@@ -42,7 +33,6 @@ export function useAuthActions() {
     const handleEmailChange = (e) => {
         const value = e.target.value;
         setEmail(value);
-        setError("");
         setEmailError(validateEmail(value));
     };
 
@@ -61,7 +51,6 @@ export function useAuthActions() {
     const handlePasswordChange = (e) => {
         const value = e.target.value;
         setPassword(value);
-        setError("");
         setPasswordError(validatePassword(value));
     };
 
@@ -78,13 +67,12 @@ export function useAuthActions() {
     // LOGIN ACTION
     // -----------------------------------------------------
     const login = async () => {
-        setError("");
-        setLoading(true);
-
         if (!isFormValid) {
-            setLoading(false);
+            showError("Please fix the errors in the form");
             return false;
         }
+
+        setLoading(true);
 
         try {
             const res = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -94,14 +82,12 @@ export function useAuthActions() {
             });
 
             if (res.status === 401) {
-                setError("Invalid email or password");
-                setLoading(false);
+                showError("Invalid email or password");
                 return false;
             }
 
             if (!res.ok) {
-                setError("Unexpected error");
-                setLoading(false);
+                showError("Unexpected error");
                 return false;
             }
 
@@ -122,7 +108,7 @@ export function useAuthActions() {
 
             return true;
         } catch {
-            setError("Network error");
+            showError("Network error");
             return false;
         } finally {
             setLoading(false);
@@ -136,39 +122,31 @@ export function useAuthActions() {
         setLoading(true);
         await authLogout();
         setLoading(false);
+        showSuccess("Logged out");
     };
 
     // -----------------------------------------------------
-    // SUBMIT HANDLER (for forms)
+    // SUBMIT HANDLER
     // -----------------------------------------------------
     const handleSubmit = async (e) => {
         e.preventDefault();
         return await login();
     };
 
-    // -----------------------------------------------------
-    // RETURN API
-    // -----------------------------------------------------
     return {
-        // state
         email,
         emailError,
         password,
         passwordError,
         remember,
-        error,
-        showErrorAnim,
-        loading,
         isFormValid,
 
-        // setters
         setRemember,
         handleEmailChange,
         handleEmailBlur,
         handlePasswordChange,
         handlePasswordBlur,
 
-        // actions
         handleSubmit,
         login,
         logout,

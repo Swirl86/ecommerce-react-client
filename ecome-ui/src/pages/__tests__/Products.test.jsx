@@ -1,25 +1,31 @@
+vi.mock("@context/UIContext", () => ({
+    __esModule: true,
+    UIProvider: ({ children }) => <div>{children}</div>,
+}));
+
+vi.mock("@hooks/useProducts", () => ({
+    useProducts: vi.fn(),
+}));
+
+vi.mock("@hooks/useCategories", () => ({
+    useCategories: vi.fn(() => ({
+        categories: [],
+        loading: false,
+        error: false,
+    })),
+}));
+
 import { useProducts } from "@hooks/useProducts";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 import Products from "../Products";
 
-// Mock router hooks
-vi.mock("react-router-dom", async () => {
-    const actual = await vi.importActual("react-router-dom");
-    return {
-        ...actual,
-        useSearchParams: () => [new URLSearchParams(""), vi.fn()],
-        useNavigate: () => vi.fn(),
-    };
-});
-
-// Mock useProducts
-vi.mock("@hooks/useProducts", () => ({
-    useProducts: vi.fn(),
-}));
-
 describe("Products page", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
     test("shows skeletons when loading is true", () => {
         useProducts.mockReturnValue({
             products: [],
@@ -33,8 +39,7 @@ describe("Products page", () => {
             </MemoryRouter>
         );
 
-        const skeletons = screen.getAllByRole("generic", { hidden: true });
-        expect(skeletons.length).toBeGreaterThan(0);
+        expect(screen.getAllByRole("generic").length).toBeGreaterThan(0);
     });
 
     test("shows products when loading is false", () => {
@@ -55,23 +60,5 @@ describe("Products page", () => {
 
         expect(screen.getByText("Product A")).toBeInTheDocument();
         expect(screen.getByText("Product B")).toBeInTheDocument();
-    });
-
-    test("shows error message when error is true", () => {
-        useProducts.mockReturnValue({
-            products: [],
-            loading: false,
-            error: true,
-        });
-
-        render(
-            <MemoryRouter>
-                <Products />
-            </MemoryRouter>
-        );
-
-        expect(
-            screen.getByText("Could not connect to backend. Please try again later.")
-        ).toBeInTheDocument();
     });
 });

@@ -1,5 +1,5 @@
 import { SESSION_DURATION, WARNING_BEFORE } from "@config/constants";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useSessionTimers(refreshToken, remember, refreshFn, logoutFn) {
     const [showSessionWarning, setShowSessionWarning] = useState(false);
@@ -7,73 +7,86 @@ export function useSessionTimers(refreshToken, remember, refreshFn, logoutFn) {
 
     const sessionTimeoutRef = useRef(null);
     const countdownIntervalRef = useRef(null);
-    const extendingRef = useRef(false);
 
     const warningTime = SESSION_DURATION - WARNING_BEFORE;
 
-    // SESSION WARNING TIMER
-    useEffect(() => {
-        if (extendingRef.current) return;
-
-        const isSession = !remember;
-        if (!isSession) return;
-
+    // -----------------------------------------------------
+    // CLEANUP HELPERS
+    // -----------------------------------------------------
+    const clearTimers = useCallback(() => {
         clearTimeout(sessionTimeoutRef.current);
+        clearInterval(countdownIntervalRef.current);
 
+        sessionTimeoutRef.current = null;
+        countdownIntervalRef.current = null;
+    }, []);
+
+    // -----------------------------------------------------
+    // START TIMERS
+    // -----------------------------------------------------
+    const startTimers = useCallback(() => {
+        clearTimers();
+
+        // Only start timers if session is NOT remembered
+        if (!refreshToken || remember) return;
+
+        // Show warning before expiry
         sessionTimeoutRef.current = setTimeout(() => {
             setShowSessionWarning(true);
+            setCountdown(Math.floor(WARNING_BEFORE / 1000));
         }, warningTime);
+    }, [refreshToken, remember, clearTimers, warningTime]);
 
-        return () => clearTimeout(sessionTimeoutRef.current);
-    }, [refreshToken, remember]);
-
+    // -----------------------------------------------------
     // COUNTDOWN
+    // -----------------------------------------------------
     useEffect(() => {
         if (!showSessionWarning) return;
-
-        const seconds = Math.floor(WARNING_BEFORE / 1000);
-        setCountdown(seconds);
 
         clearInterval(countdownIntervalRef.current);
 
         countdownIntervalRef.current = setInterval(() => {
             setCountdown((prev) => {
-                if (!showSessionWarning) {
-                    clearInterval(countdownIntervalRef.current);
-                    return prev;
-                }
-
                 if (prev <= 1) {
-                    clearInterval(countdownIntervalRef.current);
+                    clearTimers();
                     logoutFn("countdown_zero");
                     return 0;
                 }
-
                 return prev - 1;
             });
         }, 1000);
 
         return () => clearInterval(countdownIntervalRef.current);
-    }, [showSessionWarning]);
+    }, [showSessionWarning, clearTimers, logoutFn]);
 
+    // -----------------------------------------------------
     // EXTEND SESSION
-    const extendSession = async () => {
-        extendingRef.current = true;
+    // -----------------------------------------------------
+    const extendSession = useCallback(async () => {
+        const ok = await refreshFn();
+        if (!ok) return;
 
-        await refreshFn();
         setShowSessionWarning(false);
+        setCountdown(0);
 
-        clearTimeout(sessionTimeoutRef.current);
-        clearInterval(countdownIntervalRef.current);
+        startTimers();
+    }, [refreshFn, startTimers]);
 
-        sessionTimeoutRef.current = setTimeout(() => {
-            setShowSessionWarning(true);
-        }, warningTime);
+    // -----------------------------------------------------
+    // DECLINE SESSION
+    // -----------------------------------------------------
+    const declineSession = useCallback(() => {
+        clearTimers();
+        logoutFn("decline_session");
+    }, [clearTimers, logoutFn]);
 
-        extendingRef.current = false;
-    };
-
-    const declineSession = () => logoutFn("decline_session");
+    // -----------------------------------------------------
+    // RESET TIMERS WHEN TOKEN CHANGES
+    // -----------------------------------------------------
+    useEffect(() => {
+        startTimers();
+        return clearTimers;
+    }, [startTimers, clearTimers]);
 
     return {
         showSessionWarning,
