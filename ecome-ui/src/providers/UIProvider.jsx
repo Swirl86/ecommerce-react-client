@@ -1,8 +1,11 @@
 import { BACKEND_RESTORED_DURATION, MESSAGE_DURATION } from "@config/constants";
 import { UIContext } from "@context/UIContext";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-function UIProvider({ children }) {
+function UIProvider({ children, backendStatus }) {
+    const online = backendStatus?.online ?? null;
+    const offlineMode = backendStatus?.offlineMode ?? false;
+
     // -----------------------------
     // Global message system
     // -----------------------------
@@ -38,17 +41,46 @@ function UIProvider({ children }) {
         return () => clearTimeout(timer);
     }, []);
 
+    // -----------------------------
+    // Track offline transitions
+    // -----------------------------
+    const wasOfflineRef = useRef(false);
+
+    useEffect(() => {
+        if (online === false) {
+            wasOfflineRef.current = true;
+            showBackendOffline();
+        }
+    }, [online, showBackendOffline]);
+
+    useEffect(() => {
+        if (online === true && wasOfflineRef.current) {
+            showBackendRestored();
+            wasOfflineRef.current = false;
+        }
+    }, [online, showBackendRestored]);
+
+    // -----------------------------
+    // Context value (stabil)
+    // -----------------------------
     const value = {
+        // Global UI
         message,
         loading,
         setLoading,
         showError,
         showSuccess,
         showInfo,
+
+        // Backend badges
         backendOffline,
         backendRestored,
         showBackendOffline,
         showBackendRestored,
+
+        // Backend monitor state
+        online,
+        offlineMode,
     };
 
     return <UIContext.Provider value={value}>{children}</UIContext.Provider>;

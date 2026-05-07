@@ -12,17 +12,18 @@ export async function apiGet(path, token) {
     const cached = getCached(url);
 
     const headers = {};
-    if (cached?.etag) {
-        headers["If-None-Match"] = cached.etag;
-    }
-    if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-    }
+    if (cached?.etag) headers["If-None-Match"] = cached.etag;
+    if (token) headers["Authorization"] = `Bearer ${token}`;
 
     const res = await fetch(url, { headers });
 
-    if (res.status === 304 && cached) return cached.data;
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    if (res.status === 304 && cached) {
+        return cached.data;
+    }
+
+    if (!res.ok) {
+        throw new Error(`API error: ${res.status}`);
+    }
 
     const data = await res.json();
     const etag = res.headers.get("ETag");

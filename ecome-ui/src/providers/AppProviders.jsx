@@ -1,10 +1,13 @@
+import { useBackendMonitor } from "@hooks/useBackendMonitor";
 import { AuthProvider } from "@providers/AuthProvider";
 import { UIProvider } from "@providers/UIProvider";
 
 function AppProviders({ children }) {
+    const backendStatus = useBackendMonitor();
+
     return (
         <AuthProvider>
-            <UIProvider>{children}</UIProvider>
+            <UIProvider backendStatus={backendStatus}>{children}</UIProvider>
         </AuthProvider>
     );
 }
