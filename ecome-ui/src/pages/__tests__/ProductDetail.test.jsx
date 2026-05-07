@@ -3,11 +3,11 @@ import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 
 // --- MOCKS (HAVE TO BE BEFORE IMPORTS) ---
-vi.mock("@hooks/useProduct", () => ({
+vi.mock("@hooks/domain/useProduct", () => ({
     useProduct: vi.fn(),
 }));
 
-vi.mock("@hooks/useCategories", () => ({
+vi.mock("@hooks/domain/useCategories", () => ({
     useCategories: vi.fn(),
 }));
 
@@ -42,8 +42,8 @@ vi.mock("react-router-dom", async () => {
 });
 
 // --- IMPORT AFTER MOCKS ---
-import { useCategories } from "@hooks/useCategories";
-import { useProduct } from "@hooks/useProduct";
+import { useCategories } from "@hooks/domain/useCategories";
+import { useProduct } from "@hooks/domain/useProduct";
 import ProductDetail from "../ProductDetail";
 
 describe("ProductDetail (minimal version)", () => {

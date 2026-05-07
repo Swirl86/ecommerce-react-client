@@ -1,4 +1,4 @@
-import { useBackendMonitor } from "@hooks/useBackendMonitor";
+import { useBackendMonitor } from "@hooks/system/useBackendMonitor";
 import { AuthProvider } from "@providers/AuthProvider";
 import { UIProvider } from "@providers/UIProvider";
 

@@ -1,5 +1,5 @@
 import { useAuth } from "@context/AuthContext";
-import { useAuthActions } from "@hooks/useAuthActions";
+import { useAuthActions } from "@hooks/auth/useAuthActions";
 import PageContainer from "@layout/PageContainer";
 import CheckboxField from "@ui/CheckboxField";
 import InputField from "@ui/InputField";

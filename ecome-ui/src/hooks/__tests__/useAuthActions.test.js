@@ -37,7 +37,7 @@ global.fetch = vi.fn();
 // ---------------------------------------------------------
 // 4. NOW import useAuthActions
 // ---------------------------------------------------------
-import { useAuthActions } from "../useAuthActions";
+import { useAuthActions } from "@hooks/auth/useAuthActions";
 
 describe("useAuthActions (global UI version)", () => {
     beforeEach(() => {

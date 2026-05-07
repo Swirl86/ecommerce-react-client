@@ -1,4 +1,4 @@
-import { useCategories } from "@hooks/useCategories";
+import { useCategories } from "@hooks/domain/useCategories";
 import { Body, H3 } from "@typography";
 
 export default function ProductFilters({ selectedCategory, onSelectCategory }) {

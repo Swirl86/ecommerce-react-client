@@ -1,5 +1,5 @@
 import { useAuth } from "@context/AuthContext";
-import { useAuthActions } from "@hooks/useAuthActions";
+import { useAuthActions } from "@hooks/auth/useAuthActions";
 import { Link } from "react-router-dom";
 
 export default function AuthButton({ onClick }) {

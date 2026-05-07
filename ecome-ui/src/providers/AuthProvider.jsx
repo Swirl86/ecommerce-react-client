@@ -1,8 +1,8 @@
 import { logoutRequest, refreshTokenRequest } from "@api/authApi";
 import { AuthContext } from "@context/AuthContext";
-import { useAuthStorage } from "@hooks/useAuthStorage";
-import { useSessionTimers } from "@hooks/useSessionTimers";
-import { useTokenRefresh } from "@hooks/useTokenRefresh";
+import { useAuthStorage } from "@hooks/auth/useAuthStorage";
+import { useSessionTimers } from "@hooks/system/useSessionTimers";
+import { useTokenRefresh } from "@hooks/system/useTokenRefresh";
 import { useState } from "react";
 
 function AuthProvider({ children }) {

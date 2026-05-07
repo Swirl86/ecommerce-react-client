@@ -1,4 +1,4 @@
-import { useProducts } from "@hooks/useProducts";
+import { useProducts } from "@hooks/domain/useProducts";
 import PageLayout from "@layout/PageLayout";
 import ProductCard from "@products/ProductCard";
 import ProductFilters from "@sidebar/ProductFilters";

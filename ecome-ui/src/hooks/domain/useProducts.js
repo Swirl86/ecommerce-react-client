@@ -1,6 +1,6 @@
 import { getProducts } from "@api/productsApi";
 import { API_BASE_URL } from "@config/api";
-import { useCachedFetch } from "@hooks/useCachedFetch";
+import { useCachedFetch } from "@hooks/system/useCachedFetch";
 
 export function useProducts({ categoryId, sort }) {
     const url = `${API_BASE_URL}/products/search?categoryId=${categoryId || ""}&sort=${sort || ""}`;

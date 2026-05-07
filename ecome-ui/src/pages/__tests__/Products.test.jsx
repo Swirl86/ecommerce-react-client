@@ -3,11 +3,11 @@ vi.mock("@context/UIContext", () => ({
     UIProvider: ({ children }) => <div>{children}</div>,
 }));
 
-vi.mock("@hooks/useProducts", () => ({
+vi.mock("@hooks/domain/useProducts", () => ({
     useProducts: vi.fn(),
 }));
 
-vi.mock("@hooks/useCategories", () => ({
+vi.mock("@hooks/domain/useCategories", () => ({
     useCategories: vi.fn(() => ({
         categories: [],
         loading: false,
@@ -15,7 +15,7 @@ vi.mock("@hooks/useCategories", () => ({
     })),
 }));
 
-import { useProducts } from "@hooks/useProducts";
+import { useProducts } from "@hooks/domain/useProducts";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";

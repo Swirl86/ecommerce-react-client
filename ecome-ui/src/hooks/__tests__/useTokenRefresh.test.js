@@ -1,7 +1,7 @@
 import { SESSION_DURATION } from "@config/constants";
+import { useTokenRefresh } from "@hooks/system/useTokenRefresh";
 import { act, renderHook } from "@testing-library/react";
 import { vi } from "vitest";
-import { useTokenRefresh } from "../useTokenRefresh";
 
 vi.useFakeTimers();
 

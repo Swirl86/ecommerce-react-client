@@ -1,5 +1,5 @@
-import { useCategories } from "@hooks/useCategories";
-import { useProduct } from "@hooks/useProduct";
+import { useCategories } from "@hooks/domain/useCategories";
+import { useProduct } from "@hooks/domain/useProduct";
 import PageContainer from "@layout/PageContainer";
 import CollapsibleDescription from "@products/CollapsibleDescription";
 import ProductImageViewer from "@products/ProductImageViewer";

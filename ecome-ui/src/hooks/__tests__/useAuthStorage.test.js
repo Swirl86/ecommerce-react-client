@@ -1,5 +1,5 @@
+import { useAuthStorage } from "@hooks/auth/useAuthStorage";
 import { renderHook } from "@testing-library/react";
-import { useAuthStorage } from "../useAuthStorage";
 
 describe("useAuthStorage", () => {
     beforeEach(() => {
