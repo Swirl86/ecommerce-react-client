@@ -1,16 +1,9 @@
 import { BACKEND_RESTORED_DURATION, MESSAGE_DURATION } from "@config/constants";
 import { UIContext } from "@context/UIContext";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-function UIProvider({ children, backendStatus }) {
-    const online = backendStatus?.online ?? null;
-    const offlineMode = backendStatus?.offlineMode ?? false;
-
-    // -----------------------------
-    // Global message system
-    // -----------------------------
+function useMessages() {
     const [message, setMessage] = useState(null);
-    const [loading, setLoading] = useState(false);
 
     const showMessage = useCallback((type, text) => {
         setMessage({ type, text });
@@ -18,15 +11,18 @@ function UIProvider({ children, backendStatus }) {
         return () => clearTimeout(timer);
     }, []);
 
-    const showError = useCallback((text) => showMessage("error", text), [showMessage]);
-    const showSuccess = useCallback((text) => showMessage("success", text), [showMessage]);
-    const showInfo = useCallback((text) => showMessage("info", text), [showMessage]);
+    return {
+        message,
+        showError: (t) => showMessage("error", t),
+        showSuccess: (t) => showMessage("success", t),
+        showInfo: (t) => showMessage("info", t),
+    };
+}
 
-    // -----------------------------
-    // Backend status badges
-    // -----------------------------
+function useBackendBadges(online) {
     const [backendOffline, setBackendOffline] = useState(false);
     const [backendRestored, setBackendRestored] = useState(false);
+    const wasOfflineRef = useRef(false);
 
     const showBackendOffline = useCallback(() => {
         setBackendRestored(false);
@@ -36,15 +32,8 @@ function UIProvider({ children, backendStatus }) {
     const showBackendRestored = useCallback(() => {
         setBackendOffline(false);
         setBackendRestored(true);
-
-        const timer = setTimeout(() => setBackendRestored(false), BACKEND_RESTORED_DURATION);
-        return () => clearTimeout(timer);
+        setTimeout(() => setBackendRestored(false), BACKEND_RESTORED_DURATION);
     }, []);
-
-    // -----------------------------
-    // Track offline transitions
-    // -----------------------------
-    const wasOfflineRef = useRef(false);
 
     useEffect(() => {
         if (online === false) {
@@ -55,33 +44,53 @@ function UIProvider({ children, backendStatus }) {
 
     useEffect(() => {
         if (online === true && wasOfflineRef.current) {
-            showBackendRestored();
             wasOfflineRef.current = false;
+            showBackendRestored();
         }
     }, [online, showBackendRestored]);
 
-    // -----------------------------
-    // Context value (stabil)
-    // -----------------------------
-    const value = {
-        // Global UI
-        message,
-        loading,
-        setLoading,
-        showError,
-        showSuccess,
-        showInfo,
+    return { backendOffline, backendRestored, showBackendOffline, showBackendRestored };
+}
 
-        // Backend badges
-        backendOffline,
-        backendRestored,
-        showBackendOffline,
-        showBackendRestored,
+function UIProvider({ children, backendStatus }) {
+    const online = backendStatus?.online ?? null;
+    const offlineMode = backendStatus?.offlineMode ?? false;
 
-        // Backend monitor state
-        online,
-        offlineMode,
-    };
+    const [loading, setLoading] = useState(false);
+
+    const { message, showError, showSuccess, showInfo } = useMessages();
+    const { backendOffline, backendRestored, showBackendOffline, showBackendRestored } =
+        useBackendBadges(online);
+
+    const value = useMemo(
+        () => ({
+            message,
+            loading,
+            setLoading,
+            showError,
+            showSuccess,
+            showInfo,
+            backendOffline,
+            backendRestored,
+            showBackendOffline,
+            showBackendRestored,
+            online,
+            offlineMode,
+        }),
+        [
+            message,
+            loading,
+            showError,
+            showSuccess,
+            showInfo,
+            backendOffline,
+            backendRestored,
+            showBackendOffline,
+            showBackendRestored,
+            online,
+            offlineMode,
+        ]
+    );
 
     return <UIContext.Provider value={value}>{children}</UIContext.Provider>;
 }
