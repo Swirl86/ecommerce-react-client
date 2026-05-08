@@ -5,6 +5,7 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import ProductDetail from "../pages/ProductDetail";
 import Products from "../pages/Products";
+import RegisterForm from "../pages/RegisterForm";
 
 export default function AppRoutes() {
     return (
@@ -20,6 +21,14 @@ export default function AppRoutes() {
                 element={
                     <GuestRoute>
                         <Login />
+                    </GuestRoute>
+                }
+            />
+            <Route
+                path="/register"
+                element={
+                    <GuestRoute>
+                        <RegisterForm />
                     </GuestRoute>
                 }
             />

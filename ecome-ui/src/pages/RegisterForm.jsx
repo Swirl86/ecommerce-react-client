@@ -1,27 +1,23 @@
 import { useAuth } from "@context/AuthContext";
-import { useLoginForm } from "@hooks/auth/useLoginForm";
+import { useRegisterForm } from "@hooks/auth/useRegisterForm";
 import PageContainer from "@layout/PageContainer";
-import CheckboxField from "@ui/CheckboxField";
 import InputField from "@ui/InputField";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function RegisterForm() {
     const {
         email,
         emailError,
         password,
         passwordError,
-        remember,
         isFormValid,
-
-        setRemember,
         handleEmailChange,
         handleEmailBlur,
         handlePasswordChange,
         handlePasswordBlur,
         handleSubmit,
-    } = useLoginForm();
+    } = useRegisterForm();
 
     const { accessToken } = useAuth();
     const navigate = useNavigate();
@@ -37,15 +33,15 @@ export default function Login() {
             <div className="flex justify-center">
                 <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-[var(--color-border)] rounded-xl shadow-sm p-8">
                     <h1 className="text-3xl font-bold text-[var(--color-text)] mb-2">
-                        Welcome back
+                        Create account
                     </h1>
                     <p className="text-[var(--color-text-muted)] mb-6">
-                        Log in to your account to continue.
+                        Register to start shopping.
                     </p>
 
                     <form
                         onSubmit={handleSubmit}
-                        data-testid="login-form"
+                        data-testid="register-form"
                         className="flex flex-col gap-5"
                     >
                         <InputField
@@ -66,21 +62,6 @@ export default function Login() {
                             error={passwordError}
                         />
 
-                        <div className="flex items-center justify-between text-sm">
-                            <CheckboxField
-                                label="Keep me logged in"
-                                checked={remember}
-                                onChange={() => setRemember(!remember)}
-                            />
-
-                            <Link
-                                to="/forgot-password"
-                                className="text-[var(--color-primary-dark)] hover:underline"
-                            >
-                                Forgot password
-                            </Link>
-                        </div>
-
                         <button
                             disabled={!isFormValid}
                             className="
@@ -90,17 +71,17 @@ export default function Login() {
                                 transition disabled:opacity-50 disabled:cursor-not-allowed
                             "
                         >
-                            Log in
+                            Create account
                         </button>
                     </form>
 
                     <p className="text-center text-sm text-[var(--color-text-muted)] mt-6">
-                        Need an account?{" "}
+                        Already have an account?{" "}
                         <Link
-                            to="/register"
+                            to="/login"
                             className="text-[var(--color-primary-dark)] hover:underline"
                         >
-                            Create one
+                            Log in
                         </Link>
                     </p>
                 </div>

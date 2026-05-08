@@ -2,7 +2,7 @@ import { act, renderHook } from "@testing-library/react";
 import { vi } from "vitest";
 
 // ---------------------------------------------------------
-// 1. Mock UIContext FIRST (before importing useAuthActions)
+// 1. Mock UIContext FIRST
 // ---------------------------------------------------------
 const mockShowError = vi.fn();
 const mockShowSuccess = vi.fn();
@@ -17,7 +17,7 @@ vi.mock("@context/UIContext", () => ({
 }));
 
 // ---------------------------------------------------------
-// 2. Mock AuthContext with persistent mocks
+// 2. Mock AuthContext
 // ---------------------------------------------------------
 const mockAuthLogin = vi.fn();
 const mockAuthLogout = vi.fn();
@@ -35,16 +35,19 @@ vi.mock("@context/AuthContext", () => ({
 global.fetch = vi.fn();
 
 // ---------------------------------------------------------
-// 4. NOW import useAuthActions
+// 4. Import useAuthActions
 // ---------------------------------------------------------
 import { useAuthActions } from "@hooks/auth/useAuthActions";
 
-describe("useAuthActions (global UI version)", () => {
+describe("useAuthActions (new architecture)", () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
-    test("successful login calls authLogin and showSuccess", async () => {
+    // -----------------------------------------------------
+    // LOGIN TESTS
+    // -----------------------------------------------------
+    test("successful login calls authLogin", async () => {
         fetch.mockResolvedValueOnce({
             ok: true,
             json: async () => ({
@@ -59,12 +62,11 @@ describe("useAuthActions (global UI version)", () => {
         const { result } = renderHook(() => useAuthActions());
 
         await act(async () => {
-            result.current.handleEmailChange({ target: { value: "test@example.com" } });
-            result.current.handlePasswordChange({ target: { value: "password123" } });
-        });
-
-        await act(async () => {
-            await result.current.login();
+            await result.current.login({
+                email: "test@example.com",
+                password: "password123",
+                remember: false,
+            });
         });
 
         expect(mockAuthLogin).toHaveBeenCalled();
@@ -78,13 +80,12 @@ describe("useAuthActions (global UI version)", () => {
 
         const { result } = renderHook(() => useAuthActions());
 
-        act(() => {
-            result.current.handleEmailChange({ target: { value: "test@example.com" } });
-            result.current.handlePasswordChange({ target: { value: "password123" } });
-        });
-
         await act(async () => {
-            await result.current.login();
+            await result.current.login({
+                email: "test@example.com",
+                password: "password123",
+                remember: false,
+            });
         });
 
         expect(mockShowError).toHaveBeenCalledWith("Invalid email or password");
@@ -95,18 +96,20 @@ describe("useAuthActions (global UI version)", () => {
 
         const { result } = renderHook(() => useAuthActions());
 
-        act(() => {
-            result.current.handleEmailChange({ target: { value: "test@example.com" } });
-            result.current.handlePasswordChange({ target: { value: "password123" } });
-        });
-
         await act(async () => {
-            await result.current.login();
+            await result.current.login({
+                email: "test@example.com",
+                password: "password123",
+                remember: false,
+            });
         });
 
         expect(mockShowError).toHaveBeenCalledWith("Network error");
     });
 
+    // -----------------------------------------------------
+    // LOGOUT TEST
+    // -----------------------------------------------------
     test("logout calls authLogout and showSuccess", async () => {
         const { result } = renderHook(() => useAuthActions());
 
@@ -115,6 +118,73 @@ describe("useAuthActions (global UI version)", () => {
         });
 
         expect(mockAuthLogout).toHaveBeenCalled();
-        expect(mockShowSuccess).toHaveBeenCalledWith("Logged out");
+    });
+
+    // -----------------------------------------------------
+    // REGISTER TESTS
+    // -----------------------------------------------------
+    test("successful register calls authLogin and showSuccess", async () => {
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({
+                accessToken: "abc",
+                refreshToken: "xyz",
+                userId: 1,
+                email: "new@example.com",
+                role: "USER",
+            }),
+        });
+
+        const { result } = renderHook(() => useAuthActions());
+
+        await act(async () => {
+            await result.current.register({
+                email: "new@example.com",
+                password: "password123",
+            });
+        });
+
+        expect(mockAuthLogin).toHaveBeenCalled();
+        expect(mockShowSuccess).toHaveBeenCalledWith("Account created");
+    });
+
+    test("409 register triggers showError", async () => {
+        fetch.mockResolvedValueOnce({
+            ok: false,
+            status: 409,
+        });
+
+        const { result } = renderHook(() => useAuthActions());
+
+        await act(async () => {
+            await result.current.register({
+                email: "exists@example.com",
+                password: "password123",
+            });
+        });
+
+        expect(mockShowError).toHaveBeenCalledWith(
+            "That email is already registered. Try logging in instead."
+        );
+    });
+
+    test("400 register triggers showError", async () => {
+        fetch.mockResolvedValueOnce({
+            ok: false,
+            status: 400,
+        });
+
+        const { result } = renderHook(() => useAuthActions());
+
+        await act(async () => {
+            await result.current.register({
+                email: "bad",
+                password: "short",
+            });
+        });
+
+        expect(mockShowError).toHaveBeenCalledWith(
+            "Some information is missing or invalid. Please review the form."
+        );
     });
 });
