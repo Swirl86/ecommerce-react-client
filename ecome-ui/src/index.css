@@ -1,13 +1,14 @@
 @import "/src/styles/theme.css";
+
 /* Tailwind v4 custom variant */
 @custom-variant dark (&:where(.dark, .dark *));
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/*  ================================
-   GLOBAL UI STYLES
-   ================================ */
+/* ============================================
+   GLOBAL UI STYLES (semantic utility classes)
+   ============================================ */
 .ui-error {
     @apply text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 px-3 py-2 rounded-md text-sm;
 }
@@ -24,10 +25,10 @@
     @apply text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-900/20 border border-green-300 dark:border-green-700 px-3 py-2 rounded-md text-sm;
 }
 
-/*  ================================
-   Fade-in animation for system messages
-   ================================ */
-@keyframes fadeIn {
+/* ============================================
+   SYSTEM MESSAGE FADE-IN (separate animation)
+   ============================================ */
+@keyframes fadeInMessage {
     from {
         opacity: 0;
         transform: translateY(-6px);
@@ -38,13 +39,14 @@
     }
 }
 
-.animate-fadeIn {
-    animation: fadeIn 0.25s ease-out;
+.animate-fadeInMessage {
+    animation: fadeInMessage 0.25s ease-out;
+    will-change: opacity, transform;
 }
 
-/*  ================================
-   Custom animations for theme toggle
-   ================================ */
+/* ============================================
+   THEME TOGGLE ANIMATIONS
+   ============================================ */
 @layer base {
     @keyframes sun-glow-bounce {
         0%,
@@ -84,9 +86,11 @@
     }
 }
 
-/*  ================================
-   Fade-in animation for product cards
-   ================================ */
+/* ============================================
+   GLOBAL FADE EFFECTS
+   ============================================ */
+
+/* FADE-IN (good for cards appearing, sections loading, UI entering) */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -100,22 +104,123 @@
 
 .animate-fadeIn {
     animation: fadeIn 0.4s ease-out;
+    will-change: opacity, transform;
 }
 
-/*  ================================
-   Fade-in class for images to prevent flickering when loading
-   ================================ */
-.fade-in {
-    opacity: 0;
-    animation: fadeInImage 0.4s ease-out forwards;
+/* FADE-IN-SCALE (good for modals, dialogs, overlays) */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
+.animate-fadeInScale {
+    animation: fadeInScale 0.35s ease-out;
+    will-change: opacity, transform;
+}
+
+/* FADE-IN-SOFT (good for text, small UI elements, subtle transitions) */
+@keyframes fadeInSoft {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-fadeInSoft {
+    animation: fadeInSoft 0.25s ease-out;
+    will-change: opacity;
+}
+
+/* FADE-OUT (good for cards being removed, sections replaced, list items disappearing) */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+
+.animate-fadeOut {
+    animation: fadeOut 0.35s ease-out forwards;
+    will-change: opacity, transform;
+}
+
+/* FADE-OUT-SCALE (good for closing modals, dialogs, overlays) */
+@keyframes fadeOutScale {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+}
+
+.animate-fadeOutScale {
+    animation: fadeOutScale 0.3s ease-out forwards;
+    will-change: opacity, transform;
+}
+
+/* FADE-OUT-SOFT (good for text, badges, buttons fading away) */
+@keyframes fadeOutSoft {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.animate-fadeOutSoft {
+    animation: fadeOutSoft 0.25s ease-out forwards;
+    will-change: opacity;
+}
+
+/* MOTION-REDUCED FALLBACK (accessibility: disables movement but keeps fade) */
+@media (prefers-reduced-motion: reduce) {
+    .animate-fadeIn,
+    .animate-fadeInUp,
+    .animate-fadeInDown,
+    .animate-fadeInScale,
+    .animate-fadeInSoft,
+    .animate-fadeOut,
+    .animate-fadeOutScale,
+    .animate-fadeOutSoft {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ============================================
+   IMAGE FADE-IN (no movement, only opacity)
+   ============================================ */
 @keyframes fadeInImage {
     to {
         opacity: 1;
     }
 }
 
+.fade-in {
+    opacity: 0;
+    animation: fadeInImage 0.4s ease-out forwards;
+}
+
+/* ============================================
+   ERROR MESSAGE TRANSITIONS
+   ============================================ */
 .error-fade {
     transition:
         opacity 0.25s ease,
@@ -142,22 +247,21 @@
     transform: translateY(-4px);
 }
 
-/*  ================================
-   REMOVE
-   ================================ */
-/* Remove WebKit input highlight flash */
+/* ============================================
+   REMOVE DEFAULT BROWSER FLASHES
+   ============================================ */
 input {
     -webkit-tap-highlight-color: transparent;
     -webkit-focus-ring-color: transparent;
     outline: none;
 }
 
-/* Remove the white border flash on focus */
 input:focus {
     outline: none !important;
     box-shadow: none !important;
 }
 
+/* Material icons */
 .material-symbols-outlined {
     font-variation-settings:
         "FILL" 0,

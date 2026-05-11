@@ -31,6 +31,7 @@ export default function AuthButton({ onClick }) {
                         transition active:scale-95
                     "
                     title="Your profile"
+                    replace
                 >
                     👤
                 </Link>

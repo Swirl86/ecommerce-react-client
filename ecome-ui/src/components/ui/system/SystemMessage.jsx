@@ -17,7 +17,7 @@ export default function SystemMessage() {
                 className={`
                     pointer-events-auto
                     px-6 py-3 rounded-lg shadow-lg text-white font-medium
-                    animate-fadeIn
+                    animate-fadeInMessage
                     ${styles[message.type]}
                 `}
             >

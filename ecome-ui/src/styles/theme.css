@@ -25,10 +25,12 @@
     --color-sand: #fde68a; /* Subtle highlights */
 
     /* Neutrals (Light Mode) */
-    --color-bg: #ffffff; /* Page background */
+    --color-bg: #fafafa; /* Page background */
     --color-text: #111827; /* Primary text */
     --color-text-muted: #4b5563; /* Secondary text */
     --color-border: #e5e7eb; /* Borders, cards */
+    --color-surface: #f5f5f5; /* Card & panel background (elevated surfaces above page bg) */
+    --color-surface-alt: #ffffff; /* Inner card sections (higher elevation) */
 }
 
 /* ------------------------------
@@ -51,6 +53,8 @@
     --color-text: #f3f4f6; /* Primary text */
     --color-text-muted: #9ca3af; /* Secondary text */
     --color-border: #374151; /* Borders, cards */
+    --color-surface: #1f2937; /* Card & panel background (elevated surfaces above page bg) */
+    --color-surface-alt: #1a1f27; /* Slightly lighter than page bg for layering */
 }
 
 /* =========================================================
