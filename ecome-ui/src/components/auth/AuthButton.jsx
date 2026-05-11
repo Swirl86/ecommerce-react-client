@@ -16,19 +16,38 @@ export default function AuthButton({ onClick }) {
         active:scale-[0.97]
     `;
 
+    /* TODO - show profile picture instead of generic icon when implemented */
     if (user) {
         return (
-            <button
-                type="button"
-                onClick={async () => {
-                    await logout();
-                    onClick?.();
-                }}
-                className={baseClasses}
-            >
-                <span className="material-symbols-outlined text-base">lock</span>
-                Logout
-            </button>
+            <div className="flex items-center gap-2">
+                {/* Profile avatar */}
+                <Link
+                    to="/profile"
+                    onClick={onClick}
+                    className="
+                        w-9 h-9 rounded-full bg-[var(--color-primary)]
+                        text-white flex items-center justify-center
+                        text-lg hover:bg-[var(--color-primary-dark)]
+                        transition active:scale-95
+                    "
+                    title="Your profile"
+                >
+                    👤
+                </Link>
+
+                {/* Logout button */}
+                <button
+                    type="button"
+                    onClick={async () => {
+                        await logout();
+                        onClick?.();
+                    }}
+                    className={baseClasses}
+                >
+                    <span className="material-symbols-outlined text-base">lock</span>
+                    Logout
+                </button>
+            </div>
         );
     }
 

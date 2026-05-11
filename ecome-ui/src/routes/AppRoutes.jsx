@@ -5,6 +5,7 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import ProductDetail from "../pages/ProductDetail";
 import Products from "../pages/Products";
+import Profile from "../pages/Profile";
 import RegisterForm from "../pages/RegisterForm";
 
 export default function AppRoutes() {
@@ -38,7 +39,7 @@ export default function AppRoutes() {
                 path="/profile"
                 element={
                     <ProtectedRoute>
-                        <div>Profile page placeholder</div>
+                        <Profile />
                     </ProtectedRoute>
                 }
             />
