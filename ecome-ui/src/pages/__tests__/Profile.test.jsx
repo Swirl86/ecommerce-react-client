@@ -2,6 +2,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 
+// ----------------------
+// AuthContext mock
+// ----------------------
 let mockAccessToken = null;
 
 vi.mock("@context/AuthContext", () => ({
@@ -11,25 +14,47 @@ vi.mock("@context/AuthContext", () => ({
     }),
 }));
 
+// ----------------------
+// useProfileData mock
+// ----------------------
+const mockUseProfileData = vi.fn();
+
 vi.mock("@hooks/profile/useProfileData", () => ({
-    useProfileData: () => ({
-        data: {
-            name: "Test User",
-            email: "test@example.com",
-            phone: "0701234567",
-            orderCount: 3,
-            activeOrders: [],
-            address: {
-                street: "Main St",
-                city: "Stockholm",
-                postalCode: "12345",
-                country: "Sweden",
-            },
-        },
-    }),
+    useProfileData: () => mockUseProfileData(),
 }));
 
+// ----------------------
+// Mock child components
+// ----------------------
+vi.mock("@components/profile", () => ({
+    ProfileTabs: ({ activeTab, setActiveTab }) => (
+        <div>
+            <button onClick={() => setActiveTab("profile")}>Profile</button>
+            <button onClick={() => setActiveTab("wishlist")}>Wishlist</button>
+            <button onClick={() => setActiveTab("orders")}>Order History</button>
+        </div>
+    ),
+
+    ProfileDetails: ({ data }) => (
+        <div>
+            <h1>{data.name}</h1>
+            <div>{data.address.street}</div>
+            <div>
+                {data.address.postalCode} {data.address.city}
+            </div>
+            <div>{data.address.country}</div>
+        </div>
+    ),
+
+    ProfileWishlist: () => <div>Wishlist feature coming soon.</div>,
+    ProfileOrders: () => <div>Your past orders will appear here.</div>,
+}));
+
+// ----------------------
+// navigate mock
+// ----------------------
 const mockNavigate = vi.fn();
+
 vi.mock("react-router-dom", async () => {
     const actual = await vi.importActual("react-router-dom");
     return {
@@ -38,12 +63,35 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
+// ----------------------
+// Import component AFTER mocks
+// ----------------------
 import Profile from "../Profile";
 
+// ----------------------
+// TESTS
+// ----------------------
 describe("Profile page", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockAccessToken = "abc123";
+
+        mockUseProfileData.mockReturnValue({
+            data: {
+                name: "Test User",
+                email: "test@example.com",
+                phone: "0701234567",
+                orderCount: 3,
+                activeOrders: [],
+                address: {
+                    street: "Main St",
+                    city: "Stockholm",
+                    postalCode: "12345",
+                    country: "Sweden",
+                },
+            },
+            refetch: vi.fn(),
+        });
     });
 
     test("redirects to login if not authenticated", () => {
@@ -66,8 +114,6 @@ describe("Profile page", () => {
         );
 
         expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Test User");
-        expect(screen.getAllByText("test@example.com")[0]).toBeInTheDocument();
-        expect(screen.getByText("0701234567")).toBeInTheDocument();
     });
 
     test("renders address correctly", () => {

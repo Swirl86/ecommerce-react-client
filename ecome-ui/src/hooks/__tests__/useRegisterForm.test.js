@@ -23,7 +23,7 @@ describe("useRegisterForm", () => {
             result.current.handleEmailChange({ target: { value: "bad" } });
         });
 
-        expect(result.current.emailError).toBe("Email must contain @");
+        expect(result.current.emailError).toBe("Invalid email format");
     });
 
     test("updates password and validates", () => {

@@ -27,10 +27,6 @@ vi.mock("@ui/BackButtonFloating", () => ({
     default: () => <div>BACK</div>,
 }));
 
-vi.mock("@layout/PageLayout", () => ({
-    default: ({ children }) => <div>{children}</div>,
-}));
-
 vi.mock("react-router-dom", async () => {
     const actual = await vi.importActual("react-router-dom");
     return {
@@ -125,8 +121,8 @@ describe("ProductDetail (minimal version)", () => {
             </MemoryRouter>
         );
 
-        const plus = screen.getByRole("button", { name: "Increase quantity" });
-        const minus = screen.getByRole("button", { name: "Decrease quantity" });
+        const plus = screen.getByText("+");
+        const minus = screen.getByText("-");
 
         expect(screen.getByText("1")).toBeInTheDocument();
 

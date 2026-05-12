@@ -12,14 +12,17 @@ describe("validation utils", () => {
         expect(validateEmail("a")).toBe("Email must be at least 2 characters");
     });
 
+    test("too long email", () => {
+        const longEmail = "a".repeat(51) + "@test.com";
+        expect(validateEmail(longEmail)).toBe("Email must be less than 50 characters");
+    });
+
     test("missing @", () => {
-        expect(validateEmail("testexample.com")).toBe("Email must contain @");
+        expect(validateEmail("testexample.com")).toBe("Invalid email format");
     });
 
     test("invalid domain", () => {
-        expect(validateEmail("test@domain")).toBe(
-            "Email must include a valid domain (example: name@company.com)"
-        );
+        expect(validateEmail("test@domain")).toBe("Invalid email format");
     });
 
     test("valid email", () => {

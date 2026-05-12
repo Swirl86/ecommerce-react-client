@@ -27,7 +27,7 @@ describe("useLoginForm", () => {
         });
 
         expect(result.current.email).toBe("bad");
-        expect(result.current.emailError).toBe("Email must contain @");
+        expect(result.current.emailError).toBe("Invalid email format");
     });
 
     test("updates password and validates", () => {

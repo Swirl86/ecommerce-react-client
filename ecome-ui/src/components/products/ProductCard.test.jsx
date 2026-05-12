@@ -4,71 +4,82 @@ import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 import ProductCard from "./ProductCard";
 
-// Mock ProductImageViewer to make tests stable and predictable
-vi.mock("../products/ProductImageViewer", () => ({
-    default: ({ initialImage }) => <img src={initialImage} alt="Product image" />,
+// Mock ProductImageViewer to avoid loading real images
+vi.mock("@products/ProductImageViewer", () => ({
+    default: ({ initialImage }) => (
+        <img src={initialImage} alt="Product image" data-testid="product-image" />
+    ),
 }));
 
 describe("ProductCard", () => {
-    const product = {
+    const baseProduct = {
         id: 1,
         name: "Test Product",
         price: 199,
         imageUrls: ["test-image.jpg"],
     };
 
-    test("renders product name", () => {
+    const renderCard = (product = baseProduct, selectedCategory = null, sort = "") =>
         render(
             <MemoryRouter>
-                <ProductCard product={product} selectedCategory={null} sort="" />
+                <ProductCard product={product} selectedCategory={selectedCategory} sort={sort} />
             </MemoryRouter>
         );
 
+    test("renders product name", () => {
+        renderCard();
         expect(screen.getByText("Test Product")).toBeInTheDocument();
     });
 
     test("renders product price", () => {
-        render(
-            <MemoryRouter>
-                <ProductCard product={product} selectedCategory={null} sort="" />
-            </MemoryRouter>
-        );
-
+        renderCard();
         expect(screen.getByText("$199")).toBeInTheDocument();
     });
 
-    test("renders image with correct src", () => {
-        render(
-            <MemoryRouter>
-                <ProductCard product={product} selectedCategory={null} sort="" />
-            </MemoryRouter>
-        );
-
-        const img = screen.getByRole("img");
+    test("renders product image when available", () => {
+        renderCard();
+        const img = screen.getByTestId("product-image");
         expect(img).toHaveAttribute("src", "test-image.jpg");
     });
 
     test("uses fallback image when no image is provided", () => {
-        const noImageProduct = { ...product, imageUrls: [] };
+        const product = { ...baseProduct, imageUrls: [] };
+        renderCard(product);
 
-        render(
-            <MemoryRouter>
-                <ProductCard product={noImageProduct} selectedCategory={null} sort="" />
-            </MemoryRouter>
-        );
-
-        const img = screen.getByRole("img");
+        const img = screen.getByTestId("product-image");
         expect(img).toHaveAttribute("src", IMAGE_PLACEHOLDER);
     });
 
     test("renders correct alt text", () => {
-        render(
-            <MemoryRouter>
-                <ProductCard product={product} selectedCategory={null} sort="" />
-            </MemoryRouter>
-        );
-
-        const img = screen.getByRole("img");
+        renderCard();
+        const img = screen.getByTestId("product-image");
         expect(img).toHaveAttribute("alt", "Product image");
+    });
+
+    test("renders correct link without query params", () => {
+        renderCard();
+        const link = screen.getByRole("link");
+        expect(link).toHaveAttribute("href", "/products/1");
+    });
+
+    test("renders correct link with category and sort params", () => {
+        renderCard(baseProduct, 5, "price_desc");
+
+        const link = screen.getByRole("link");
+        expect(link).toHaveAttribute("href", "/products/1?category=5&sort=price_desc");
+    });
+
+    test("renders fallback name when missing", () => {
+        const product = { ...baseProduct, name: null };
+        renderCard(product);
+
+        expect(screen.getByText("Unnamed Product")).toBeInTheDocument();
+    });
+
+    test("renders fallback price when missing", () => {
+        const product = { ...baseProduct, price: null };
+        renderCard(product);
+
+        expect(screen.getByText("No price available")).toBeInTheDocument();
     });
 });

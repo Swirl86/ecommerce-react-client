@@ -2,23 +2,32 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 
-const mockSubmit = vi.fn();
+// ----------------------
+// Stable mock for useRegisterForm
+// ----------------------
+const mockHandleSubmit = vi.fn();
 
-vi.mock("@hooks/auth/useRegisterForm", () => ({
-    useRegisterForm: () => ({
-        email: "",
-        emailError: "",
-        password: "",
-        passwordError: "",
-        isFormValid: true,
-        handleEmailChange: vi.fn(),
-        handleEmailBlur: vi.fn(),
-        handlePasswordChange: vi.fn(),
-        handlePasswordBlur: vi.fn(),
-        handleSubmit: mockSubmit,
-    }),
+const mockUseRegisterForm = vi.fn(() => ({
+    email: "",
+    emailError: "",
+    password: "",
+    passwordError: "",
+    isFormValid: true,
+
+    handleEmailChange: vi.fn(),
+    handleEmailBlur: vi.fn(),
+    handlePasswordChange: vi.fn(),
+    handlePasswordBlur: vi.fn(),
+    handleSubmit: mockHandleSubmit,
 }));
 
+vi.mock("@hooks/auth/useRegisterForm", () => ({
+    useRegisterForm: () => mockUseRegisterForm(),
+}));
+
+// ----------------------
+// AuthContext mock
+// ----------------------
 let mockAccessToken = null;
 
 vi.mock("@context/AuthContext", () => ({
@@ -27,7 +36,11 @@ vi.mock("@context/AuthContext", () => ({
     }),
 }));
 
+// ----------------------
+// navigate mock
+// ----------------------
 const mockNavigate = vi.fn();
+
 vi.mock("react-router-dom", async () => {
     const actual = await vi.importActual("react-router-dom");
     return {
@@ -36,8 +49,14 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
+// ----------------------
+// Import component AFTER mocks
+// ----------------------
 import RegisterForm from "../RegisterForm";
 
+// ----------------------
+// TESTS
+// ----------------------
 describe("Register page", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -63,7 +82,7 @@ describe("Register page", () => {
         );
 
         fireEvent.submit(screen.getByTestId("register-form"));
-        expect(mockSubmit).toHaveBeenCalled();
+        expect(mockHandleSubmit).toHaveBeenCalled();
     });
 
     test("redirects to /profile if already logged in", () => {
