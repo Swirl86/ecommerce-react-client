@@ -2,6 +2,7 @@ import { useState } from "react";
 
 export default function InputField({
     label,
+    name = "",
     type = "text",
     value,
     onChange,
@@ -30,6 +31,7 @@ export default function InputField({
             <div className="relative">
                 <input
                     id={inputId}
+                    name={name}
                     type={inputType}
                     placeholder={placeholder}
                     value={value}

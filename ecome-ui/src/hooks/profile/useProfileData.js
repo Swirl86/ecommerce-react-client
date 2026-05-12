@@ -1,43 +1,22 @@
+import { getFullProfile } from "@api/profileApi";
 import { API_BASE_URL } from "@config/api";
 import { useAuth } from "@context/AuthContext";
-import { useUI } from "@context/UIContext";
-import { useEffect, useState } from "react";
+import { useCachedFetch } from "@hooks/system/useCachedFetch";
 
 export function useProfileData() {
     const { accessToken } = useAuth();
-    const { setLoading, showError } = useUI();
 
-    const [data, setData] = useState(null);
+    const url = `${API_BASE_URL}/users/me/full-profile`;
 
-    useEffect(() => {
-        if (!accessToken) return;
+    const { data, loading, error, refetch } = useCachedFetch(url, {
+        fetcher: () => getFullProfile(accessToken),
+        enabled: !!accessToken, // fetch only when logged in
+    });
 
-        async function fetchProfile() {
-            try {
-                setLoading(true);
-
-                const res = await fetch(`${API_BASE_URL}/users/me/full-profile`, {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                });
-
-                if (!res.ok) {
-                    showError("Could not load profile");
-                    return;
-                }
-
-                const json = await res.json();
-                setData(json);
-            } catch {
-                showError("Network error while loading profile");
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        fetchProfile();
-    }, [accessToken, setLoading, showError]);
-
-    return { data };
+    return {
+        data,
+        loading,
+        error,
+        refetch,
+    };
 }

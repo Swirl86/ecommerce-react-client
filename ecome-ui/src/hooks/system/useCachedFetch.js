@@ -53,6 +53,14 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher } = {}) {
     }
 
     // -----------------------------------------------------
+    // Manual refetch (used by EditProfileForm / EditAddressForm)
+    // -----------------------------------------------------
+    async function refetch() {
+        // Always fetch fresh data, bypass cache
+        await fetchFreshData(false);
+    }
+
+    // -----------------------------------------------------
     // Main loader
     // -----------------------------------------------------
     useEffect(() => {
@@ -84,5 +92,5 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher } = {}) {
         fetchFreshData(false);
     }, [url, offlineMode, online, maxAge]);
 
-    return { data, loading, error };
+    return { data, loading, error, refetch };
 }

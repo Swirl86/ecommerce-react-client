@@ -9,7 +9,7 @@ import { ProfileDetails, ProfileOrders, ProfileTabs, ProfileWishlist } from "@co
 export default function Profile() {
     const { accessToken } = useAuth();
     const navigate = useNavigate();
-    const { data } = useProfileData();
+    const { data, refetch } = useProfileData();
 
     const [activeTab, setActiveTab] = useState("profile");
 
@@ -26,7 +26,7 @@ export default function Profile() {
                 <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
                 <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl shadow-sm p-8 animate-fadeIn">
-                    {activeTab === "profile" && <ProfileDetails data={data} />}
+                    {activeTab === "profile" && <ProfileDetails data={data} refetch={refetch} />}
                     {activeTab === "wishlist" && <ProfileWishlist />}
                     {activeTab === "orders" && <ProfileOrders />}
                 </div>
