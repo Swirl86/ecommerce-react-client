@@ -1,6 +1,41 @@
 # Ecommerce React Client
-A React-based frontend project using Tailwind CSS, built with a clean structure and small, focused commits.  
-Designed to integrate seamlessly with my Spring Boot backend project: [**springboot-ecommerce-api**](https://github.com/Swirl86/springboot-ecommerce-api).
+A modern, fully component‑based React frontend built with **Vite**, **Tailwind CSS**, and a clean architecture.  
+This client integrates directly with my Spring Boot backend project: [**springboot-ecommerce-api**](https://github.com/Swirl86/springboot-ecommerce-api).
+
+The project focuses on clarity, maintainability, and small, meaningful commits with a strong emphasis on UI/UX polish and robust test coverage.
+
+---
+
+## 🔗 Backend Integration
+
+This frontend is built to work directly with:
+
+**https://github.com/Swirl86/springboot-ecommerce-api**
+
+### 🧩 Backend Provides
+<details>
+<summary><strong>E‑commerce Domain</strong></summary>
+  
+- Products  
+- Categories  
+- Wishlist  
+</details>
+
+<details>
+<summary><strong>User & Auth</strong></summary>
+  
+- JWT authentication  
+- User profiles  
+- Admin roles
+</details>
+
+<details>
+<summary><strong>Orders & Checkout</strong></summary>
+  
+- Cart → Checkout → Order creation  
+- Order history  
+- Address management
+</details>
 
 ---
 
@@ -21,28 +56,91 @@ Designed to integrate seamlessly with my Spring Boot backend project: [**springb
 
 ---
 
-## 🔗 Backend Integration
+## 🚀 Features
 
-This frontend is built to work directly with:
+<details>
+<summary><strong>Product Browsing</strong></summary>
+  
+- Product grid with responsive layout  
+- Category filtering (URL‑synced)  
+- Sorting (URL‑synced)  
+- Product image viewer with zoom  
+- Skeleton loaders for smooth UX  
+</details>
 
-**https://github.com/Swirl86/springboot-ecommerce-api**
+<details>
+<summary><strong>Authentication & User Flow</strong></summary>
+  
+- Login & Register pages
+- Redirects based on auth state
+- “Keep me logged in” option
+- Form validation via custom hooks
+</details>
+
+<details>
+<summary><strong>Profile Management</strong></summary>
+  
+- Profile overview
+- Edit profile (name, email, phone, password)
+- Edit address
+- Wishlist tab (UI placeholder)
+- Order history tab (UI placeholder)
+</details>
+
+<details>
+<summary><strong>Testing</strong></summary>
+  
+- Full Vitest + Testing Library setup
+- Stable mocks for hooks, context, router, and UI
+- Tests for:
+  - Login
+  - Register
+  - Profile
+  - EditProfileForm
+  - EditAddressForm
+  - ProductCard
+  - Products page
+- Centralized alias configuration for consistent imports
+</details>
 
 ---
 
-## 🧩 Backend Provides
+## 📌 Notes
 
-The backend (springboot-ecommerce-api) currently includes:
+- This project is actively evolving alongside the backend.  
+- More features will be added: cart, checkout UI, wishlist UI, admin dashboard.  
+- UI/UX polish is a priority (animations, skeletons, transitions).  
 
-### 🛍️ E‑commerce Domain
-- **Products** – full product catalog with pricing and details  
-- **Categories** – structured grouping for browsing and filtering  
-- **Wishlist** – save and manage favorite products  
+---
 
-### 👤 User & Auth
-- **Regular Users with Profiles** – personal profile data and saved information  
-- **Admin Users** – role‑based access for administrative operations  
+## 🛠️ Development
 
-### 💳 Orders & Checkout
-- **Checkout Flow** – cart → order creation → order management  
+### 📥 Install dependencies
+Install all required packages:
 
+```bash
+npm install
+```
 
+### 🚀 Start development server
+
+Launch the Vite dev server:
+
+```bash
+npm run dev
+```
+
+### 🧪 Run tests
+
+Launch the Vite dev server:
+
+```bash
+npm run test
+```
+
+---
+
+## 📄 License
+
+MIT License  
+© 2026 Susanne (Swirl86)
