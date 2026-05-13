@@ -52,10 +52,7 @@ function useBackendBadges(online) {
     return { backendOffline, backendRestored, showBackendOffline, showBackendRestored };
 }
 
-function UIProvider({ children, backendStatus }) {
-    const online = backendStatus?.online ?? null;
-    const offlineMode = backendStatus?.offlineMode ?? false;
-
+function UIProvider({ children, online, offlineMode }) {
     const [loading, setLoading] = useState(false);
 
     const { message, showError, showSuccess, showInfo } = useMessages();

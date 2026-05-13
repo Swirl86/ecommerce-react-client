@@ -3,4 +3,6 @@ export const backendMonitorState = {
     initialized: false,
     offlineSince: null,
     backoff: null,
+    lastPollingMode: null,
+    wasOffline: false,
 };
