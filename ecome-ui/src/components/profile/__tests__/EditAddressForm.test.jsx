@@ -2,8 +2,6 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 
 import * as profileApi from "@api/profileApi";
-import * as formUtils from "@utils/formUtils";
-import * as validation from "@utils/validation";
 import EditAddressForm from "../EditAddressForm";
 
 // ----------------------
@@ -31,15 +29,6 @@ vi.mock("@api/profileApi", () => ({
     updateAddress: vi.fn(),
 }));
 
-vi.mock("@utils/formUtils", () => ({
-    getChangedFields: vi.fn(),
-    isDirty: vi.fn(),
-}));
-
-vi.mock("@utils/validation", () => ({
-    validateAddress: vi.fn(),
-}));
-
 // ----------------------
 // TESTS
 // ----------------------
@@ -53,10 +42,6 @@ describe("EditAddressForm", () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-
-        vi.mocked(formUtils.isDirty).mockReturnValue(true);
-        vi.mocked(formUtils.getChangedFields).mockReturnValue({});
-        vi.mocked(validation.validateAddress).mockReturnValue({});
     });
 
     test("renders initial values", () => {
@@ -69,63 +54,72 @@ describe("EditAddressForm", () => {
     });
 
     test("disables Save when no changes", () => {
-        vi.mocked(formUtils.isDirty).mockReturnValue(false);
-
         render(<EditAddressForm address={baseAddress} refetch={vi.fn()} onCancel={vi.fn()} />);
 
         expect(screen.getByRole("button", { name: /save/i })).toBeDisabled();
     });
 
-    test("shows validation errors", () => {
-        vi.mocked(validation.validateAddress).mockReturnValueOnce({
-            street: "Street must be at least 3 characters",
-            postalCode: "Postal code must be 3–10 letters or numbers",
-            city: "City must be at least 2 characters",
-            country: "Country must be at least 2 characters",
-        });
-
+    test("enables Save when a field changes", () => {
         render(<EditAddressForm address={baseAddress} refetch={vi.fn()} onCancel={vi.fn()} />);
 
-        fireEvent.click(screen.getByRole("button", { name: /save/i }));
+        fireEvent.change(screen.getByLabelText("City"), { target: { value: "Uppsala" } });
 
-        expect(screen.getByText("Street must be at least 3 characters")).toBeInTheDocument();
-        expect(screen.getByText("Postal code must be 3–10 letters or numbers")).toBeInTheDocument();
-        expect(screen.getByText("City must be at least 2 characters")).toBeInTheDocument();
-        expect(screen.getByText("Country must be at least 2 characters")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /save/i })).not.toBeDisabled();
     });
 
-    test("shows info when no changes to update", () => {
-        vi.mocked(validation.validateAddress).mockReturnValueOnce({});
-        vi.mocked(formUtils.getChangedFields).mockReturnValueOnce({});
+    test("validates only changed fields", () => {
+        const address = {
+            street: null,
+            postalCode: null,
+            city: "Stockholm",
+            country: null,
+        };
 
+        render(<EditAddressForm address={address} refetch={vi.fn()} onCancel={vi.fn()} />);
+
+        // Change only city → should validate only city
+        fireEvent.change(screen.getByLabelText("City"), { target: { value: "" } });
+        fireEvent.click(screen.getByRole("button", { name: /save/i }));
+
+        expect(screen.getByText("city must be at least 2 characters")).toBeInTheDocument();
+    });
+
+    test("does not submit when no changes", () => {
         const mockOnCancel = vi.fn();
 
         render(<EditAddressForm address={baseAddress} refetch={vi.fn()} onCancel={mockOnCancel} />);
 
-        fireEvent.click(screen.getByRole("button", { name: /save/i }));
+        const saveButton = screen.getByRole("button", { name: /save/i });
 
-        expect(mockShowInfo).toHaveBeenCalledWith("No changes to update");
-        expect(mockOnCancel).toHaveBeenCalled();
+        // Save should be disabled when no changes
+        expect(saveButton).toBeDisabled();
+
+        // Clicking save should do nothing
+        fireEvent.click(saveButton);
+
+        expect(mockShowInfo).not.toHaveBeenCalled();
+        expect(mockOnCancel).not.toHaveBeenCalled();
     });
 
     test("submits only changed fields", () => {
-        vi.mocked(validation.validateAddress).mockReturnValueOnce({});
-        vi.mocked(formUtils.getChangedFields).mockReturnValueOnce({ street: "New Street 5" });
-
         render(<EditAddressForm address={baseAddress} refetch={vi.fn()} onCancel={vi.fn()} />);
 
         fireEvent.change(screen.getByLabelText("Street"), { target: { value: "New Street 5" } });
         fireEvent.click(screen.getByRole("button", { name: /save/i }));
 
         expect(profileApi.updateAddress).toHaveBeenCalledWith(
-            { street: "New Street 5" },
+            {
+                street: "New Street 5",
+                postalCode: "12345",
+                city: "Stockholm",
+                country: "Sweden",
+            },
             "token123"
         );
     });
 
     test("calls refetch and onCancel after success", async () => {
         vi.mocked(profileApi.updateAddress).mockResolvedValueOnce({});
-        vi.mocked(formUtils.getChangedFields).mockReturnValueOnce({ city: "Uppsala" });
 
         const mockRefetch = vi.fn();
         const mockOnCancel = vi.fn();
@@ -146,7 +140,6 @@ describe("EditAddressForm", () => {
 
     test("shows error on failure", async () => {
         vi.mocked(profileApi.updateAddress).mockRejectedValueOnce(new Error("Server error"));
-        vi.mocked(formUtils.getChangedFields).mockReturnValueOnce({ city: "Uppsala" });
 
         render(<EditAddressForm address={baseAddress} refetch={vi.fn()} onCancel={vi.fn()} />);
 

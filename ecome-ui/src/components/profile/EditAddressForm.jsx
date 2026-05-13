@@ -4,7 +4,6 @@ import { useUI } from "@context/UIContext";
 import FormButtons from "@ui/FormButtons";
 import InputField from "@ui/InputField";
 import { getChangedFields, isDirty } from "@utils/formUtils";
-import { validateAddress } from "@utils/validation";
 import { useEffect, useState } from "react";
 
 export default function EditAddressForm({ address, onCancel, refetch }) {
@@ -22,10 +21,10 @@ export default function EditAddressForm({ address, onCancel, refetch }) {
 
     useEffect(() => {
         setForm({
-            street: address?.street || "",
-            postalCode: address?.postalCode || "",
-            city: address?.city || "",
-            country: address?.country || "",
+            street: address?.street ?? "",
+            postalCode: address?.postalCode ?? "",
+            city: address?.city ?? "",
+            country: address?.country ?? "",
         });
     }, [address]);
 
@@ -34,31 +33,54 @@ export default function EditAddressForm({ address, onCancel, refetch }) {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
+    const validateAddress = (form, original) => {
+        const errors = {};
+        const fields = ["street", "postalCode", "city", "country"];
+
+        for (const field of fields) {
+            const newValue = (form[field] ?? "").trim();
+            const oldValue = (original?.[field] ?? "").trim();
+
+            if (newValue !== oldValue) {
+                if (!newValue || newValue.length < 2) {
+                    errors[field] = `${field} must be at least 2 characters`;
+                }
+            }
+        }
+
+        return errors;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const newErrors = validateAddress(form);
+        // Validate only changed fields
+        const newErrors = validateAddress(form, address);
         setErrors(newErrors);
+
         if (Object.keys(newErrors).length > 0) return;
 
-        // -----------------------------------------------------
-        // Build payload with only changed fields
-        // -----------------------------------------------------
-        const payload = getChangedFields(form, address);
+        // Determine changed fields
+        const changed = getChangedFields(form, address);
 
-        // -----------------------------------------------------
-        // Nothing changed → do nothing
-        // -----------------------------------------------------
-        if (Object.keys(payload).length === 0) {
+        // Nothing changed
+        if (Object.keys(changed).length === 0) {
             showInfo("No changes to update");
             onCancel();
             return;
         }
 
+        // Build full payload (original + changed)
+        const { id, ...rest } = address;
+
+        const payload = {
+            ...rest,
+            ...changed,
+        };
+
         try {
             setLoading(true);
 
-            // Send only changed fields
             await updateAddress(payload, accessToken);
 
             showSuccess("Address updated successfully");

@@ -1,5 +1,5 @@
 import { useUI } from "@context/UIContext";
-import { getCached } from "@utils/etagCache";
+import { getCached, memoryCache } from "@utils/etagCache";
 import { getLocalCache, setLocalCache } from "@utils/localCache";
 import { useEffect, useRef, useState } from "react";
 
@@ -46,7 +46,6 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher, token } =
 
             setData(fresh);
             setLocalCache(url, fresh);
-            cacheBustedRef.current = false;
         } catch {
             if (!hasLocalCache) applyError("Could not load data");
         } finally {
@@ -61,14 +60,10 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher, token } =
     function invalidate() {
         cacheBustedRef.current = true;
 
-        // Clear memory cache
-        const mem = getCached(url);
-        if (mem) {
-            mem.etag = null;
-            mem.data = null;
-        }
+        // Remove from memory cache completely
+        memoryCache.delete(url);
 
-        // Clear localStorage cache
+        // Remove from localStorage
         localStorage.removeItem(url);
     }
 
@@ -76,8 +71,8 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher, token } =
     // Manual refetch (used by EditProfileForm / EditAddressForm)
     // -----------------------------------------------------
     async function refetch() {
-        invalidate(); // clear cache
-        await fetchFreshData(false); // force fresh fetch
+        invalidate();
+        await fetchFreshData(false);
     }
 
     // -----------------------------------------------------
@@ -91,8 +86,8 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher, token } =
         if (memoryCached) {
             const canUseMemory =
                 !cacheBustedRef.current || // normal case
-                offlineMode || // offline → use memory
-                online === false; // backend unreachable
+                offlineMode ||
+                online === false;
 
             if (canUseMemory) {
                 return applyData(memoryCached.data);
@@ -103,13 +98,13 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher, token } =
         const localCached = getLocalCache(url, maxAge);
         const hasLocalCache = Boolean(localCached);
 
-        // 3. Offline (short or long)
+        // 3. Offline
         if (online === false || offlineMode) {
             if (hasLocalCache) return applyData(localCached);
             return applyError("Offline and no cached data available");
         }
 
-        // 4. Online with cache → SWR
+        // 4. Online with local cache → SWR
         if (hasLocalCache) {
             applyData(localCached);
             fetchFreshData(true);

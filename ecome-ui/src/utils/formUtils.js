@@ -3,9 +3,16 @@ export function getChangedFields(form, original = {}) {
     const payload = {};
 
     for (const key in form) {
-        const newValue = typeof form[key] === "string" ? form[key].trim() : form[key];
-        const oldValue = original?.[key] ?? "";
+        // Normalize null → ""
+        const newValueRaw = form[key] ?? "";
+        const oldValueRaw = original?.[key] ?? "";
 
+        // Trim strings
+        const newValue = typeof newValueRaw === "string" ? newValueRaw.trim() : newValueRaw;
+
+        const oldValue = typeof oldValueRaw === "string" ? oldValueRaw.trim() : oldValueRaw;
+
+        // Compare normalized values
         if (newValue !== oldValue) {
             payload[key] = newValue;
         }
