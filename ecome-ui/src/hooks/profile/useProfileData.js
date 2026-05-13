@@ -11,6 +11,7 @@ export function useProfileData() {
     const { data, loading, error, refetch } = useCachedFetch(url, {
         fetcher: () => getFullProfile(accessToken),
         enabled: !!accessToken, // fetch only when logged in
+        token: accessToken,
     });
 
     return {

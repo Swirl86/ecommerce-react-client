@@ -3,7 +3,7 @@ import ProfileAddress from "./ProfileAddress";
 import ProfileHeader from "./ProfileHeader";
 import ProfileInfo from "./ProfileInfo";
 
-export default function ProfileDetails({ data, refetch }) {
+export default function ProfileDetails({ data, refetch, refresh }) {
     const [editingSection, setEditingSection] = useState(null);
     // null | "profile" | "address"
 
@@ -14,6 +14,7 @@ export default function ProfileDetails({ data, refetch }) {
             <ProfileInfo
                 data={data}
                 refetch={refetch}
+                refresh={refresh}
                 isEditing={editingSection === "profile"}
                 onEdit={() => setEditingSection("profile")}
                 onCancel={() => setEditingSection(null)}

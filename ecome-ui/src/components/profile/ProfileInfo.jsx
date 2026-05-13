@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import EditProfileForm from "./EditProfileForm";
 
-export default function ProfileInfo({ data, isEditing, onEdit, onCancel, refetch }) {
+export default function ProfileInfo({ data, isEditing, onEdit, onCancel, refetch, refresh }) {
     return (
         <div className="bg-[var(--color-surface-alt)] border border-[var(--color-border)] rounded-xl shadow-sm p-6">
             {/* VIEW MODE */}
@@ -49,7 +49,12 @@ export default function ProfileInfo({ data, isEditing, onEdit, onCancel, refetch
             {/* EDIT MODE */}
             {isEditing && (
                 <div className="flex flex-col gap-4 animate-fadeInScale">
-                    <EditProfileForm data={data} onCancel={onCancel} refetch={refetch} />
+                    <EditProfileForm
+                        data={data}
+                        onCancel={onCancel}
+                        refetch={refetch}
+                        refresh={refresh}
+                    />
                 </div>
             )}
         </div>

@@ -49,6 +49,7 @@ export function useSessionTimers(refreshToken, remember, refreshFn, logoutFn) {
             setCountdown((prev) => {
                 if (prev <= 1) {
                     clearTimers();
+                    setShowSessionWarning(false);
                     logoutFn("countdown_zero");
                     return 0;
                 }
@@ -77,6 +78,7 @@ export function useSessionTimers(refreshToken, remember, refreshFn, logoutFn) {
     // -----------------------------------------------------
     const declineSession = useCallback(() => {
         clearTimers();
+        setShowSessionWarning(false);
         logoutFn("decline_session");
     }, [clearTimers, logoutFn]);
 

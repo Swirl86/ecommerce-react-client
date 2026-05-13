@@ -19,6 +19,28 @@ function AuthProvider({ children }) {
     const isAuthenticated = Boolean(accessToken);
 
     // -----------------------------------------------------
+    // SAVE UPDATED USER INFO (e.g. after profile update)
+    // -----------------------------------------------------
+    function updateAuthUser(updates) {
+        setUser((prev) => {
+            if (!prev) return prev;
+
+            const updatedUser = { ...prev, ...updates };
+
+            save(
+                {
+                    accessToken,
+                    refreshToken,
+                    user: updatedUser,
+                },
+                remember
+            );
+
+            return updatedUser;
+        });
+    }
+
+    // -----------------------------------------------------
     // REFRESH TOKEN
     // -----------------------------------------------------
     async function refresh() {
@@ -109,6 +131,7 @@ function AuthProvider({ children }) {
         countdown,
         remember,
         setRemember,
+        updateAuthUser,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

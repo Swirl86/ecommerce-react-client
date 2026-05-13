@@ -7,8 +7,8 @@ import { getChangedFields, isDirty } from "@utils/formUtils";
 import { validateEmail, validatePassword, validatePhone } from "@utils/validation";
 import { useEffect, useState } from "react";
 
-export default function EditProfileForm({ data, refetch, onCancel }) {
-    const { accessToken } = useAuth();
+export default function EditProfileForm({ data, refetch, refresh, onCancel }) {
+    const { accessToken, updateAuthUser } = useAuth();
     const { setLoading, showError, showSuccess, showInfo } = useUI();
 
     const [form, setForm] = useState({
@@ -39,17 +39,22 @@ export default function EditProfileForm({ data, refetch, onCancel }) {
     const validate = () => {
         const newErrors = {};
 
-        // NAME
-        if (!form.name || form.name.length < 2)
-            newErrors.name = "Name must be at least 2 characters";
+        // NAME (validate only if changed)
+        if (form.name !== (data.name || "")) {
+            if (!form.name || form.name.length < 2) {
+                newErrors.name = "Name must be at least 2 characters";
+            }
+        }
 
-        // EMAIL
+        // EMAIL (always required)
         const emailError = validateEmail(form.email);
         if (emailError) newErrors.email = emailError;
 
-        // PHONE
-        const phoneError = validatePhone(form.phone);
-        if (phoneError) newErrors.phone = phoneError;
+        // PHONE (validate only if changed)
+        if (form.phone !== (data.phone || "")) {
+            const phoneError = validatePhone(form.phone);
+            if (phoneError) newErrors.phone = phoneError;
+        }
 
         // PASSWORD CHANGE
         const isChangingPassword = form.currentPassword || form.newPassword || form.confirmPassword;
@@ -118,12 +123,20 @@ export default function EditProfileForm({ data, refetch, onCancel }) {
         try {
             setLoading(true);
 
-            // Send only changed fields
+            // 1. Update backend - Send only changed fields
             await updateProfile(payload, accessToken);
 
-            showSuccess("Profile updated successfully");
+            // 2. Update local auth state if email changed
+            const emailChanged = Boolean(payload.email);
+            if (emailChanged) {
+                await refresh(); // new token might have new email in payload
+                updateAuthUser({ email: payload.email });
+            }
 
+            // 4. Refetch profile + close
             await refetch();
+
+            showSuccess("Profile updated successfully");
             onCancel();
         } catch (err) {
             showError(err.message);

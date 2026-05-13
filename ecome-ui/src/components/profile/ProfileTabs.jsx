@@ -6,7 +6,7 @@ export default function ProfileTabs({ activeTab, setActiveTab }) {
     ];
 
     return (
-        <div className="bg-[var(--color-surface)] dark:bg-gray-800 border border-[var(--color-border)] rounded-xl shadow-sm sticky top-20 z-20">
+        <div className="bg-[var(--color-surface)] dark:bg-gray-800 border border-[var(--color-border)] rounded-xl shadow-sm top-20 z-20">
             <div className="flex gap-8 px-6 pt-4">
                 {tabs.map((tab) => (
                     <button

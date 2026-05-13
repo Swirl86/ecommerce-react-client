@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { ProfileDetails, ProfileOrders, ProfileTabs, ProfileWishlist } from "@components/profile";
 
 export default function Profile() {
-    const { accessToken } = useAuth();
+    const { accessToken, refresh } = useAuth();
     const navigate = useNavigate();
     const { data, refetch } = useProfileData();
 
@@ -26,7 +26,9 @@ export default function Profile() {
                 <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
                 <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl shadow-sm p-8 animate-fadeIn">
-                    {activeTab === "profile" && <ProfileDetails data={data} refetch={refetch} />}
+                    {activeTab === "profile" && (
+                        <ProfileDetails data={data} refetch={refetch} refresh={refresh} />
+                    )}
                     {activeTab === "wishlist" && <ProfileWishlist />}
                     {activeTab === "orders" && <ProfileOrders />}
                 </div>

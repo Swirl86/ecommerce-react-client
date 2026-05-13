@@ -3,14 +3,16 @@ import { getCached } from "@utils/etagCache";
 import { getLocalCache, setLocalCache } from "@utils/localCache";
 import { useEffect, useRef, useState } from "react";
 
-export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher } = {}) {
+export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher, token } = {}) {
     const [data, setData] = useState(null);
     const [loading, setLocalLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const { setLoading: setGlobalLoading, showError, offlineMode, online } = useUI();
 
+    const cacheBustedRef = useRef(false);
     const mountedRef = useRef(true);
+
     useEffect(() => {
         mountedRef.current = true;
         return () => (mountedRef.current = false);
@@ -44,6 +46,7 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher } = {}) {
 
             setData(fresh);
             setLocalCache(url, fresh);
+            cacheBustedRef.current = false;
         } catch {
             if (!hasLocalCache) applyError("Could not load data");
         } finally {
@@ -53,11 +56,28 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher } = {}) {
     }
 
     // -----------------------------------------------------
+    // Invalidate cache
+    // -----------------------------------------------------
+    function invalidate() {
+        cacheBustedRef.current = true;
+
+        // Clear memory cache
+        const mem = getCached(url);
+        if (mem) {
+            mem.etag = null;
+            mem.data = null;
+        }
+
+        // Clear localStorage cache
+        localStorage.removeItem(url);
+    }
+
+    // -----------------------------------------------------
     // Manual refetch (used by EditProfileForm / EditAddressForm)
     // -----------------------------------------------------
     async function refetch() {
-        // Always fetch fresh data, bypass cache
-        await fetchFreshData(false);
+        invalidate(); // clear cache
+        await fetchFreshData(false); // force fresh fetch
     }
 
     // -----------------------------------------------------
@@ -68,7 +88,16 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher } = {}) {
 
         // 1. Memory cache
         const memoryCached = getCached(url);
-        if (memoryCached) return applyData(memoryCached.data);
+        if (memoryCached) {
+            const canUseMemory =
+                !cacheBustedRef.current || // normal case
+                offlineMode || // offline → use memory
+                online === false; // backend unreachable
+
+            if (canUseMemory) {
+                return applyData(memoryCached.data);
+            }
+        }
 
         // 2. Local cache
         const localCached = getLocalCache(url, maxAge);
@@ -90,7 +119,7 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher } = {}) {
         // 5. Online without cache
         setLocalLoading(true);
         fetchFreshData(false);
-    }, [url, offlineMode, online, maxAge]);
+    }, [url, offlineMode, online, maxAge, token]);
 
     return { data, loading, error, refetch };
 }

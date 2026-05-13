@@ -24,6 +24,21 @@ describe("formUtils", () => {
         expect(getChangedFields(form, original)).toEqual({});
     });
 
+    test("getChangedFields handles null original", () => {
+        const form = { name: "Anna" };
+        const original = null;
+
+        expect(() => getChangedFields(form, original)).not.toThrow();
+        expect(getChangedFields(form, original)).toEqual({ name: "Anna" });
+    });
+
+    test("isDirty handles null original", () => {
+        const form = { name: "Anna" };
+        const original = null;
+
+        expect(isDirty(form, original)).toBe(true);
+    });
+
     test("isDirty returns true when something changed", () => {
         const form = { name: "Anna" };
         const original = { name: "Bob" };
