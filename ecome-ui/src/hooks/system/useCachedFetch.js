@@ -1,5 +1,5 @@
 import { useUI } from "@context/UIContext";
-import { getCached, memoryCache } from "@utils/etagCache";
+import { deleteCached, getCached } from "@utils/etagCache";
 import { getLocalCache, setLocalCache } from "@utils/localCache";
 import { useEffect, useRef, useState } from "react";
 
@@ -61,7 +61,7 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher, token } =
         cacheBustedRef.current = true;
 
         // Remove from memory cache completely
-        memoryCache.delete(url);
+        deleteCached(url);
 
         // Remove from localStorage
         localStorage.removeItem(url);
