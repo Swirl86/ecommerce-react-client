@@ -3,7 +3,10 @@ import { deleteCached, getCached } from "@utils/etagCache";
 import { getLocalCache, setLocalCache } from "@utils/localCache";
 import { useEffect, useRef, useState } from "react";
 
-export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher, token } = {}) {
+export function useCachedFetch(
+    url,
+    { maxAge = 1000 * 60 * 5, fetcher, token, disableGlobalLoading = false } = {}
+) {
     const [data, setData] = useState(null);
     const [loading, setLocalLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -39,7 +42,9 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher, token } =
     // -----------------------------------------------------
     async function fetchFreshData(hasLocalCache) {
         try {
-            if (!hasLocalCache) setGlobalLoading(true);
+            if (!hasLocalCache && !disableGlobalLoading) {
+                setGlobalLoading(true);
+            }
 
             const fresh = await fetcher(url);
             if (!mountedRef.current) return;
@@ -49,7 +54,9 @@ export function useCachedFetch(url, { maxAge = 1000 * 60 * 5, fetcher, token } =
         } catch {
             if (!hasLocalCache) applyError("Could not load data");
         } finally {
-            if (mountedRef.current && !hasLocalCache) setGlobalLoading(false);
+            if (mountedRef.current && !hasLocalCache && !disableGlobalLoading) {
+                setGlobalLoading(false);
+            }
             if (mountedRef.current) setLocalLoading(false);
         }
     }

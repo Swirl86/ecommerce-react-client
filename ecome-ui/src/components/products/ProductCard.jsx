@@ -1,6 +1,7 @@
 import { IMAGE_PLACEHOLDER } from "@config/constants";
 import ProductImageViewer from "@products/ProductImageViewer";
 import { H3, Muted } from "@typography";
+import WishlistButton from "@ui/WishlistButton";
 import { Link } from "react-router-dom";
 
 export default function ProductCard({ product, selectedCategory, sort }) {
@@ -38,6 +39,8 @@ export default function ProductCard({ product, selectedCategory, sort }) {
                         aspect-[4/3] sm:aspect-[3/2] lg:aspect-[4/3]
                     "
                 >
+                    <WishlistButton productId={product.id} variant="icon" />
+
                     <ProductImageViewer
                         images={product.imageUrls}
                         showThumbnails={false}
