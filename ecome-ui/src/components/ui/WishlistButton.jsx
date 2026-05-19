@@ -1,6 +1,6 @@
 import { useAuth } from "@context/AuthContext";
 import { useUI } from "@context/UIContext";
-import { useWishlist } from "@hooks/wishlist/useWishlist";
+import { useWishlist } from "@hooks/profile/useWishlist";
 
 export default function WishlistButton({ productId, variant = "icon" }) {
     const { accessToken } = useAuth();
