@@ -1,8 +1,8 @@
 import { useAuth } from "@context/AuthContext";
 import { useProfileData } from "@hooks/profile/useProfileData";
 import PageContainer from "@layout/PageContainer";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { ProfileDetails, ProfileOrders, ProfileTabs, ProfileWishlist } from "@components/profile";
 
@@ -11,7 +11,12 @@ export default function Profile() {
     const navigate = useNavigate();
     const { data, refetch } = useProfileData();
 
-    const [activeTab, setActiveTab] = useState("profile");
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab = searchParams.get("tab") ?? "profile";
+
+    const setActiveTab = (tab) => {
+        setSearchParams({ tab });
+    };
 
     useEffect(() => {
         if (!accessToken) navigate("/login");
