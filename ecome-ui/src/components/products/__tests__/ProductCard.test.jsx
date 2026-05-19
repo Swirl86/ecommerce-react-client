@@ -1,8 +1,43 @@
 import { IMAGE_PLACEHOLDER } from "@config/constants";
+import ProductCard from "@products/ProductCard";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
-import ProductCard from "./ProductCard";
+
+// ----------------------
+// REQUIRED MOCKS
+// ----------------------
+
+// AuthContext (WishlistButton kräver detta)
+vi.mock("@context/AuthContext", () => ({
+    useAuth: () => ({
+        accessToken: "token123",
+        user: { id: 1 },
+    }),
+}));
+
+// UIContext (WishlistButton använder showSuccess/showError)
+vi.mock("@context/UIContext", () => ({
+    useUI: () => ({
+        showSuccess: vi.fn(),
+        showError: vi.fn(),
+        showInfo: vi.fn(),
+    }),
+}));
+
+// Wishlist hook (WishlistButton använder detta)
+vi.mock("@hooks/profile/useWishlist", () => ({
+    useWishlist: () => ({
+        wishlist: [],
+        toggle: vi.fn(),
+    }),
+}));
+
+// Typography mocks
+vi.mock("@typography", () => ({
+    H3: ({ children }) => <h3>{children}</h3>,
+    Muted: ({ children }) => <span>{children}</span>,
+}));
 
 // Mock ProductImageViewer to avoid loading real images
 vi.mock("@products/ProductImageViewer", () => ({
@@ -11,6 +46,9 @@ vi.mock("@products/ProductImageViewer", () => ({
     ),
 }));
 
+// ----------------------
+// TESTS
+// ----------------------
 describe("ProductCard", () => {
     const baseProduct = {
         id: 1,

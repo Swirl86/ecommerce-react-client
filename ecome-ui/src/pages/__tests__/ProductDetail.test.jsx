@@ -2,7 +2,11 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 
-// --- MOCKS (HAVE TO BE BEFORE IMPORTS) ---
+// ----------------------
+// REQUIRED MOCKS
+// ----------------------
+
+// Domain hooks
 vi.mock("@hooks/domain/useProduct", () => ({
     useProduct: vi.fn(),
 }));
@@ -11,8 +15,45 @@ vi.mock("@hooks/domain/useCategories", () => ({
     useCategories: vi.fn(),
 }));
 
+// Auth + UI (WishlistButton kräver detta)
+vi.mock("@context/AuthContext", () => ({
+    useAuth: () => ({
+        accessToken: "token123",
+        user: { id: 1 },
+    }),
+}));
+
+vi.mock("@context/UIContext", () => ({
+    useUI: () => ({
+        showSuccess: vi.fn(),
+        showError: vi.fn(),
+        showInfo: vi.fn(),
+    }),
+}));
+
+// Wishlist hook (WishlistButton använder detta)
+vi.mock("@hooks/profile/useWishlist", () => ({
+    useWishlist: () => ({
+        wishlist: [],
+        toggle: vi.fn(),
+    }),
+}));
+
+// Typography
+vi.mock("@typography", () => ({
+    H2: ({ children }) => <h2>{children}</h2>,
+    H3: ({ children }) => <h3>{children}</h3>,
+    Muted: ({ children }) => <span>{children}</span>,
+}));
+
+// Layout
+vi.mock("@layout/PageContainer", () => ({
+    default: ({ children }) => <div data-testid="page">{children}</div>,
+}));
+
+// UI components
 vi.mock("@products/ProductImageViewer", () => ({
-    default: () => <div>IMAGE</div>,
+    default: () => <div data-testid="image-viewer">IMAGE</div>,
 }));
 
 vi.mock("@ui/SkeletonCard", () => ({
@@ -27,6 +68,23 @@ vi.mock("@ui/BackButtonFloating", () => ({
     default: () => <div>BACK</div>,
 }));
 
+// Description
+vi.mock("@products/CollapsibleDescription", () => ({
+    default: ({ text }) => <div>{text}</div>,
+}));
+
+// Quantity selector (mockad för enkelhet)
+vi.mock("@ui/QuantitySelector", () => ({
+    default: ({ value, onChange }) => (
+        <div>
+            <button onClick={() => onChange(value - 1)}>-</button>
+            <span>{value}</span>
+            <button onClick={() => onChange(value + 1)}>+</button>
+        </div>
+    ),
+}));
+
+// Router mocks
 vi.mock("react-router-dom", async () => {
     const actual = await vi.importActual("react-router-dom");
     return {
@@ -37,11 +95,16 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
-// --- IMPORT AFTER MOCKS ---
+// ----------------------
+// IMPORT AFTER MOCKS
+// ----------------------
 import { useCategories } from "@hooks/domain/useCategories";
 import { useProduct } from "@hooks/domain/useProduct";
 import ProductDetail from "../ProductDetail";
 
+// ----------------------
+// TESTS
+// ----------------------
 describe("ProductDetail (minimal version)", () => {
     beforeEach(() => {
         vi.clearAllMocks();

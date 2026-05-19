@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import ThemeToggle from "@ui/ThemeToggle";
 import { vi } from "vitest";
-import ThemeToggle from "./ThemeToggle";
 
 // Helper to mock matchMedia
 function mockMatchMedia(matches) {
