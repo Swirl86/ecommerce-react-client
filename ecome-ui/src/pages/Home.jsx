@@ -1,8 +1,10 @@
 import { Body, H1, Muted } from "@typography";
+import { Link } from "react-router-dom";
+import PageContainer from "@layout/PageContainer";
 
 export default function Home() {
     return (
-        <div>
+        <PageContainer>
             {/* Hero section */}
             <section className="max-w-7xl mx-auto px-4 py-20 text-center">
                 <div className="mb-6">
@@ -16,20 +18,21 @@ export default function Home() {
                     </Body>
                 </div>
 
-                <a
-                    href="/products"
+                <Link
+                    key="products"
+                    to="/products"
                     className="inline-block bg-sky-300 text-gray-900
                                hover:bg-sky-400 dark:bg-sky-500 dark:text-white
                                px-8 py-3 rounded-lg text-sm font-medium transition"
                 >
                     Shop Now
-                </a>
+                </Link>
             </section>
 
             {/* Future sections */}
             <section className="max-w-7xl mx-auto px-4 py-16 text-center">
                 <Muted>More content coming soon — featured products, categories, and news.</Muted>
             </section>
-        </div>
+        </PageContainer>
     );
 }

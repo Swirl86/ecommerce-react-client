@@ -83,7 +83,7 @@ export default function ProductDetail() {
                     <CollapsibleDescription text={product.description} />
 
                     {/* Quantity selector */}
-                    <div>
+                    <div className="space-y-4">
                         <H3>Quantity</H3>
                         <QuantitySelector value={quantity} onChange={setQuantity} />
                     </div>

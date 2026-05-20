@@ -1,6 +1,7 @@
 import GuestRoute from "@components/auth/GuestRoute";
 import ProtectedRoute from "@components/auth/ProtectedRoute";
 import { Route, Routes } from "react-router-dom";
+import Cart from "../pages/Cart";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import ProductDetail from "../pages/ProductDetail";
@@ -40,6 +41,14 @@ export default function AppRoutes() {
                 element={
                     <ProtectedRoute>
                         <Profile />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/cart"
+                element={
+                    <ProtectedRoute>
+                        <Cart />
                     </ProtectedRoute>
                 }
             />

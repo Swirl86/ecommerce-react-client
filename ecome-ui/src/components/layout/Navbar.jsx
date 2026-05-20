@@ -43,7 +43,12 @@ export default function Navbar() {
 
                     <Link
                         to="/cart"
-                        className="hover:text-sky-500 dark:hover:text-sky-300 transition"
+                        className="
+                            p-2 rounded-full transition-all duration-300
+                            hover:bg-gray-200 dark:hover:bg-gray-700
+                            hover:text-sky-600 dark:hover:text-sky-300
+                            active:scale-95
+                        "
                     >
                         🛒
                     </Link>
