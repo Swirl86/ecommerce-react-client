@@ -3,7 +3,7 @@ import { useAuth } from "@context/AuthContext";
 import { useUI } from "@context/UIContext";
 import FormButtons from "@ui/FormButtons";
 import InputField from "@ui/InputField";
-import { getChangedFields, isDirty } from "@utils/formUtils";
+import { getChangedFields, isDirty } from "@utils";
 import { useEffect, useState } from "react";
 
 export default function EditAddressForm({ address, onCancel, refetch }) {

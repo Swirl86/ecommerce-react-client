@@ -1,6 +1,6 @@
 import { useAuth } from "@context/AuthContext";
 import { H3 } from "@typography";
-import { CartUtils } from "@utils/cart/cartUtils";
+import { CartUtils } from "@utils";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function OrderSummary({ items }) {

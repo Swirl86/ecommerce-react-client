@@ -1,6 +1,6 @@
 import { addCartItem, clearCart, removeCartItem, updateCartItem } from "@api/cartApi";
 import { IMAGE_PLACEHOLDER } from "@config/constants";
-import { clearLocalCart, getLocalCart, saveLocalCart } from "@utils/cart/localCart";
+import { clearLocalCart, getLocalCart, saveLocalCart } from "@utils";
 
 // -----------------------------
 // LOCAL CART ADAPTER

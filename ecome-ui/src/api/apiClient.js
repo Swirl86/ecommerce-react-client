@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "@config/api";
-import { getCached, saveCached } from "@utils/etagCache";
+import { getCached, saveCached } from "@utils";
 
 // -----------------------------------------------------
 // API CLIENT (framework-agnostic, no React hooks)

@@ -1,4 +1,4 @@
-import { validateEmail, validatePassword } from "@utils/validation";
+import { validateEmail, validatePassword } from "@utils";
 import { useState } from "react";
 import { useAuthActions } from "./useAuthActions";
 

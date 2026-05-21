@@ -1,7 +1,6 @@
 import { DEFAULT_SHORT_MAX_AGE } from "@config/constants";
 import { useUI } from "@context/UIContext";
-import { deleteCached, getCached } from "@utils/etagCache";
-import { getLocalCache, setLocalCache } from "@utils/localCache";
+import { deleteCached, getCached, getLocalCache, setLocalCache } from "@utils";
 import { useEffect, useRef, useState } from "react";
 
 export function useCachedFetch(

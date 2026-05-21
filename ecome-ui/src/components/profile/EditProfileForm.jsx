@@ -3,8 +3,7 @@ import { useAuth } from "@context/AuthContext";
 import { useUI } from "@context/UIContext";
 import FormButtons from "@ui/FormButtons";
 import InputField from "@ui/InputField";
-import { getChangedFields, isDirty } from "@utils/formUtils";
-import { validateEmail, validatePassword, validatePhone } from "@utils/validation";
+import { getChangedFields, isDirty, validateEmail, validatePassword, validatePhone } from "@utils";
 import { useEffect, useState } from "react";
 
 export default function EditProfileForm({ data, refetch, refresh, onCancel }) {
