@@ -1,11 +1,17 @@
+import { clearCart, getCart } from "@api/cartApi";
 import { API_BASE_URL } from "@config/api";
 import { useAuth } from "@context/AuthContext";
 import { useUI } from "@context/UIContext";
-import { syncBackendCartToLocal, syncLocalCartToBackend } from "@utils/cart/cartSync";
+import {
+    cartsAreIdentical,
+    getLocalCart,
+    syncBackendCartToLocal,
+    syncLocalCartToBackend,
+} from "@utils";
 
 export function useAuthActions() {
     const { login: authLogin, logout: authLogout, accessToken } = useAuth();
-    const { showError, showSuccess, setLoading } = useUI();
+    const { showError, showSuccess, setLoading, showCartMergeDialog } = useUI();
 
     async function login({ email, password, remember }) {
         setLoading(true);
@@ -29,6 +35,73 @@ export function useAuthActions() {
 
             const data = await res.json();
 
+            // 1. Fetch carts
+            const backend = await getCart(data.accessToken);
+            const local = getLocalCart().items;
+
+            // 2. Skip dialog if carts are identical
+            if (cartsAreIdentical(backend.items, local)) {
+                await syncBackendCartToLocal(data.accessToken);
+
+                authLogin(
+                    {
+                        accessToken: data.accessToken,
+                        refreshToken: data.refreshToken,
+                        user: {
+                            id: data.userId,
+                            email: data.email,
+                            role: data.role,
+                        },
+                    },
+                    remember
+                );
+
+                return { ok: true };
+            }
+
+            // 3. Show dialog only if both have items AND differ
+            if (backend.items.length > 0 && local.length > 0) {
+                return new Promise((resolve) => {
+                    showCartMergeDialog(backend.items, local, async (choice) => {
+                        if (choice === "backend") {
+                            await syncBackendCartToLocal(data.accessToken);
+                        } else if (choice === "local") {
+                            await clearCart(data.accessToken);
+                            await syncLocalCartToBackend(data.accessToken);
+                        } else if (choice === "merge") {
+                            await syncLocalCartToBackend(data.accessToken);
+                        }
+
+                        // Log in after the choice is made
+                        authLogin(
+                            {
+                                accessToken: data.accessToken,
+                                refreshToken: data.refreshToken,
+                                user: {
+                                    id: data.userId,
+                                    email: data.email,
+                                    role: data.role,
+                                },
+                            },
+                            remember
+                        );
+
+                        resolve({ ok: true });
+                    });
+                });
+            }
+
+            // 4. Only local cart → synca local → backend
+            if (local.length > 0) {
+                await syncLocalCartToBackend(data.accessToken);
+            }
+
+            // 5. Only backend cart → synca backend → local
+            if (backend.items.length > 0) {
+                await syncBackendCartToLocal(data.accessToken);
+            }
+
+            // 6. Login
             authLogin(
                 {
                     accessToken: data.accessToken,
@@ -41,8 +114,6 @@ export function useAuthActions() {
                 },
                 remember
             );
-
-            await syncLocalCartToBackend(data.accessToken);
 
             return { ok: true };
         } catch {

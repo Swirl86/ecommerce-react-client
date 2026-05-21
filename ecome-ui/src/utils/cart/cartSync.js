@@ -1,5 +1,5 @@
 import { addCartItem, clearCart, getCart } from "@api/cartApi";
-import { getLocalCart, saveLocalCart } from "@utils/cart/localCart";
+import { getLocalCart, saveLocalCart } from "@utils";
 
 // LOCAL → BACKEND
 export async function syncLocalCartToBackend(accessToken) {

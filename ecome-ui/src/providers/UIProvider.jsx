@@ -1,3 +1,4 @@
+import CartMergeDialog from "@components/cart/CartMergeDialog";
 import { BACKEND_RESTORED_DURATION, MESSAGE_DURATION } from "@config/constants";
 import { UIContext } from "@context/UIContext";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -59,6 +60,16 @@ function UIProvider({ children, online, offlineMode }) {
     const { backendOffline, backendRestored, showBackendOffline, showBackendRestored } =
         useBackendBadges(online);
 
+    const [cartMergeDialog, setCartMergeDialog] = useState(null);
+
+    const showCartMergeDialog = (backend, local, callback) => {
+        setCartMergeDialog({ backend, local, callback });
+    };
+
+    const hideCartMergeDialog = () => {
+        setCartMergeDialog(null);
+    };
+
     const value = useMemo(
         () => ({
             message,
@@ -73,6 +84,8 @@ function UIProvider({ children, online, offlineMode }) {
             showBackendRestored,
             online,
             offlineMode,
+            showCartMergeDialog,
+            hideCartMergeDialog,
         }),
         [
             message,
@@ -89,7 +102,21 @@ function UIProvider({ children, online, offlineMode }) {
         ]
     );
 
-    return <UIContext.Provider value={value}>{children}</UIContext.Provider>;
+    return (
+        <UIContext.Provider value={value}>
+            {children}
+            {cartMergeDialog && (
+                <CartMergeDialog
+                    oldCart={cartMergeDialog.backend}
+                    latestCart={cartMergeDialog.local}
+                    onChoose={(choice) => {
+                        cartMergeDialog.callback(choice);
+                        hideCartMergeDialog();
+                    }}
+                />
+            )}
+        </UIContext.Provider>
+    );
 }
 
 export { UIProvider };
