@@ -1,9 +1,10 @@
 import { API_BASE_URL } from "@config/api";
 import { useAuth } from "@context/AuthContext";
 import { useUI } from "@context/UIContext";
+import { syncBackendCartToLocal, syncLocalCartToBackend } from "@utils/cart/cartSync";
 
 export function useAuthActions() {
-    const { login: authLogin, logout: authLogout } = useAuth();
+    const { login: authLogin, logout: authLogout, accessToken } = useAuth();
     const { showError, showSuccess, setLoading } = useUI();
 
     async function login({ email, password, remember }) {
@@ -40,6 +41,8 @@ export function useAuthActions() {
                 },
                 remember
             );
+
+            await syncLocalCartToBackend(data.accessToken);
 
             return { ok: true };
         } catch {
@@ -102,6 +105,7 @@ export function useAuthActions() {
 
     async function logout() {
         setLoading(true);
+        await syncBackendCartToLocal(accessToken);
         await authLogout();
         setLoading(false);
     }

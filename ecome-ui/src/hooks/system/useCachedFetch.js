@@ -1,3 +1,4 @@
+import { DEFAULT_SHORT_MAX_AGE } from "@config/constants";
 import { useUI } from "@context/UIContext";
 import { deleteCached, getCached } from "@utils/etagCache";
 import { getLocalCache, setLocalCache } from "@utils/localCache";
@@ -5,10 +6,12 @@ import { useEffect, useRef, useState } from "react";
 
 export function useCachedFetch(
     url,
-    { maxAge = 1000 * 60 * 5, fetcher, token, disableGlobalLoading = false } = {}
+    { maxAge = DEFAULT_SHORT_MAX_AGE, fetcher, token, disableGlobalLoading = false } = {}
 ) {
+    const disabled = !url || !fetcher;
+
     const [data, setData] = useState(null);
-    const [loading, setLocalLoading] = useState(true);
+    const [loading, setLocalLoading] = useState(!disabled);
     const [error, setError] = useState(null);
 
     const { setLoading: setGlobalLoading, showError, offlineMode, online } = useUI();
@@ -41,6 +44,8 @@ export function useCachedFetch(
     // Fetch fresh data
     // -----------------------------------------------------
     async function fetchFreshData(hasLocalCache) {
+        if (disabled) return;
+
         try {
             if (!hasLocalCache && !disableGlobalLoading) {
                 setGlobalLoading(true);
@@ -65,19 +70,16 @@ export function useCachedFetch(
     // Invalidate cache
     // -----------------------------------------------------
     function invalidate() {
+        if (disabled) return;
         cacheBustedRef.current = true;
-
-        // Remove from memory cache completely
         deleteCached(url);
-
-        // Remove from localStorage
-        localStorage.removeItem(url);
     }
 
     // -----------------------------------------------------
     // Manual refetch (used by EditProfileForm / EditAddressForm)
     // -----------------------------------------------------
     async function refetch() {
+        if (disabled) return;
         invalidate();
         await fetchFreshData(false);
     }
@@ -86,15 +88,13 @@ export function useCachedFetch(
     // Main loader
     // -----------------------------------------------------
     useEffect(() => {
+        if (disabled) return;
         if (online === null) return;
 
         // 1. Memory cache
         const memoryCached = getCached(url);
         if (memoryCached) {
-            const canUseMemory =
-                !cacheBustedRef.current || // normal case
-                offlineMode ||
-                online === false;
+            const canUseMemory = !cacheBustedRef.current || offlineMode || online === false;
 
             if (canUseMemory) {
                 return applyData(memoryCached.data);
@@ -123,5 +123,10 @@ export function useCachedFetch(
         fetchFreshData(false);
     }, [url, offlineMode, online, maxAge, token]);
 
-    return { data, loading, error, refetch };
+    return {
+        data: disabled ? null : data,
+        loading: disabled ? false : loading,
+        error: disabled ? null : error,
+        refetch: disabled ? () => {} : refetch,
+    };
 }

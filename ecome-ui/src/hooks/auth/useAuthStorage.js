@@ -1,52 +1,40 @@
+import { LOCAL_AUTH_KEY } from "@config/constants";
 import { useCallback } from "react";
 
 export function useAuthStorage() {
-    // Load from localStorage first, then sessionStorage
     const load = useCallback(() => {
-        const remember = localStorage.getItem("remember") === "true";
+        // remember controls *where* auth is located
+        const localRaw = localStorage.getItem(LOCAL_AUTH_KEY);
+        if (localRaw) return JSON.parse(localRaw);
 
-        if (remember) {
-            return {
-                accessToken: localStorage.getItem("accessToken"),
-                refreshToken: localStorage.getItem("refreshToken"),
-                user: JSON.parse(localStorage.getItem("user") || "null"),
-                remember: true,
-            };
-        }
+        const sessionRaw = sessionStorage.getItem(LOCAL_AUTH_KEY);
+        if (sessionRaw) return JSON.parse(sessionRaw);
 
         return {
-            accessToken: sessionStorage.getItem("accessToken"),
-            refreshToken: sessionStorage.getItem("refreshToken"),
-            user: JSON.parse(sessionStorage.getItem("user") || "null"),
+            accessToken: null,
+            refreshToken: null,
+            user: null,
             remember: false,
         };
     }, []);
 
     // Save tokens + user depending on remember
     const save = useCallback((auth, remember) => {
+        const data = { ...auth, remember };
+
         if (remember) {
-            localStorage.setItem("accessToken", auth.accessToken);
-            localStorage.setItem("refreshToken", auth.refreshToken);
-            localStorage.setItem("user", JSON.stringify(auth.user));
-            localStorage.setItem("remember", "true");
-
-            sessionStorage.clear();
+            localStorage.setItem(LOCAL_AUTH_KEY, JSON.stringify(data));
+            sessionStorage.removeItem(LOCAL_AUTH_KEY);
         } else {
-            sessionStorage.setItem("accessToken", auth.accessToken);
-            sessionStorage.setItem("refreshToken", auth.refreshToken);
-            sessionStorage.setItem("user", JSON.stringify(auth.user));
-
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            localStorage.removeItem("user");
-            localStorage.removeItem("remember");
+            sessionStorage.setItem(LOCAL_AUTH_KEY, JSON.stringify(data));
+            localStorage.removeItem(LOCAL_AUTH_KEY);
         }
     }, []);
 
     // Clear both storages
     const clear = useCallback(() => {
-        localStorage.clear();
-        sessionStorage.clear();
+        localStorage.removeItem(LOCAL_AUTH_KEY);
+        sessionStorage.removeItem(LOCAL_AUTH_KEY);
     }, []);
 
     return { load, save, clear };

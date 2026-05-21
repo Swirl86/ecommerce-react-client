@@ -16,6 +16,7 @@ export default function AppRoutes() {
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/:id" element={<ProductDetail />} />
+            <Route path="/cart" element={<Cart />} />
 
             {/* Guest-only pages (login, register) */}
             <Route
@@ -35,7 +36,7 @@ export default function AppRoutes() {
                 }
             />
 
-            {/* Protected pages (profile, cart, orders) */}
+            {/* Protected pages (profile, checkout, orders) */}
             <Route
                 path="/profile"
                 element={
@@ -45,10 +46,11 @@ export default function AppRoutes() {
                 }
             />
             <Route
-                path="/cart"
+                path="/checkout"
                 element={
                     <ProtectedRoute>
-                        <Cart />
+                        {/*<Checkout />*/}
+                        <div>Place Holder Checkout Page</div>
                     </ProtectedRoute>
                 }
             />

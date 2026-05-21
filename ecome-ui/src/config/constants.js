@@ -24,6 +24,17 @@ export const WARNING_BEFORE = 1 * 60 * 1000;
 
 //
 // ─────────────────────────────────────────────
+//   LOCALCACHE MANAGEMENT
+// ─────────────────────────────────────────────
+//
+
+export const DEFAULT_SHORT_MAX_AGE = 1000 * 60 * 5; // 5 minutes
+export const DEFAULT_LONG_MAX_AGE = 1000 * 60 * 60 * 24 * 2; // Two days
+export const LOCAL_CART_KEY = "local_cart";
+export const LOCAL_AUTH_KEY = "auth";
+
+//
+// ─────────────────────────────────────────────
 //   HEALTHCHECK & BACKEND MONITORING
 // ─────────────────────────────────────────────
 //
@@ -51,3 +62,24 @@ export const MESSAGE_DURATION = 8000;
 
 // Duration for the "Backend restored" badge
 export const BACKEND_RESTORED_DURATION = 3000;
+
+//
+// ─────────────────────────────────────────────
+//   DUMMY DATA - SHIPPING & TAX
+// ─────────────────────────────────────────────
+//
+
+// Minimum order value for free shipping
+export const FREE_SHIPPING_THRESHOLD = 100;
+
+// Shipping cost tiers
+export const SHIPPING_COST_BASE = 4.99; // Orders under $50
+export const SHIPPING_COST_REDUCED = 2.99; // Orders $50–$99.99
+export const SHIPPING_COST_FREE = 0; // Orders >= FREE_SHIPPING_THRESHOLD
+
+// VAT / Sales tax rate (25%)
+export const TAX_RATE = 0.25;
+
+// Estimated delivery window (in days)
+export const DELIVERY_MIN_DAYS = 2;
+export const DELIVERY_MAX_DAYS = 5;

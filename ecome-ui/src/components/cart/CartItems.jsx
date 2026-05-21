@@ -1,30 +1,7 @@
-import { IMAGE_PLACEHOLDER } from "@config/constants";
-import { H3, Muted } from "@typography";
+import { H3 } from "@typography";
 import QuantitySelector from "@ui/QuantitySelector";
 
-export default function CartItems() {
-    // TODO change to real data
-    const items = [
-        {
-            id: 1,
-            name: "Plaid Shirt & Buttoned Skirt Set",
-            price: 39.99,
-            quantity: 1,
-            image: IMAGE_PLACEHOLDER,
-            color: "Olive / Multi",
-            size: "S",
-        },
-        {
-            id: 2,
-            name: "Soft Knit Hoodie",
-            price: 29.99,
-            quantity: 2,
-            image: IMAGE_PLACEHOLDER,
-            color: "Cream",
-            size: "M",
-        },
-    ];
-
+export default function CartItems({ items, onUpdateQuantity, onDelete }) {
     return (
         <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl shadow-sm p-8">
             <div className="space-y-6">
@@ -43,30 +20,32 @@ export default function CartItems() {
                         {/* IMAGE */}
                         <div className="sm:shrink-0">
                             <img
-                                src={item.image}
-                                alt={item.name}
-                                className="
-                w-full h-48
-                sm:w-32 sm:h-32
-                object-cover rounded-lg
-            "
+                                src={item.imageUrl}
+                                alt={item.productName}
+                                className="w-full h-48 sm:w-32 sm:h-32 object-cover rounded-lg"
                             />
                         </div>
 
                         {/* TEXT + CONTROLS */}
                         <div className="flex-1 flex flex-col justify-between">
                             <div>
-                                <H3>{item.name}</H3>
-                                <Muted className="text-sm">
-                                    {item.color} — Size {item.size}
-                                </Muted>
+                                <H3>{item.productName}</H3>
+
+                                {/* Unit price */}
+                                <p className="text-sm text-gray-500">
+                                    ${item.unitPrice.toFixed(2)} each
+                                </p>
                             </div>
 
                             <div className="flex items-center gap-4 mt-3">
-                                <QuantitySelector value={item.quantity} onChange={() => {}} />
+                                <QuantitySelector
+                                    value={item.quantity}
+                                    onChange={(q) => onUpdateQuantity(item.id, q)}
+                                />
 
                                 <button
                                     type="button"
+                                    onClick={() => onDelete(item.id)}
                                     className="
                                         flex items-center justify-center
                                         w-9 h-9
@@ -79,6 +58,7 @@ export default function CartItems() {
                                         focus:bg-red-700
                                     "
                                 >
+                                    {/* Trash icon */}
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -94,8 +74,9 @@ export default function CartItems() {
                                 </button>
                             </div>
 
+                            {/* Total price */}
                             <div className="text-left sm:text-right font-medium text-lg mt-3 sm:mt-0">
-                                ${(item.price * item.quantity).toFixed(2)}
+                                ${(item.unitPrice * item.quantity).toFixed(2)}
                             </div>
                         </div>
                     </div>

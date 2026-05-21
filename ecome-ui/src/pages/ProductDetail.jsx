@@ -1,3 +1,4 @@
+import { useCart } from "@hooks/cart/useCart";
 import { useCategories } from "@hooks/domain/useCategories";
 import { useProduct } from "@hooks/domain/useProduct";
 import PageContainer from "@layout/PageContainer";
@@ -22,6 +23,9 @@ export default function ProductDetail() {
 
     // Load categories for breadcrumbs
     const { categories } = useCategories();
+
+    const { cart, addItem } = useCart();
+    const existingItem = cart?.find((item) => item.productId === product?.id);
 
     const [quantity, setQuantity] = useState(1);
 
@@ -90,10 +94,35 @@ export default function ProductDetail() {
 
                     {/* CTA button */}
                     <div className="flex gap-4 mt-4">
-                        <button className="px-6 py-3 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition">
+                        <button
+                            onClick={() => addItem(product.id, quantity)}
+                            className="px-6 py-3 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition"
+                        >
                             Add to cart
                         </button>
                     </div>
+
+                    {existingItem && (
+                        <div className="flex items-center gap-1 mt-1 text-green-600 text-sm">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                className="w-6 h-6"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 0 0-1.414 0L9 11.586 6.707 9.293a1 1 0 1 0-1.414 1.414l3 3a1 1 0 0 0 1.414 0l7-7a1 1 0 0 0 0-1.414Z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                            <span>
+                                You have{" "}
+                                <span className="font-semibold">{existingItem.quantity}</span> in
+                                your cart
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
         </PageContainer>
