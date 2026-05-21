@@ -13,6 +13,7 @@ vi.mock("@context/UIContext", () => ({
         showError: mockShowError,
         showSuccess: mockShowSuccess,
         setLoading: mockSetLoading,
+        showCartMergeDialog: vi.fn(),
     }),
 }));
 
@@ -30,12 +31,33 @@ vi.mock("@context/AuthContext", () => ({
 }));
 
 // ---------------------------------------------------------
-// 3. Mock fetch BEFORE importing useAuthActions
+// 3. Mock cart + storage logic
+// ---------------------------------------------------------
+vi.mock("@api/cartApi", () => ({
+    getCart: vi.fn(() => ({ items: [] })),
+    clearCart: vi.fn().mockResolvedValue(),
+}));
+
+vi.mock("@utils/cart/localCart", () => ({
+    getLocalCart: vi.fn(() => ({ items: [] })),
+}));
+
+vi.mock("@utils/cart/cartSync", () => ({
+    syncBackendCartToLocal: vi.fn().mockResolvedValue(),
+    syncLocalCartToBackend: vi.fn().mockResolvedValue(),
+}));
+
+vi.mock("@utils/cart/compareCarts", () => ({
+    cartsAreIdentical: vi.fn(() => true),
+}));
+
+// ---------------------------------------------------------
+// 4. Mock fetch BEFORE importing useAuthActions
 // ---------------------------------------------------------
 global.fetch = vi.fn();
 
 // ---------------------------------------------------------
-// 4. Import useAuthActions
+// 5. Import useAuthActions
 // ---------------------------------------------------------
 import { useAuthActions } from "@hooks/auth/useAuthActions";
 
