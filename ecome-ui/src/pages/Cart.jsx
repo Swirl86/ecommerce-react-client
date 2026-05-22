@@ -1,4 +1,5 @@
 import CartItems from "@components/cart/CartItems";
+import EmptyCart from "@components/cart/EmptyCart";
 import OrderSummary from "@components/cart/OrderSummary";
 import { useCart } from "@hooks/cart/useCart";
 import PageContainer from "@layout/PageContainer";
@@ -6,6 +7,14 @@ import { H2 } from "@typography";
 
 export default function Cart() {
     const { cart, updateQuantity, deleteItem, clear } = useCart();
+
+    if (!cart || cart.length === 0) {
+        return (
+            <PageContainer>
+                <EmptyCart />
+            </PageContainer>
+        );
+    }
 
     return (
         <PageContainer>
