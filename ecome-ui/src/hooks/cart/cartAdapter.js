@@ -2,82 +2,89 @@ import { addCartItem, clearCart, removeCartItem, updateCartItem } from "@api/car
 import { IMAGE_PLACEHOLDER } from "@config/constants";
 import { clearLocalCart, getLocalCart, saveLocalCart } from "@utils";
 
-// -----------------------------
+// -----------------------------------------------------
+// Helpers
+// -----------------------------------------------------
+function normalizeProduct(product) {
+    return {
+        id: product.id,
+        name: product.name,
+        imageUrl: product.imageUrls?.[0] ?? IMAGE_PLACEHOLDER,
+        price: Number(product.price) || 0,
+    };
+}
+
+function generateLocalId() {
+    return crypto.randomUUID();
+}
+
+// -----------------------------------------------------
 // LOCAL CART ADAPTER
-// -----------------------------
+// -----------------------------------------------------
 export const localAdapter = {
-    get: () => getLocalCart().items,
+    get: () => getLocalCart(),
 
-    add: (productId, quantity = 1) => {
-        const c = getLocalCart();
-        const item = c.items.find((i) => i.productId === productId);
+    add: (product, quantity = 1) => {
+        const normalized = normalizeProduct(product);
+        const cart = getLocalCart();
 
-        let product = window.__PRODUCTS__?.find((p) => p.id === productId);
+        const existing = cart.items.find((i) => i.productId === normalized.id);
 
-        if (!product) {
-            product = {
-                id: productId,
-                name: "Unknown product",
-                imageUrl: IMAGE_PLACEHOLDER,
-                price: 0,
-            };
-        }
-
-        if (item) {
-            item.quantity += quantity;
+        if (existing) {
+            existing.quantity += quantity;
         } else {
-            c.items.push({
-                id: Date.now(), // fake cartItemId offline,
-                productId,
-                productName: product.name,
-                imageUrl: product.imageUrl,
-                unitPrice: product.price,
+            cart.items.push({
+                id: generateLocalId(),
+                productId: normalized.id,
+                productName: normalized.name,
+                imageUrl: normalized.imageUrl,
+                unitPrice: normalized.price,
                 quantity,
             });
         }
 
-        saveLocalCart(c);
+        saveLocalCart(cart);
     },
 
-    update: (id, quantity) => {
-        const c = getLocalCart();
-        const item = c.items.find((i) => i.id === id);
+    update: (itemId, quantity) => {
+        const cart = getLocalCart();
+        const item = cart.items.find((i) => i.id === itemId);
         if (item) item.quantity = quantity;
-        saveLocalCart(c);
+        saveLocalCart(cart);
     },
 
-    delete: (id) => {
-        const c = getLocalCart();
-        c.items = c.items.filter((i) => i.id !== id);
-        saveLocalCart(c);
+    delete: (itemId) => {
+        const cart = getLocalCart();
+        cart.items = cart.items.filter((i) => i.id !== itemId);
+        saveLocalCart(cart);
     },
 
     clear: () => clearLocalCart(),
 };
 
-// -----------------------------
+// -----------------------------------------------------
 // BACKEND CART ADAPTER
-// -----------------------------
-export const backendAdapter = (accessToken, refetch) => ({
-    get: (data) => data?.items || [],
+// -----------------------------------------------------
+export const backendAdapter = (accessToken, onChange) => ({
+    get: (data) => data,
 
-    add: async (productId, quantity = 1) => {
-        await addCartItem(productId, quantity, accessToken);
-        await refetch();
+    add: async (product, quantity = 1) => {
+        await addCartItem(product.id, quantity, accessToken);
+        await onChange();
     },
 
     update: async (itemId, quantity) => {
         await updateCartItem(itemId, quantity, accessToken);
-        await refetch();
+        await onChange();
     },
 
     delete: async (itemId) => {
         await removeCartItem(itemId, accessToken);
-        await refetch();
+        await onChange();
     },
 
     clear: async () => {
         await clearCart(accessToken);
-        await refetch();
+        await onChange();
     },
 });

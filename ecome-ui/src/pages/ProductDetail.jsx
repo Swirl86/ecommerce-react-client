@@ -95,7 +95,8 @@ export default function ProductDetail() {
                     {/* CTA button */}
                     <div className="flex gap-4 mt-4">
                         <button
-                            onClick={() => addItem(product.id, quantity)}
+                            disabled={!product}
+                            onClick={() => addItem(product, quantity)}
                             className="px-6 py-3 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition"
                         >
                             Add to cart

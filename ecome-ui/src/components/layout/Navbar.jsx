@@ -1,12 +1,20 @@
+import { useCart } from "@hooks/cart/useCart";
 import LogoSwitcher from "@ui/LogoSwitcher";
 import ThemeToggle from "@ui/ThemeToggle";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import AuthButton from "../auth/AuthButton";
 
 export default function Navbar() {
     const navRef = useRef(null);
     const [menuOpen, setMenuOpen] = useState(false);
+
+    const { cart, version } = useCart();
+    const count = cart?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
+
+    useEffect(() => {
+        // trigger rendering
+    }, [version]);
 
     return (
         <header className="backdrop-blur bg-neutral-50/80 dark:bg-gray-800/80 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
@@ -44,13 +52,26 @@ export default function Navbar() {
                     <Link
                         to="/cart"
                         className="
-                            p-2 rounded-full transition-all duration-300
+                            relative p-2 rounded-full transition-all duration-300
                             hover:bg-gray-200 dark:hover:bg-gray-700
                             hover:text-sky-600 dark:hover:text-sky-300
                             active:scale-95
                         "
                     >
                         🛒
+                        {count > 0 && (
+                            <span
+                                className="
+                                    absolute -top-1 -right-1
+                                    bg-sky-500 text-white text-xs font-semibold
+                                    w-5 h-5 flex items-center justify-center
+                                    rounded-full shadow
+                                    dark:bg-sky-400
+                                "
+                            >
+                                {count}
+                            </span>
+                        )}
                     </Link>
 
                     <AuthButton />
@@ -101,9 +122,22 @@ export default function Navbar() {
 
                         <Link
                             to="/cart"
-                            className="hover:text-sky-500 dark:hover:text-sky-300 transition"
+                            className="relative hover:text-sky-500 dark:hover:text-sky-300 transition"
                         >
                             🛒
+                            {count > 0 && (
+                                <span
+                                    className="
+                                        absolute -top-1 -right-1
+                                        bg-sky-500 text-white text-xs font-semibold
+                                        w-5 h-5 flex items-center justify-center
+                                        rounded-full shadow
+                                        dark:bg-sky-400
+                                    "
+                                >
+                                    {count}
+                                </span>
+                            )}
                         </Link>
 
                         <AuthButton onClick={() => setMenuOpen(false)} />

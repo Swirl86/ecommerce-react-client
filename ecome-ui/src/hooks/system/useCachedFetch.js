@@ -50,7 +50,7 @@ export function useCachedFetch(
                 setGlobalLoading(true);
             }
 
-            const fresh = await fetcher(url);
+            const fresh = await fetcher();
             if (!mountedRef.current) return;
 
             setData(fresh);
@@ -94,10 +94,7 @@ export function useCachedFetch(
         const memoryCached = getCached(url);
         if (memoryCached) {
             const canUseMemory = !cacheBustedRef.current || offlineMode || online === false;
-
-            if (canUseMemory) {
-                return applyData(memoryCached.data);
-            }
+            if (canUseMemory) return applyData(memoryCached.data);
         }
 
         // 2. Local cache
