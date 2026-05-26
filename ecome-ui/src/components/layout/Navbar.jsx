@@ -61,6 +61,7 @@ export default function Navbar() {
                         🛒
                         {count > 0 && (
                             <span
+                                data-testid="cart-badge"
                                 className="
                                     absolute -top-1 -right-1
                                     bg-sky-500 text-white text-xs font-semibold
@@ -127,6 +128,7 @@ export default function Navbar() {
                             🛒
                             {count > 0 && (
                                 <span
+                                    data-testid="cart-badge"
                                     className="
                                         absolute -top-1 -right-1
                                         bg-sky-500 text-white text-xs font-semibold

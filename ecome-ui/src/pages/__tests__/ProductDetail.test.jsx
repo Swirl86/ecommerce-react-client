@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { TestProviders } from "@utils/test-utils/TestProviders";
 import { vi } from "vitest";
 
 // ----------------------
@@ -15,23 +15,31 @@ vi.mock("@hooks/domain/useCategories", () => ({
     useCategories: vi.fn(),
 }));
 
-// Auth + UI (WishlistButton kräver detta)
-vi.mock("@context/AuthContext", () => ({
-    useAuth: () => ({
-        accessToken: "token123",
-        user: { id: 1 },
-    }),
-}));
+// Auth + UI
+vi.mock("@context/AuthContext", async () => {
+    const actual = await vi.importActual("@context/AuthContext");
+    return {
+        ...actual,
+        useAuth: () => ({
+            accessToken: "token123",
+            user: { id: 1 },
+        }),
+    };
+});
 
-vi.mock("@context/UIContext", () => ({
-    useUI: () => ({
-        showSuccess: vi.fn(),
-        showError: vi.fn(),
-        showInfo: vi.fn(),
-    }),
-}));
+vi.mock("@context/UIContext", async () => {
+    const actual = await vi.importActual("@context/UIContext");
+    return {
+        ...actual,
+        useUI: () => ({
+            showSuccess: vi.fn(),
+            showError: vi.fn(),
+            showInfo: vi.fn(),
+        }),
+    };
+});
 
-// Wishlist hook (WishlistButton använder detta)
+// Wishlist hook
 vi.mock("@hooks/profile/useWishlist", () => ({
     useWishlist: () => ({
         wishlist: [],
@@ -73,7 +81,7 @@ vi.mock("@products/CollapsibleDescription", () => ({
     default: ({ text }) => <div>{text}</div>,
 }));
 
-// Quantity selector (mockad för enkelhet)
+// Quantity selector
 vi.mock("@ui/QuantitySelector", () => ({
     default: ({ value, onChange }) => (
         <div>
@@ -122,9 +130,9 @@ describe("ProductDetail (minimal version)", () => {
         });
 
         render(
-            <MemoryRouter>
+            <TestProviders>
                 <ProductDetail />
-            </MemoryRouter>
+            </TestProviders>
         );
 
         expect(screen.getByTestId("skeleton-card")).toBeInTheDocument();
@@ -149,9 +157,9 @@ describe("ProductDetail (minimal version)", () => {
         });
 
         render(
-            <MemoryRouter>
+            <TestProviders>
                 <ProductDetail />
-            </MemoryRouter>
+            </TestProviders>
         );
 
         expect(screen.getByText("Test Product")).toBeInTheDocument();
@@ -179,9 +187,9 @@ describe("ProductDetail (minimal version)", () => {
         });
 
         render(
-            <MemoryRouter>
+            <TestProviders>
                 <ProductDetail />
-            </MemoryRouter>
+            </TestProviders>
         );
 
         const plus = screen.getByText("+");
