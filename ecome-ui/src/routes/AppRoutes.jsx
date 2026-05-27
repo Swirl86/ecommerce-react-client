@@ -1,7 +1,9 @@
 import GuestRoute from "@components/auth/GuestRoute";
 import ProtectedRoute from "@components/auth/ProtectedRoute";
+import CheckoutConfirmationPage from "@components/checkout/CheckoutConfirmationPage";
 import { Route, Routes } from "react-router-dom";
 import Cart from "../pages/Cart";
+import CheckoutPage from "../pages/CheckoutPage";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import ProductDetail from "../pages/ProductDetail";
@@ -49,8 +51,15 @@ export default function AppRoutes() {
                 path="/checkout"
                 element={
                     <ProtectedRoute>
-                        {/*<Checkout />*/}
-                        <div>Place Holder Checkout Page</div>
+                        <CheckoutPage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/checkout/confirmation/:orderId"
+                element={
+                    <ProtectedRoute>
+                        <CheckoutConfirmationPage />
                     </ProtectedRoute>
                 }
             />
