@@ -1,20 +1,16 @@
 import { act, renderHook } from "@testing-library/react";
+import { createMockUI } from "@utils/test-utils/mockUtils";
 import { vi } from "vitest";
 
 // ---------------------------------------------------------
-// 1. Mock UIContext FIRST
+// 1. Mock UIContext
 // ---------------------------------------------------------
-const mockShowError = vi.fn();
-const mockShowSuccess = vi.fn();
-const mockSetLoading = vi.fn();
+const mockUI = createMockUI({
+    showCartMergeDialog: vi.fn(),
+});
 
 vi.mock("@context/UIContext", () => ({
-    useUI: () => ({
-        showError: mockShowError,
-        showSuccess: mockShowSuccess,
-        setLoading: mockSetLoading,
-        showCartMergeDialog: vi.fn(),
-    }),
+    useUI: () => mockUI,
 }));
 
 // ---------------------------------------------------------
@@ -61,6 +57,9 @@ global.fetch = vi.fn();
 // ---------------------------------------------------------
 import { useAuthActions } from "@hooks/auth/useAuthActions";
 
+// ---------------------------------------------------------
+// TESTS
+// ---------------------------------------------------------
 describe("useAuthActions (new architecture)", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -110,7 +109,7 @@ describe("useAuthActions (new architecture)", () => {
             });
         });
 
-        expect(mockShowError).toHaveBeenCalledWith("Invalid email or password");
+        expect(mockUI.showError).toHaveBeenCalledWith("Invalid email or password");
     });
 
     test("network error triggers showError", async () => {
@@ -126,7 +125,7 @@ describe("useAuthActions (new architecture)", () => {
             });
         });
 
-        expect(mockShowError).toHaveBeenCalledWith("Network error");
+        expect(mockUI.showError).toHaveBeenCalledWith("Network error");
     });
 
     // -----------------------------------------------------
@@ -167,7 +166,7 @@ describe("useAuthActions (new architecture)", () => {
         });
 
         expect(mockAuthLogin).toHaveBeenCalled();
-        expect(mockShowSuccess).toHaveBeenCalledWith("Account created");
+        expect(mockUI.showSuccess).toHaveBeenCalledWith("Account created");
     });
 
     test("409 register triggers showError", async () => {
@@ -185,7 +184,7 @@ describe("useAuthActions (new architecture)", () => {
             });
         });
 
-        expect(mockShowError).toHaveBeenCalledWith(
+        expect(mockUI.showError).toHaveBeenCalledWith(
             "That email is already registered. Try logging in instead."
         );
     });
@@ -205,7 +204,7 @@ describe("useAuthActions (new architecture)", () => {
             });
         });
 
-        expect(mockShowError).toHaveBeenCalledWith(
+        expect(mockUI.showError).toHaveBeenCalledWith(
             "Some information is missing or invalid. Please review the form."
         );
     });

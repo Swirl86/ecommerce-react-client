@@ -30,6 +30,7 @@ describe("useBackendMonitor (composition test)", () => {
     it("returns combined backend status", async () => {
         const { result } = renderHook(() => useBackendMonitor());
 
+        // MUST wait for async state update
         await waitFor(() => {
             expect(result.current.checking).toBe(false);
         });

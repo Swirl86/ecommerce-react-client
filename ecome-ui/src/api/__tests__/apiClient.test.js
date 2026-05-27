@@ -1,40 +1,58 @@
+import {
+    createMockApiBaseUrl,
+    createMockEtagCache,
+    createMockFetch,
+} from "@utils/test-utils/mockUtils";
 import { vi } from "vitest";
 import { apiGet, apiSend } from "../apiClient";
 
 // ----------------------
-// MOCKS
+// Mocks
 // ----------------------
-let mockBaseUrl = "http://mock-api";
+// Placeholder references (assigned AFTER mocks)
+let apiBaseUrl;
+let etagCache;
 
+// Mock @config/api
 vi.mock("@config/api", () => ({
     get API_BASE_URL() {
-        return mockBaseUrl;
+        return apiBaseUrl.get();
     },
 }));
 
-const mockGetCached = vi.fn();
-const mockSaveCached = vi.fn();
-
+// Mock @utils/etagCache (via @utils index re-export)
 vi.mock("@utils/etagCache", () => ({
-    getCached: (...args) => mockGetCached(...args),
-    saveCached: (...args) => mockSaveCached(...args),
+    getCached: (...args) => etagCache.mockGetCached(...args),
+    saveCached: (...args) => etagCache.mockSaveCached(...args),
 }));
 
-// Mock global fetch
-global.fetch = vi.fn();
+// Mock @utils (because it re-exports etagCache)
+vi.mock("@utils", () => ({
+    getCached: (...args) => etagCache.mockGetCached(...args),
+    saveCached: (...args) => etagCache.mockSaveCached(...args),
+}));
 
+// Mock fetch
+const mockFetch = createMockFetch();
+
+// ---------------------------------------------------------
+// Initialize mocks AFTER vi.mock()
+// ---------------------------------------------------------
+apiBaseUrl = createMockApiBaseUrl();
+etagCache = createMockEtagCache();
+
+// ---------------------------------------------------------
+// TESTS
+// ---------------------------------------------------------
 describe("apiClient", () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
-    // ----------------------
-    // apiGet
-    // ----------------------
     test("GET without cache", async () => {
-        mockGetCached.mockReturnValue(null);
+        etagCache.mockGetCached.mockReturnValue(null);
 
-        fetch.mockResolvedValueOnce({
+        mockFetch.mockResolvedValueOnce({
             ok: true,
             status: 200,
             json: () => Promise.resolve({ ok: true }),
@@ -43,7 +61,7 @@ describe("apiClient", () => {
 
         const result = await apiGet("/test");
 
-        expect(fetch).toHaveBeenCalledWith("http://mock-api/test", {
+        expect(mockFetch).toHaveBeenCalledWith("http://mock-api/test", {
             headers: {},
         });
 
@@ -51,12 +69,12 @@ describe("apiClient", () => {
     });
 
     test("GET with cache + 304 returns cached data", async () => {
-        mockGetCached.mockReturnValue({
+        etagCache.mockGetCached.mockReturnValue({
             etag: "abc",
             data: { cached: true },
         });
 
-        fetch.mockResolvedValueOnce({
+        mockFetch.mockResolvedValueOnce({
             ok: true,
             status: 304,
             headers: { get: () => null },
@@ -68,9 +86,9 @@ describe("apiClient", () => {
     });
 
     test("GET updates cache when ETag present", async () => {
-        mockGetCached.mockReturnValue(null);
+        etagCache.mockGetCached.mockReturnValue(null);
 
-        fetch.mockResolvedValueOnce({
+        mockFetch.mockResolvedValueOnce({
             ok: true,
             status: 200,
             json: () => Promise.resolve({ fresh: true }),
@@ -79,7 +97,7 @@ describe("apiClient", () => {
 
         await apiGet("/test");
 
-        expect(mockSaveCached).toHaveBeenCalledWith(
+        expect(etagCache.mockSaveCached).toHaveBeenCalledWith(
             "http://mock-api/test",
             { fresh: true },
             "etag123"
@@ -87,9 +105,9 @@ describe("apiClient", () => {
     });
 
     test("GET sends Authorization header when token exists", async () => {
-        mockGetCached.mockReturnValue(null);
+        etagCache.mockGetCached.mockReturnValue(null);
 
-        fetch.mockResolvedValueOnce({
+        mockFetch.mockResolvedValueOnce({
             ok: true,
             status: 200,
             json: () => Promise.resolve({}),
@@ -98,15 +116,15 @@ describe("apiClient", () => {
 
         await apiGet("/test", "token123");
 
-        expect(fetch).toHaveBeenCalledWith("http://mock-api/test", {
+        expect(mockFetch).toHaveBeenCalledWith("http://mock-api/test", {
             headers: { Authorization: "Bearer token123" },
         });
     });
 
     test("GET throws error when !res.ok", async () => {
-        mockGetCached.mockReturnValue(null);
+        etagCache.mockGetCached.mockReturnValue(null);
 
-        fetch.mockResolvedValueOnce({
+        mockFetch.mockResolvedValueOnce({
             ok: false,
             status: 500,
         });
@@ -114,15 +132,12 @@ describe("apiClient", () => {
         await expect(apiGet("/test")).rejects.toThrow("API error: 500");
     });
 
-    // ----------------------
-    // apiSend
-    // ----------------------
     test("apiSend sends correct method, body and headers", async () => {
-        fetch.mockResolvedValueOnce({ ok: true });
+        mockFetch.mockResolvedValueOnce({ ok: true });
 
         await apiSend("POST", "/test", { a: 1 });
 
-        expect(fetch).toHaveBeenCalledWith("http://mock-api/test", {
+        expect(mockFetch).toHaveBeenCalledWith("http://mock-api/test", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -132,11 +147,11 @@ describe("apiClient", () => {
     });
 
     test("apiSend includes Authorization header when token exists", async () => {
-        fetch.mockResolvedValueOnce({ ok: true });
+        mockFetch.mockResolvedValueOnce({ ok: true });
 
         await apiSend("PUT", "/test", { a: 1 }, "token123");
 
-        expect(fetch).toHaveBeenCalledWith("http://mock-api/test", {
+        expect(mockFetch).toHaveBeenCalledWith("http://mock-api/test", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

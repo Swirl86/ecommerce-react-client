@@ -1,52 +1,53 @@
 import { act, render, screen } from "@testing-library/react";
+import { createMockAuthForProviders, createMockUI } from "@utils/test-utils/mockUtils";
 import { TestProviders } from "@utils/test-utils/TestProviders";
 import { vi } from "vitest";
 
 // ----------------------
-// MOCK useCart
+// Mock useCart
 // ----------------------
 const mockUseCart = vi.fn();
 
+// ----------------------
+// Mock UIContext
+// ----------------------
+const mockUI = createMockUI();
+
+vi.mock("@context/UIContext", async () => {
+    const actual = await vi.importActual("@context/UIContext");
+    return {
+        ...actual, // keep UIContext + UIProvider
+        useUI: () => mockUI, // override only the hook
+    };
+});
+
+// ----------------------
+// Mock AuthContext (Provider-safe)
+// Keeps AuthContext + AuthProvider but overrides useAuth
+// ----------------------
+vi.mock("@context/AuthContext", async () => {
+    const actual = await vi.importActual("@context/AuthContext");
+    const authMock = createMockAuthForProviders();
+    return {
+        ...actual,
+        useAuth: authMock.useAuth,
+    };
+});
+
+// ----------------------
+// Mock useCart hook
+// ----------------------
 vi.mock("@hooks/cart/useCart", () => ({
     useCart: () => mockUseCart(),
 }));
 
 // ----------------------
-// MOCK AuthContext
-// ----------------------
-vi.mock("@context/AuthContext", async () => {
-    const actual = await vi.importActual("@context/AuthContext");
-    return {
-        ...actual,
-        useAuth: () => ({
-            isAuthenticated: true,
-            user: { id: 1 },
-        }),
-    };
-});
-
-// ----------------------
-// MOCK UIContext
-// ----------------------
-vi.mock("@context/UIContext", async () => {
-    const actual = await vi.importActual("@context/UIContext");
-    return {
-        ...actual,
-        useUI: () => ({
-            showSuccess: vi.fn(),
-            showError: vi.fn(),
-            showInfo: vi.fn(),
-        }),
-    };
-});
-
-// ----------------------
-// IMPORT Navbar AFTER mocks
+// Import Navbar AFTER mocks
 // ----------------------
 import Navbar from "../Navbar";
 
 // ----------------------
-// TESTS
+// Tests
 // ----------------------
 describe("Navbar cart badge", () => {
     beforeEach(() => {
@@ -85,19 +86,13 @@ describe("Navbar cart badge", () => {
     });
 
     test("updates badge when cart changes", () => {
-        const { rerender } = render(
-            <TestProviders>
-                <Navbar />
-            </TestProviders>
-        );
-
-        // First render: empty cart
+        // Initial render with empty cart
         mockUseCart.mockReturnValue({
             cart: [],
             version: 0,
         });
 
-        rerender(
+        const { rerender } = render(
             <TestProviders>
                 <Navbar />
             </TestProviders>
@@ -105,7 +100,7 @@ describe("Navbar cart badge", () => {
 
         expect(screen.queryByTestId("cart-badge")).toBeNull();
 
-        // Second render: cart has items
+        // Update cart
         mockUseCart.mockReturnValue({
             cart: [
                 { id: 1, quantity: 1 },

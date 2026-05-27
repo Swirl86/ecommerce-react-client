@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { createMockAuth, createMockUI } from "@utils/test-utils/mockUtils";
 import { vi } from "vitest";
 
 import * as profileApi from "@api/profileApi";
@@ -6,45 +7,51 @@ import * as formUtils from "@utils/formUtils";
 import * as validation from "@utils/validation";
 import EditProfileForm from "../EditProfileForm";
 
-// ----------------------
-// GLOBAL MOCKS
-// ----------------------
+// ---------------------------------------------------------
+// Mock AuthContext
+// ---------------------------------------------------------
+const mockAuth = createMockAuth();
+
 vi.mock("@context/AuthContext", () => ({
-    useAuth: () => ({ accessToken: "token123" }),
+    useAuth: () => mockAuth,
 }));
 
-const mockSetLoading = vi.fn();
-const mockShowError = vi.fn();
-const mockShowSuccess = vi.fn();
-const mockShowInfo = vi.fn();
+// ---------------------------------------------------------
+// Mock UIContext
+// ---------------------------------------------------------
+const mockUI = createMockUI();
 
 vi.mock("@context/UIContext", () => ({
-    useUI: () => ({
-        setLoading: mockSetLoading,
-        showError: mockShowError,
-        showSuccess: mockShowSuccess,
-        showInfo: mockShowInfo,
-    }),
+    useUI: () => mockUI,
 }));
 
+// ---------------------------------------------------------
+// Mock profile API
+// ---------------------------------------------------------
 vi.mock("@api/profileApi", () => ({
     updateProfile: vi.fn(),
 }));
 
+// ---------------------------------------------------------
+// Mock form utilities
+// ---------------------------------------------------------
 vi.mock("@utils/formUtils", () => ({
     getChangedFields: vi.fn(),
     isDirty: vi.fn(),
 }));
 
+// ---------------------------------------------------------
+// Mock validation utilities
+// ---------------------------------------------------------
 vi.mock("@utils/validation", () => ({
     validateEmail: vi.fn(),
     validatePhone: vi.fn(),
     validatePassword: vi.fn(),
 }));
 
-// ----------------------
-// TESTS
-// ----------------------
+// ---------------------------------------------------------
+// Tests
+// ---------------------------------------------------------
 describe("EditProfileForm", () => {
     const baseData = {
         name: "Anna",
@@ -55,7 +62,7 @@ describe("EditProfileForm", () => {
     beforeEach(() => {
         vi.clearAllMocks();
 
-        // Default mocks
+        // Default mock behavior
         vi.mocked(formUtils.isDirty).mockReturnValue(true);
         vi.mocked(formUtils.getChangedFields).mockReturnValue({});
         vi.mocked(validation.validateEmail).mockReturnValue(null);
@@ -91,7 +98,7 @@ describe("EditProfileForm", () => {
 
         fireEvent.click(screen.getByRole("button", { name: /save/i }));
 
-        expect(mockShowInfo).toHaveBeenCalledWith("No changes to update");
+        expect(mockUI.showInfo).toHaveBeenCalledWith("No changes to update");
         expect(mockOnCancel).toHaveBeenCalled();
     });
 
@@ -148,7 +155,7 @@ describe("EditProfileForm", () => {
         fireEvent.click(screen.getByRole("button", { name: /save/i }));
 
         await waitFor(() => {
-            expect(mockShowSuccess).toHaveBeenCalledWith("Profile updated successfully");
+            expect(mockUI.showSuccess).toHaveBeenCalledWith("Profile updated successfully");
             expect(mockRefetch).toHaveBeenCalled();
             expect(mockOnCancel).toHaveBeenCalled();
         });
@@ -164,7 +171,7 @@ describe("EditProfileForm", () => {
         fireEvent.click(screen.getByRole("button", { name: /save/i }));
 
         await waitFor(() => {
-            expect(mockShowError).toHaveBeenCalledWith("Server error");
+            expect(mockUI.showError).toHaveBeenCalledWith("Server error");
         });
     });
 });

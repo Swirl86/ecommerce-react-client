@@ -1,36 +1,37 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { createMockAuth, createMockUI } from "@utils/test-utils/mockUtils";
 import { vi } from "vitest";
 
 import * as profileApi from "@api/profileApi";
 import EditAddressForm from "../EditAddressForm";
 
 // ----------------------
-// GLOBAL MOCKS
+// Mock AuthContext
 // ----------------------
+const mockAuth = createMockAuth();
+
 vi.mock("@context/AuthContext", () => ({
-    useAuth: () => ({ accessToken: "token123" }),
+    useAuth: () => mockAuth,
 }));
 
-const mockSetLoading = vi.fn();
-const mockShowError = vi.fn();
-const mockShowSuccess = vi.fn();
-const mockShowInfo = vi.fn();
+// ----------------------
+// Mock UIContext
+// ----------------------
+const mockUI = createMockUI();
 
 vi.mock("@context/UIContext", () => ({
-    useUI: () => ({
-        setLoading: mockSetLoading,
-        showError: mockShowError,
-        showSuccess: mockShowSuccess,
-        showInfo: mockShowInfo,
-    }),
+    useUI: () => mockUI,
 }));
 
+// ----------------------
+// Mock profile API
+// ----------------------
 vi.mock("@api/profileApi", () => ({
     updateAddress: vi.fn(),
 }));
 
 // ----------------------
-// TESTS
+// Tests
 // ----------------------
 describe("EditAddressForm", () => {
     const baseAddress = {
@@ -97,7 +98,7 @@ describe("EditAddressForm", () => {
         // Clicking save should do nothing
         fireEvent.click(saveButton);
 
-        expect(mockShowInfo).not.toHaveBeenCalled();
+        expect(mockUI.showInfo).not.toHaveBeenCalled();
         expect(mockOnCancel).not.toHaveBeenCalled();
     });
 
@@ -132,7 +133,7 @@ describe("EditAddressForm", () => {
         fireEvent.click(screen.getByRole("button", { name: /save/i }));
 
         await waitFor(() => {
-            expect(mockShowSuccess).toHaveBeenCalledWith("Address updated successfully");
+            expect(mockUI.showSuccess).toHaveBeenCalledWith("Address updated successfully");
             expect(mockRefetch).toHaveBeenCalled();
             expect(mockOnCancel).toHaveBeenCalled();
         });
@@ -147,7 +148,7 @@ describe("EditAddressForm", () => {
         fireEvent.click(screen.getByRole("button", { name: /save/i }));
 
         await waitFor(() => {
-            expect(mockShowError).toHaveBeenCalledWith("Server error");
+            expect(mockUI.showError).toHaveBeenCalledWith("Server error");
         });
     });
 });

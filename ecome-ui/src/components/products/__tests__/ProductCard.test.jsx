@@ -1,45 +1,49 @@
 import { IMAGE_PLACEHOLDER } from "@config/constants";
 import ProductCard from "@products/ProductCard";
 import { render, screen } from "@testing-library/react";
+import { createMockAuth, createMockUI, createMockWishlist } from "@utils/test-utils/mockUtils";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 
 // ----------------------
-// REQUIRED MOCKS
+// Mock instances
 // ----------------------
+const mockUI = createMockUI();
+const mockAuth = createMockAuth();
+const mockWishlist = createMockWishlist();
 
-// AuthContext (WishlistButton kräver detta)
-vi.mock("@context/AuthContext", () => ({
-    useAuth: () => ({
-        accessToken: "token123",
-        user: { id: 1 },
-    }),
-}));
-
-// UIContext (WishlistButton använder showSuccess/showError)
+// ----------------------
+// Mock UIContext
+// ----------------------
 vi.mock("@context/UIContext", () => ({
-    useUI: () => ({
-        showSuccess: vi.fn(),
-        showError: vi.fn(),
-        showInfo: vi.fn(),
-    }),
+    useUI: () => mockUI,
 }));
 
-// Wishlist hook (WishlistButton använder detta)
+// ----------------------
+// Mock AuthContext
+// ----------------------
+vi.mock("@context/AuthContext", () => ({
+    useAuth: () => mockAuth,
+}));
+
+// ----------------------
+// Mock Wishlist hook
+// ----------------------
 vi.mock("@hooks/profile/useWishlist", () => ({
-    useWishlist: () => ({
-        wishlist: [],
-        toggle: vi.fn(),
-    }),
+    useWishlist: () => mockWishlist,
 }));
 
-// Typography mocks
+// ----------------------
+// Mock Typography components
+// ----------------------
 vi.mock("@typography", () => ({
     H3: ({ children }) => <h3>{children}</h3>,
     Muted: ({ children }) => <span>{children}</span>,
 }));
 
-// Mock ProductImageViewer to avoid loading real images
+// ----------------------
+// Mock ProductImageViewer
+// ----------------------
 vi.mock("@products/ProductImageViewer", () => ({
     default: ({ initialImage }) => (
         <img src={initialImage} alt="Product image" data-testid="product-image" />
@@ -47,7 +51,7 @@ vi.mock("@products/ProductImageViewer", () => ({
 }));
 
 // ----------------------
-// TESTS
+// Tests
 // ----------------------
 describe("ProductCard", () => {
     const baseProduct = {

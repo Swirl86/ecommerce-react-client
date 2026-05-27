@@ -1,9 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { mockUIProviderPassthrough } from "@utils/test-utils/mockUtils";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 
 // ----------------------
-// Stable mocks
+// Mocks
 // ----------------------
 const mockUseProducts = vi.fn();
 const mockUseCategories = vi.fn(() => ({
@@ -20,11 +21,7 @@ vi.mock("@hooks/domain/useCategories", () => ({
     useCategories: () => mockUseCategories(),
 }));
 
-// Mock UIContext (required by PageLayout)
-vi.mock("@context/UIContext", () => ({
-    __esModule: true,
-    UIProvider: ({ children }) => <div>{children}</div>,
-}));
+vi.mock("@context/UIContext", () => mockUIProviderPassthrough());
 
 // Mock ProductCard to avoid rendering full card
 vi.mock("@products/ProductCard", () => ({

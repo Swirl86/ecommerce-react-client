@@ -1,25 +1,12 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { createMockFormHook } from "@utils/test-utils/mockUtils";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 
 // ----------------------
-// Stable mock for useRegisterForm
+// Mock
 // ----------------------
-const mockHandleSubmit = vi.fn();
-
-const mockUseRegisterForm = vi.fn(() => ({
-    email: "",
-    emailError: "",
-    password: "",
-    passwordError: "",
-    isFormValid: true,
-
-    handleEmailChange: vi.fn(),
-    handleEmailBlur: vi.fn(),
-    handlePasswordChange: vi.fn(),
-    handlePasswordBlur: vi.fn(),
-    handleSubmit: mockHandleSubmit,
-}));
+const { mockHandleSubmit, mockHook: mockUseRegisterForm } = createMockFormHook();
 
 vi.mock("@hooks/auth/useRegisterForm", () => ({
     useRegisterForm: () => mockUseRegisterForm(),

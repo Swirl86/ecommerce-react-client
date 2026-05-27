@@ -1,55 +1,38 @@
 import { render, screen } from "@testing-library/react";
+import {
+    createDynamicAuthMock,
+    createMockFormHook,
+    createMockUI,
+} from "@utils/test-utils/mockUtils";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 
-// ----------------------
-// 1. Stable mock for useLoginForm
-// ----------------------
-const mockHandleSubmit = vi.fn();
-
-const mockUseLoginForm = vi.fn(() => ({
-    email: "",
-    emailError: "",
-    password: "",
-    passwordError: "",
-    remember: false,
-    isFormValid: true,
-
-    setRemember: vi.fn(),
-    handleEmailChange: vi.fn(),
-    handleEmailBlur: vi.fn(),
-    handlePasswordChange: vi.fn(),
-    handlePasswordBlur: vi.fn(),
-    handleSubmit: mockHandleSubmit,
-}));
+// ---------------------------------------------------------
+// Mock useLoginForm
+// ---------------------------------------------------------
+const { mockHandleSubmit, mockHook: mockUseLoginForm } = createMockFormHook();
 
 vi.mock("@hooks/auth/useLoginForm", () => ({
     useLoginForm: () => mockUseLoginForm(),
 }));
 
-// ----------------------
-// 2. Mock AuthContext
-// ----------------------
+// ---------------------------------------------------------
+// AuthContext mock (dynamic token)
+// ---------------------------------------------------------
 let mockAccessToken = null;
 
-vi.mock("@context/AuthContext", () => ({
-    useAuth: () => ({ accessToken: mockAccessToken }),
-}));
+vi.mock("@context/AuthContext", () => createDynamicAuthMock(() => mockAccessToken));
 
-// ----------------------
-// 3. Mock UIContext
-// ----------------------
+// ---------------------------------------------------------
+// UIContext mock
+// ---------------------------------------------------------
 vi.mock("@context/UIContext", () => ({
-    useUI: () => ({
-        showError: vi.fn(),
-        showSuccess: vi.fn(),
-        setLoading: vi.fn(),
-    }),
+    useUI: () => createMockUI(),
 }));
 
-// ----------------------
-// 4. Mock navigate
-// ----------------------
+// ---------------------------------------------------------
+// Mock navigate
+// ---------------------------------------------------------
 const mockNavigate = vi.fn();
 
 vi.mock("react-router-dom", async () => {
@@ -60,14 +43,14 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
-// ----------------------
-// 5. Import component AFTER mocks
-// ----------------------
+// ---------------------------------------------------------
+// Import component AFTER mocks
+// ---------------------------------------------------------
 import Login from "../Login";
 
-// ----------------------
+// ---------------------------------------------------------
 // TESTS
-// ----------------------
+// ---------------------------------------------------------
 describe("Login page (new architecture)", () => {
     beforeEach(() => {
         vi.clearAllMocks();

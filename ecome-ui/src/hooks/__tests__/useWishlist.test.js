@@ -1,35 +1,26 @@
 import { act, renderHook } from "@testing-library/react";
+import { createDynamicAuthMock, createMockUI } from "@utils/test-utils/mockUtils";
 import { vi } from "vitest";
 
-// ----------------------
-// ACCESS TOKEN MOCK
-// ----------------------
+// ---------------------------------------------------------
+// AuthContext mock
+// ---------------------------------------------------------
 let mockAccessToken = "token123";
 
-vi.mock("@context/AuthContext", () => ({
-    useAuth: () => ({
-        accessToken: mockAccessToken,
-    }),
-}));
+vi.mock("@context/AuthContext", () => createDynamicAuthMock(() => mockAccessToken));
 
-// ----------------------
-// UI MOCK
-// ----------------------
-const mockShowError = vi.fn();
-const mockShowSuccess = vi.fn();
-const mockShowInfo = vi.fn();
+// ---------------------------------------------------------
+// UIContext mock
+// ---------------------------------------------------------
+const mockUI = createMockUI();
 
 vi.mock("@context/UIContext", () => ({
-    useUI: () => ({
-        showError: mockShowError,
-        showSuccess: mockShowSuccess,
-        showInfo: mockShowInfo,
-    }),
+    useUI: () => mockUI,
 }));
 
-// ----------------------
-// API MOCKS
-// ----------------------
+// ---------------------------------------------------------
+// Wishlist API mocks
+// ---------------------------------------------------------
 const mockGetWishlist = vi.fn();
 const mockAddToWishlist = vi.fn();
 const mockRemoveFromWishlist = vi.fn();
@@ -42,23 +33,23 @@ vi.mock("@api/wishlistApi", () => ({
     clearWishlist: (...args) => mockClearWishlist(...args),
 }));
 
-// ----------------------
-// useCachedFetch MOCK
-// ----------------------
+// ---------------------------------------------------------
+// useCachedFetch mock
+// ---------------------------------------------------------
 const mockUseCachedFetch = vi.fn();
 
 vi.mock("@hooks/system/useCachedFetch", () => ({
     useCachedFetch: (...args) => mockUseCachedFetch(...args),
 }));
 
-// ----------------------
-// IMPORT AFTER MOCKS
-// ----------------------
+// ---------------------------------------------------------
+// Import hook AFTER mocks
+// ---------------------------------------------------------
 import { useWishlist } from "@hooks/profile/useWishlist";
 
-// ----------------------
-// TESTS
-// ----------------------
+// ---------------------------------------------------------
+// Tests
+// ---------------------------------------------------------
 describe("useWishlist", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -170,7 +161,7 @@ describe("useWishlist", () => {
             await result.current.toggle(1);
         });
 
-        expect(mockShowError).toHaveBeenCalledWith("fail");
+        expect(mockUI.showError).toHaveBeenCalledWith("fail");
     });
 
     test("clearAll handles errors", async () => {
@@ -188,6 +179,6 @@ describe("useWishlist", () => {
             await result.current.clearAll();
         });
 
-        expect(mockShowError).toHaveBeenCalledWith("boom");
+        expect(mockUI.showError).toHaveBeenCalledWith("boom");
     });
 });

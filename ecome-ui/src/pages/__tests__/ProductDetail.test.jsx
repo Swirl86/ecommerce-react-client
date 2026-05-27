@@ -2,11 +2,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { TestProviders } from "@utils/test-utils/TestProviders";
 import { vi } from "vitest";
 
-// ----------------------
-// REQUIRED MOCKS
-// ----------------------
-
-// Domain hooks
+// ---------------------------------------------------------
+// Domain hook mocks
+// ---------------------------------------------------------
 vi.mock("@hooks/domain/useProduct", () => ({
     useProduct: vi.fn(),
 }));
@@ -15,31 +13,9 @@ vi.mock("@hooks/domain/useCategories", () => ({
     useCategories: vi.fn(),
 }));
 
-// Auth + UI
-vi.mock("@context/AuthContext", async () => {
-    const actual = await vi.importActual("@context/AuthContext");
-    return {
-        ...actual,
-        useAuth: () => ({
-            accessToken: "token123",
-            user: { id: 1 },
-        }),
-    };
-});
-
-vi.mock("@context/UIContext", async () => {
-    const actual = await vi.importActual("@context/UIContext");
-    return {
-        ...actual,
-        useUI: () => ({
-            showSuccess: vi.fn(),
-            showError: vi.fn(),
-            showInfo: vi.fn(),
-        }),
-    };
-});
-
-// Wishlist hook
+// ---------------------------------------------------------
+// Wishlist mock
+// ---------------------------------------------------------
 vi.mock("@hooks/profile/useWishlist", () => ({
     useWishlist: () => ({
         wishlist: [],
@@ -47,19 +23,25 @@ vi.mock("@hooks/profile/useWishlist", () => ({
     }),
 }));
 
-// Typography
+// ---------------------------------------------------------
+// Typography mocks
+// ---------------------------------------------------------
 vi.mock("@typography", () => ({
     H2: ({ children }) => <h2>{children}</h2>,
     H3: ({ children }) => <h3>{children}</h3>,
     Muted: ({ children }) => <span>{children}</span>,
 }));
 
-// Layout
+// ---------------------------------------------------------
+// Layout mock
+// ---------------------------------------------------------
 vi.mock("@layout/PageContainer", () => ({
     default: ({ children }) => <div data-testid="page">{children}</div>,
 }));
 
-// UI components
+// ---------------------------------------------------------
+// UI component mocks
+// ---------------------------------------------------------
 vi.mock("@products/ProductImageViewer", () => ({
     default: () => <div data-testid="image-viewer">IMAGE</div>,
 }));
@@ -76,12 +58,10 @@ vi.mock("@ui/BackButtonFloating", () => ({
     default: () => <div>BACK</div>,
 }));
 
-// Description
 vi.mock("@products/CollapsibleDescription", () => ({
     default: ({ text }) => <div>{text}</div>,
 }));
 
-// Quantity selector
 vi.mock("@ui/QuantitySelector", () => ({
     default: ({ value, onChange }) => (
         <div>
@@ -92,7 +72,9 @@ vi.mock("@ui/QuantitySelector", () => ({
     ),
 }));
 
+// ---------------------------------------------------------
 // Router mocks
+// ---------------------------------------------------------
 vi.mock("react-router-dom", async () => {
     const actual = await vi.importActual("react-router-dom");
     return {
@@ -103,17 +85,17 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
-// ----------------------
-// IMPORT AFTER MOCKS
-// ----------------------
+// ---------------------------------------------------------
+// Import AFTER mocks
+// ---------------------------------------------------------
 import { useCategories } from "@hooks/domain/useCategories";
 import { useProduct } from "@hooks/domain/useProduct";
 import ProductDetail from "../ProductDetail";
 
-// ----------------------
-// TESTS
-// ----------------------
-describe("ProductDetail (minimal version)", () => {
+// ---------------------------------------------------------
+// Tests
+// ---------------------------------------------------------
+describe("ProductDetail (optimized)", () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
