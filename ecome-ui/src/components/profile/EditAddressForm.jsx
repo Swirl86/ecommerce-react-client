@@ -71,12 +71,15 @@ export default function EditAddressForm({ address, onCancel, refetch }) {
         }
 
         // Build full payload (original + changed)
-        const { id, ...rest } = address;
+        let payload;
 
-        const payload = {
-            ...rest,
-            ...changed,
-        };
+        // If user has no address yet
+        if (!address) {
+            payload = { ...form };
+        } else {
+            const { id, ...rest } = address;
+            payload = { ...rest, ...changed };
+        }
 
         try {
             setLoading(true);
