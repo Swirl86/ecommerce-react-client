@@ -25,3 +25,16 @@ export function getChangedFields(form, original = {}) {
 export function isDirty(form, original) {
     return Object.keys(getChangedFields(form, original)).length > 0;
 }
+
+export function getDefaultShippingForm(profile) {
+    const address = profile?.address || {};
+
+    return {
+        name: profile?.name || "",
+        phone: profile?.phone || "",
+        street: address.street || "",
+        city: address.city || "",
+        postalCode: address.postalCode || "",
+        country: address.country || "",
+    };
+}

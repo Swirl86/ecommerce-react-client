@@ -72,6 +72,7 @@ export default function InputField({
                                 `
                         }
 
+                        ${className}
                         focus:outline-none
                         focus-visible:outline-none
                         focus:ring-offset-0

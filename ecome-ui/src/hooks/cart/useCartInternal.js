@@ -2,6 +2,7 @@ import { API_BASE_URL } from "@config/api";
 import { useAuth } from "@context/AuthContext";
 import { backendAdapter, localAdapter } from "@hooks/cart/cartAdapter";
 import { useCachedFetch } from "@hooks/system/useCachedFetch";
+import { CartUtils } from "@utils";
 import { useState } from "react";
 
 export function useCartInternal() {
@@ -55,6 +56,11 @@ export function useCartInternal() {
     const cartData = adapter.get(data);
     const items = cartData?.items ? [...cartData.items] : [];
 
+    const subtotal = CartUtils.getSubtotal(items);
+    const shipping = CartUtils.getShipping(subtotal);
+    const tax = CartUtils.getTax(subtotal);
+    const total = CartUtils.getTotal(items);
+
     return {
         cart: items,
         addItem: adapter.add,
@@ -65,5 +71,10 @@ export function useCartInternal() {
         error,
         refetch,
         version,
+
+        subtotal,
+        shipping,
+        tax,
+        total,
     };
 }
