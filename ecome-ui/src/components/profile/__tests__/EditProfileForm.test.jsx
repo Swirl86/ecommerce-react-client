@@ -3,9 +3,9 @@ import { createMockAuth, createMockUI } from "@utils/test-utils/mockUtils";
 import { vi } from "vitest";
 
 import * as profileApi from "@api/profileApi";
+import { EditProfileForm } from "@components/profile";
 import * as formUtils from "@utils/formUtils";
 import * as validation from "@utils/validation";
-import EditProfileForm from "../edit/EditProfileForm";
 
 // ---------------------------------------------------------
 // Mock AuthContext

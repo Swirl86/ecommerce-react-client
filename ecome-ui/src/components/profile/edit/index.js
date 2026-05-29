@@ -1,2 +1,2 @@
-export { EditAddressForm } from "./EditAddressForm";
-export { EditProfileForm } from "./EditProfileForm";
+export { default as EditAddressForm } from "./EditAddressForm";
+export { default as EditProfileForm } from "./EditProfileForm";
