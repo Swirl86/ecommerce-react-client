@@ -20,3 +20,10 @@ export async function checkout(token) {
 export function getOrderById(orderId, token) {
     return apiGet(`/orders/${orderId}`, token);
 }
+
+// ---------------------------------------------------------
+// GET ACTIVE ORDERS (GET /orders/active)
+// ---------------------------------------------------------
+export function getActiveOrders(token) {
+    return apiGet("/orders/active", token);
+}

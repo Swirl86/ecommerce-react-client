@@ -9,7 +9,7 @@ import {
 export const CartUtils = {
     // Calculate subtotal
     getSubtotal(items) {
-        return items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+        return items.reduce((sum, item) => sum + this.getItemPrice(item) * item.quantity, 0);
     },
 
     // Shipping tiers
@@ -40,5 +40,26 @@ export const CartUtils = {
             reached: missing <= 0,
             missing: Math.max(0, missing),
         };
+    },
+
+    getItemPrice(item) {
+        return item.unitPrice ?? item.price ?? 0;
+    },
+
+    /**
+     * Returns a random expected ship date between 1–30 days after the order date.
+     * @param {string | Date} createdAt - The order creation date.
+     * @returns {Date} A new Date object with the randomized ship date.
+     */
+    getRandomExpectedShipDate(createdAt) {
+        const baseDate = new Date(createdAt);
+
+        // Random number between 1 and 30
+        const randomDays = Math.floor(Math.random() * 30) + 1;
+
+        const result = new Date(baseDate);
+        result.setDate(baseDate.getDate() + randomDays);
+
+        return result;
     },
 };

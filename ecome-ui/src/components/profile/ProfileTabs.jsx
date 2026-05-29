@@ -2,6 +2,7 @@ export default function ProfileTabs({ activeTab, setActiveTab }) {
     const tabs = [
         { id: "profile", label: "Profile" },
         { id: "wishlist", label: "Wishlist" },
+        { id: "activeOrders", label: "Active Orders" },
         { id: "orders", label: "Order History" },
     ];
 

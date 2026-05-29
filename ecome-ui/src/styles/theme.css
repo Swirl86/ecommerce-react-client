@@ -1,60 +1,117 @@
 /* =========================================================
    E‑ComE Design Tokens — Tech + Soft Pastel Theme
    ---------------------------------------------------------
-   This is where all colors are saved + info about which components use them.
-   Tailwind is still used for styling.
+   Centralized color tokens for the entire UI.
+   Tailwind handles layout & utility classes.
    ========================================================= */
 
 /* ------------------------------
    Light Mode (default)
 --------------------------------*/
 :root {
-    /* Brand Colors */
-    --color-primary: #7dd3fc; /* Buttons, highlights, ThemeToggle (light) */
-    --color-primary-dark: #0ea5e9; /* Hover states, links */
+    /* Brand Colors — primary identity colors */
+    --color-primary: #7dd3fc; /* Primary brand color (buttons, highlights) */
+    --color-primary-dark: #0ea5e9; /* Hover state, links */
 
-    /* Accent Pastels */
-    --color-accent: #fbcfe8; /* Badges, small UI details */
-    --color-accent-dark: #ec4899; /* Hover, dark mode badges */
+    /* Accent Pastels — decorative UI elements */
+    --color-accent: #fbcfe8; /* Badges, subtle highlights */
+    --color-accent-dark: #ec4899; /* Accent hover, dark mode badges */
 
-    /* Pastel Utility Colors */
-    --color-mint: #a7f3d0; /* Success badges, tags */
+    /* Pastel Utility Colors — semantic but soft */
+    --color-mint: #a7f3d0; /* Success tags, positive indicators */
     --color-lavender: #ddd6fe; /* Info tags, filters */
-    --color-peach: #fecaca; /* Sale, alerts */
-    --color-sky: #bae6fd; /* Soft backgrounds */
-    --color-sand: #fde68a; /* Subtle highlights */
+    --color-peach: #fecaca; /* Alerts, warnings */
+    --color-sky: #bae6fd; /* Soft backgrounds, info */
+    --color-sand: #fde68a; /* Highlights, pending states */
 
-    /* Neutrals (Light Mode) */
+    /* Neutrals — core layout colors */
     --color-bg: #fafafa; /* Page background */
     --color-text: #111827; /* Primary text */
     --color-text-muted: #4b5563; /* Secondary text */
-    --color-border: #e5e7eb; /* Borders, cards */
-    --color-surface: #f5f5f5; /* Card & panel background (elevated surfaces above page bg) */
-    --color-surface-alt: #ffffff; /* Inner card sections (higher elevation) */
+    --color-border: #e5e7eb; /* Borders, dividers */
+    --color-surface: #f5f5f5; /* Card background */
+    --color-surface-alt: #ffffff; /* Elevated card sections */
+
+    /* ---------------------------------------------------------
+       Order Status Colors — used for badges & status banners
+       Each status has a background + text color.
+       Light mode uses stronger pastels for visibility.
+    --------------------------------------------------------- */
+
+    --status-pending-bg: #fde68a; /* Pending: soft yellow (sand) */
+    --status-pending-text: #92400e; /* Pending text */
+
+    --status-processing-bg: #bae6fd; /* Processing: soft sky blue */
+    --status-processing-text: #075985;
+
+    --status-shipped-bg: #ddd6fe; /* Shipped: soft lavender */
+    --status-shipped-text: #5b21b6;
+
+    --status-completed-bg: #a7f3d0; /* Completed: soft mint */
+    --status-completed-text: #065f46;
+
+    --status-cancelled-bg: #fecaca; /* Cancelled: soft peach */
+    --status-cancelled-text: #991b1b;
+
+    --status-return-bg: #fbcfe8; /* Return requested: soft accent pink */
+    --status-return-text: #9d174d;
+
+    --status-refunded-bg: #a7f3d0; /* Refunded: mint (same as completed) */
+    --status-refunded-text: #065f46;
 }
 
 /* ------------------------------
    Dark Mode
 --------------------------------*/
 .dark {
-    --color-primary: #0ea5e9; /* Buttons, highlights */
-    --color-primary-dark: #0284c7; /* Hover */
+    /* Brand Colors — darker, more saturated */
+    --color-primary: #0ea5e9;
+    --color-primary-dark: #0284c7;
 
-    --color-accent: #ec4899; /* Badges */
-    --color-accent-dark: #be185d; /* Hover */
+    /* Accent Pastels — richer in dark mode */
+    --color-accent: #ec4899;
+    --color-accent-dark: #be185d;
 
+    /* Pastel Utility Colors — glowing pastels */
     --color-mint: #34d399;
     --color-lavender: #a78bfa;
     --color-peach: #fb7185;
     --color-sky: #38bdf8;
     --color-sand: #fbbf24;
 
-    --color-bg: #111827; /* Page background */
-    --color-text: #f3f4f6; /* Primary text */
-    --color-text-muted: #9ca3af; /* Secondary text */
-    --color-border: #374151; /* Borders, cards */
-    --color-surface: #1f2937; /* Card & panel background (elevated surfaces above page bg) */
-    --color-surface-alt: #1a1f27; /* Slightly lighter than page bg for layering */
+    /* Neutrals — dark backgrounds */
+    --color-bg: #111827;
+    --color-text: #f3f4f6;
+    --color-text-muted: #9ca3af;
+    --color-border: #374151;
+    --color-surface: #1f2937;
+    --color-surface-alt: #1a1f27;
+
+    /* ---------------------------------------------------------
+       Order Status Colors — dark mode variants
+       Transparent pastels for a soft glow effect.
+    --------------------------------------------------------- */
+
+    --status-pending-bg: rgba(251, 191, 36, 0.15);
+    --status-pending-text: #fbbf24;
+
+    --status-processing-bg: rgba(56, 189, 248, 0.15);
+    --status-processing-text: #38bdf8;
+
+    --status-shipped-bg: rgba(167, 139, 250, 0.15);
+    --status-shipped-text: #c4b5fd;
+
+    --status-completed-bg: rgba(52, 211, 153, 0.15);
+    --status-completed-text: #6ee7b7;
+
+    --status-cancelled-bg: rgba(248, 113, 113, 0.15);
+    --status-cancelled-text: #fca5a5;
+
+    --status-return-bg: rgba(236, 72, 153, 0.15);
+    --status-return-text: #f472b6;
+
+    --status-refunded-bg: rgba(52, 211, 153, 0.15);
+    --status-refunded-text: #6ee7b7;
 }
 
 /* =========================================================

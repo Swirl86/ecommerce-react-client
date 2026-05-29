@@ -4,7 +4,13 @@ import PageContainer from "@layout/PageContainer";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { ProfileDetails, ProfileOrders, ProfileTabs, ProfileWishlist } from "@components/profile";
+import {
+    ProfileActiveOrders,
+    ProfileDetails,
+    ProfileOrders,
+    ProfileTabs,
+    ProfileWishlist,
+} from "@components/profile";
 
 export default function Profile() {
     const { accessToken, refresh } = useAuth();
@@ -35,6 +41,7 @@ export default function Profile() {
                         <ProfileDetails data={data} refetch={refetch} refresh={refresh} />
                     )}
                     {activeTab === "wishlist" && <ProfileWishlist />}
+                    {activeTab === "activeOrders" && <ProfileActiveOrders />}
                     {activeTab === "orders" && <ProfileOrders />}
                 </div>
             </div>
