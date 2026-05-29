@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import EditProfileForm from "./EditProfileForm";
+import EditProfileForm from "./edit/EditProfileForm";
 
 export default function ProfileInfo({ data, isEditing, onEdit, onCancel, refetch, refresh }) {
     return (

@@ -5,7 +5,7 @@ import { vi } from "vitest";
 import * as profileApi from "@api/profileApi";
 import * as formUtils from "@utils/formUtils";
 import * as validation from "@utils/validation";
-import EditProfileForm from "../EditProfileForm";
+import EditProfileForm from "../edit/EditProfileForm";
 
 // ---------------------------------------------------------
 // Mock AuthContext

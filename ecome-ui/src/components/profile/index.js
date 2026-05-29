@@ -1,3 +1,4 @@
+export * from "./edit";
 export * from "./orders";
 export { default as ProfileAddress } from "./ProfileAddress";
 export { default as ProfileDetails } from "./ProfileDetails";

@@ -3,7 +3,7 @@ import { createMockAuth, createMockUI } from "@utils/test-utils/mockUtils";
 import { vi } from "vitest";
 
 import * as profileApi from "@api/profileApi";
-import EditAddressForm from "../EditAddressForm";
+import { EditAddressForm } from "./edit";
 
 // ----------------------
 // Mock AuthContext

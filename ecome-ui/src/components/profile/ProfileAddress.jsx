@@ -1,4 +1,4 @@
-import EditAddressForm from "./EditAddressForm";
+import EditAddressForm from "./edit/EditAddressForm";
 
 export default function ProfileAddress({ data, isEditing, onEdit, onCancel, refetch }) {
     return (

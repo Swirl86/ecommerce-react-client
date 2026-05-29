@@ -1,9 +1,3 @@
-import { useAuth } from "@context/AuthContext";
-import { useProfileData } from "@hooks/profile/useProfileData";
-import PageContainer from "@layout/PageContainer";
-import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-
 import {
     ProfileActiveOrders,
     ProfileDetails,
@@ -11,6 +5,11 @@ import {
     ProfileTabs,
     ProfileWishlist,
 } from "@components/profile";
+import { useAuth } from "@context/AuthContext";
+import { useProfileData } from "@hooks/profile/useProfileData";
+import PageContainer from "@layout/PageContainer";
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function Profile() {
     const { accessToken, refresh } = useAuth();

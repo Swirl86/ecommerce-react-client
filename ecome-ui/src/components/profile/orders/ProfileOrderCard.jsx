@@ -1,6 +1,5 @@
 import { IMAGE_PLACEHOLDER } from "@config/constants";
-import { CartUtils } from "@utils";
-import { getOrderStatusUI } from "@utils/orderStatusUtils";
+import { CartUtils, getOrderStatusUI } from "@utils";
 
 export default function ProfileOrderCard({ order, isOpen, onToggle }) {
     const ui = getOrderStatusUI(order.status);
