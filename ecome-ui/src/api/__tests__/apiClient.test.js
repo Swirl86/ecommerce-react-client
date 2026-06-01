@@ -9,7 +9,6 @@ import { apiGet, apiSend } from "../apiClient";
 // ----------------------
 // Mocks
 // ----------------------
-// Placeholder references (assigned AFTER mocks)
 let apiBaseUrl;
 let etagCache;
 
@@ -20,13 +19,13 @@ vi.mock("@config/api", () => ({
     },
 }));
 
-// Mock @utils/etagCache (via @utils index re-export)
+// Mock @utils/etagCache
 vi.mock("@utils/etagCache", () => ({
     getCached: (...args) => etagCache.mockGetCached(...args),
     saveCached: (...args) => etagCache.mockSaveCached(...args),
 }));
 
-// Mock @utils (because it re-exports etagCache)
+// Mock @utils (re-export)
 vi.mock("@utils", () => ({
     getCached: (...args) => etagCache.mockGetCached(...args),
     saveCached: (...args) => etagCache.mockSaveCached(...args),
@@ -35,9 +34,7 @@ vi.mock("@utils", () => ({
 // Mock fetch
 const mockFetch = createMockFetch();
 
-// ---------------------------------------------------------
 // Initialize mocks AFTER vi.mock()
-// ---------------------------------------------------------
 apiBaseUrl = createMockApiBaseUrl();
 etagCache = createMockEtagCache();
 
@@ -63,6 +60,7 @@ describe("apiClient", () => {
 
         expect(mockFetch).toHaveBeenCalledWith("http://mock-api/test", {
             headers: {},
+            _token: undefined,
         });
 
         expect(result).toEqual({ ok: true });
@@ -118,6 +116,7 @@ describe("apiClient", () => {
 
         expect(mockFetch).toHaveBeenCalledWith("http://mock-api/test", {
             headers: { Authorization: "Bearer token123" },
+            _token: "token123",
         });
     });
 
@@ -143,6 +142,7 @@ describe("apiClient", () => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ a: 1 }),
+            _token: undefined,
         });
     });
 
@@ -158,6 +158,7 @@ describe("apiClient", () => {
                 Authorization: "Bearer token123",
             },
             body: JSON.stringify({ a: 1 }),
+            _token: "token123",
         });
     });
 });

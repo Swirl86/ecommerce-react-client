@@ -1,6 +1,7 @@
-import { SESSION_DURATION, WARNING_BEFORE } from "@config/constants";
+import { WARNING_BEFORE } from "@config/constants";
 import { useSessionTimers } from "@hooks/system/useSessionTimers";
 import { act, renderHook } from "@testing-library/react";
+import { createMockJwt } from "@utils/test-utils/mockUtils";
 import { vi } from "vitest";
 
 vi.useFakeTimers();
@@ -9,25 +10,31 @@ describe("useSessionTimers", () => {
     const mockRefresh = vi.fn();
     const mockLogout = vi.fn();
 
-    test("shows warning after timeout", () => {
+    const EXPIRY = 10 * 60 * 1000; // 10 min
+
+    test("shows warning before expiry", () => {
+        const accessToken = createMockJwt(EXPIRY);
+
         const { result } = renderHook(() =>
-            useSessionTimers("refreshToken", false, mockRefresh, mockLogout)
+            useSessionTimers(accessToken, false, mockRefresh, mockLogout)
         );
 
         act(() => {
-            vi.advanceTimersByTime(SESSION_DURATION - WARNING_BEFORE);
+            vi.advanceTimersByTime(EXPIRY - WARNING_BEFORE);
         });
 
         expect(result.current.showSessionWarning).toBe(true);
     });
 
     test("countdown decreases", () => {
+        const accessToken = createMockJwt(EXPIRY);
+
         const { result } = renderHook(() =>
-            useSessionTimers("refreshToken", false, mockRefresh, mockLogout)
+            useSessionTimers(accessToken, false, mockRefresh, mockLogout)
         );
 
         act(() => {
-            vi.advanceTimersByTime(SESSION_DURATION - WARNING_BEFORE);
+            vi.advanceTimersByTime(EXPIRY - WARNING_BEFORE);
         });
 
         act(() => {
@@ -38,18 +45,12 @@ describe("useSessionTimers", () => {
     });
 
     test("logout when countdown hits zero", () => {
-        const { result } = renderHook(() =>
-            useSessionTimers("refreshToken", false, mockRefresh, mockLogout)
-        );
+        const accessToken = createMockJwt(EXPIRY);
 
-        // 1) Trigger session warning
-        act(() => {
-            vi.advanceTimersByTime(SESSION_DURATION - WARNING_BEFORE);
-        });
+        renderHook(() => useSessionTimers(accessToken, false, mockRefresh, mockLogout));
 
-        // 2) Trigger countdown (WARNING_BEFORE ms)
         act(() => {
-            vi.advanceTimersByTime(WARNING_BEFORE);
+            vi.advanceTimersByTime(EXPIRY);
         });
 
         expect(mockLogout).toHaveBeenCalled();
@@ -58,12 +59,14 @@ describe("useSessionTimers", () => {
     test("extendSession resets timers", async () => {
         mockRefresh.mockResolvedValue(true);
 
+        const accessToken = createMockJwt(EXPIRY);
+
         const { result } = renderHook(() =>
-            useSessionTimers("refreshToken", false, mockRefresh, mockLogout)
+            useSessionTimers(accessToken, false, mockRefresh, mockLogout)
         );
 
         act(() => {
-            vi.advanceTimersByTime(SESSION_DURATION - WARNING_BEFORE);
+            vi.advanceTimersByTime(EXPIRY - WARNING_BEFORE);
         });
 
         expect(result.current.showSessionWarning).toBe(true);

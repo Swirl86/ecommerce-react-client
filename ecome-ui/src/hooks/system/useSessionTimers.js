@@ -1,24 +1,22 @@
-import { SESSION_DURATION, WARNING_BEFORE } from "@config/constants";
+import { WARNING_BEFORE } from "@config/constants";
+import { getMsUntilExpiry } from "@utils/jwt";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export function useSessionTimers(refreshToken, remember, refreshFn, logoutFn) {
+export function useSessionTimers(accessToken, remember, refreshFn, logoutFn) {
     const [showSessionWarning, setShowSessionWarning] = useState(false);
     const [countdown, setCountdown] = useState(0);
 
-    const sessionTimeoutRef = useRef(null);
+    const warningTimeoutRef = useRef(null);
+    const logoutTimeoutRef = useRef(null);
     const countdownIntervalRef = useRef(null);
-
-    const warningTime = SESSION_DURATION - WARNING_BEFORE;
 
     // -----------------------------------------------------
     // CLEANUP HELPERS
     // -----------------------------------------------------
     const clearTimers = useCallback(() => {
-        clearTimeout(sessionTimeoutRef.current);
+        clearTimeout(warningTimeoutRef.current);
+        clearTimeout(logoutTimeoutRef.current);
         clearInterval(countdownIntervalRef.current);
-
-        sessionTimeoutRef.current = null;
-        countdownIntervalRef.current = null;
     }, []);
 
     // -----------------------------------------------------
@@ -26,16 +24,31 @@ export function useSessionTimers(refreshToken, remember, refreshFn, logoutFn) {
     // -----------------------------------------------------
     const startTimers = useCallback(() => {
         clearTimers();
+        setShowSessionWarning(false);
+        setCountdown(0);
 
-        // Only start timers if session is NOT remembered
-        if (!refreshToken || remember) return;
+        if (!accessToken) return;
 
-        // Show warning before expiry
-        sessionTimeoutRef.current = setTimeout(() => {
-            setShowSessionWarning(true);
-            setCountdown(Math.floor(WARNING_BEFORE / 1000));
-        }, warningTime);
-    }, [refreshToken, remember, clearTimers, warningTime]);
+        const msUntilExpiry = getMsUntilExpiry(accessToken);
+        if (msUntilExpiry == null || msUntilExpiry <= 0) {
+            logoutFn("token_expired");
+            return;
+        }
+
+        const warningIn = Math.max(msUntilExpiry - WARNING_BEFORE, 0);
+
+        warningTimeoutRef.current = setTimeout(() => {
+            if (!remember) {
+                setShowSessionWarning(true);
+                setCountdown(Math.floor(WARNING_BEFORE / 1000));
+            }
+        }, warningIn);
+
+        logoutTimeoutRef.current = setTimeout(() => {
+            clearTimers();
+            logoutFn("session_timeout");
+        }, msUntilExpiry);
+    }, [accessToken, remember, clearTimers, logoutFn]);
 
     // -----------------------------------------------------
     // COUNTDOWN
@@ -43,13 +56,10 @@ export function useSessionTimers(refreshToken, remember, refreshFn, logoutFn) {
     useEffect(() => {
         if (!showSessionWarning) return;
 
-        clearInterval(countdownIntervalRef.current);
-
         countdownIntervalRef.current = setInterval(() => {
             setCountdown((prev) => {
                 if (prev <= 1) {
                     clearTimers();
-                    setShowSessionWarning(false);
                     logoutFn("countdown_zero");
                     return 0;
                 }

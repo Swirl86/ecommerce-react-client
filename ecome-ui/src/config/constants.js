@@ -16,11 +16,8 @@ export const DEFAULT_PAGE_SIZE = 20;
 // ─────────────────────────────────────────────
 //
 
-// Total session duration before automatic logout (30 minutes)
-export const SESSION_DURATION = 30 * 60 * 1000;
-
 // Time before session expiration when a warning should be shown (1 minute)
-export const WARNING_BEFORE = 1 * 60 * 1000;
+export const WARNING_BEFORE = 58 * 60 * 1000; // 59 minutes
 
 //
 // ─────────────────────────────────────────────

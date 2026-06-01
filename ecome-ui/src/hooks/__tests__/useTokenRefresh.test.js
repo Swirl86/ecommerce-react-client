@@ -1,6 +1,6 @@
-import { SESSION_DURATION } from "@config/constants";
 import { useTokenRefresh } from "@hooks/system/useTokenRefresh";
 import { act, renderHook } from "@testing-library/react";
+import { createMockJwt } from "@utils/test-utils/mockUtils";
 import { vi } from "vitest";
 
 vi.useFakeTimers();
@@ -10,23 +10,31 @@ describe("useTokenRefresh", () => {
         const refresh = vi.fn();
         const setAuthLoading = vi.fn();
 
-        renderHook(() => useTokenRefresh("refreshToken", refresh, setAuthLoading));
+        const accessToken = createMockJwt(5000); // expires in 5s
+        const refreshToken = "dummy";
 
-        // Flush microtasks (async useEffect)
+        renderHook(() => useTokenRefresh(accessToken, refreshToken, refresh, setAuthLoading));
+
         await act(() => {});
 
-        expect(refresh).toHaveBeenCalled();
+        expect(refresh).not.toHaveBeenCalled(); // no immediate refresh
         expect(setAuthLoading).toHaveBeenCalledWith(false);
     });
 
-    test("auto refresh interval", () => {
+    test("auto refresh before expiry", () => {
         const refresh = vi.fn();
         const setAuthLoading = vi.fn();
 
-        renderHook(() => useTokenRefresh("refreshToken", refresh, setAuthLoading));
+        const accessToken = createMockJwt(5000); // expires in 5s
+        const refreshToken = "dummy";
 
-        vi.advanceTimersByTime(SESSION_DURATION);
+        renderHook(() => useTokenRefresh(accessToken, refreshToken, refresh, setAuthLoading));
 
-        expect(refresh).toHaveBeenCalledTimes(2);
+        // REFRESH_OFFSET_MS = 60s → but expiry is only 5s → refresh happens immediately
+        act(() => {
+            vi.runAllTimers();
+        });
+
+        expect(refresh).toHaveBeenCalledTimes(1);
     });
 });

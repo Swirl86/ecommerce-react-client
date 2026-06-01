@@ -1,116 +1,155 @@
+import { configureApiAuth } from "@api/apiClient";
 import { logoutRequest, refreshTokenRequest } from "@api/authApi";
 import { AuthContext } from "@context/AuthContext";
 import { useAuthStorage } from "@hooks/auth/useAuthStorage";
 import { useSessionTimers } from "@hooks/system/useSessionTimers";
 import { useTokenRefresh } from "@hooks/system/useTokenRefresh";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-function AuthProvider({ children }) {
+export function AuthProvider({ children }) {
     const { load, save, clear } = useAuthStorage();
 
-    const initial = load();
-
-    const [accessToken, setAccessToken] = useState(initial.accessToken || null);
-    const [refreshToken, setRefreshToken] = useState(initial.refreshToken || null);
-    const [user, setUser] = useState(initial.user || null);
-    const [remember, setRemember] = useState(initial.remember || false);
+    const [accessToken, setAccessToken] = useState(null);
+    const [refreshToken, setRefreshToken] = useState(null);
+    const [user, setUser] = useState(null);
+    const [remember, setRemember] = useState(false);
     const [authLoading, setAuthLoading] = useState(true);
 
     const isAuthenticated = Boolean(accessToken);
 
     // -----------------------------------------------------
-    // SAVE UPDATED USER INFO (e.g. after profile update)
+    // INITIAL LOAD
     // -----------------------------------------------------
-    function updateAuthUser(updates) {
-        setUser((prev) => {
-            if (!prev) return prev;
-
-            const updatedUser = { ...prev, ...updates };
-
-            save(
-                {
-                    accessToken,
-                    refreshToken,
-                    user: updatedUser,
-                },
-                remember
-            );
-
-            return updatedUser;
-        });
-    }
+    useEffect(() => {
+        const initial = load();
+        setAccessToken(initial.accessToken || null);
+        setRefreshToken(initial.refreshToken || null);
+        setUser(initial.user || null);
+        setRemember(initial.remember || false);
+    }, []);
 
     // -----------------------------------------------------
-    // REFRESH TOKEN
+    // LOGOUT
     // -----------------------------------------------------
-    async function refresh() {
+    const logout = useCallback(
+        async (reason = "manual") => {
+            try {
+                const tokenToRevoke = refreshToken;
+                if (tokenToRevoke) await logoutRequest(tokenToRevoke);
+            } catch {}
+
+            setAccessToken(null);
+            setRefreshToken(null);
+            setUser(null);
+            clear();
+        },
+        [refreshToken, clear]
+    );
+
+    // -----------------------------------------------------
+    // REFRESH
+    // -----------------------------------------------------
+    const refresh = useCallback(async () => {
         if (!refreshToken) return null;
 
         try {
             const data = await refreshTokenRequest(refreshToken);
 
-            const auth = {
-                accessToken: data.accessToken,
-                refreshToken: data.refreshToken,
-                user,
-            };
-
             setAccessToken(data.accessToken);
             setRefreshToken(data.refreshToken);
 
-            save(auth, remember);
+            save(
+                {
+                    accessToken: data.accessToken,
+                    refreshToken: data.refreshToken,
+                    user,
+                    remember,
+                },
+                remember
+            );
 
             return data.accessToken;
         } catch {
             logout("refresh_failed");
             return null;
         }
-    }
+    }, [refreshToken, user, remember, save, logout]);
 
     // -----------------------------------------------------
-    // LOGOUT
+    // UPDATE USER
     // -----------------------------------------------------
-    async function logout(reason = "manual") {
-        try {
-            if (refreshToken) await logoutRequest(refreshToken);
-        } catch {}
+    const updateAuthUser = useCallback(
+        (updates) => {
+            setUser((prev) => {
+                if (!prev) return prev;
 
-        setAccessToken(null);
-        setRefreshToken(null);
-        setUser(null);
+                const updatedUser = { ...prev, ...updates };
 
-        clear();
-    }
+                save(
+                    (prevState) => ({
+                        ...prevState,
+                        user: updatedUser,
+                    }),
+                    remember
+                );
+
+                return updatedUser;
+            });
+        },
+        [remember, save]
+    );
 
     // -----------------------------------------------------
     // LOGIN
     // -----------------------------------------------------
-    function login(authResponse, rememberChoice) {
-        const auth = {
-            accessToken: authResponse.accessToken,
-            refreshToken: authResponse.refreshToken,
-            user: {
-                id: authResponse.id,
-                email: authResponse.email,
-                role: authResponse.role,
-            },
-        };
+    const login = useCallback(
+        (authResponse, rememberChoice) => {
+            const auth = {
+                accessToken: authResponse.accessToken,
+                refreshToken: authResponse.refreshToken,
+                user: {
+                    id: authResponse.id,
+                    email: authResponse.email,
+                    role: authResponse.role,
+                },
+                remember: rememberChoice,
+            };
 
-        setAccessToken(auth.accessToken);
-        setRefreshToken(auth.refreshToken);
-        setUser(auth.user);
-        setRemember(rememberChoice);
+            setAccessToken(auth.accessToken);
+            setRefreshToken(auth.refreshToken);
+            setUser(auth.user);
+            setRemember(rememberChoice);
 
-        save(auth, rememberChoice);
-    }
+            save(auth, rememberChoice);
+        },
+        [save]
+    );
+
+    // -----------------------------------------------------
+    // CONFIGURE API CLIENT
+    // -----------------------------------------------------
+    const getAccessToken = useCallback(() => accessToken, [accessToken]);
+
+    useEffect(() => {
+        if (!accessToken) {
+            configureApiAuth(null);
+            return;
+        }
+
+        configureApiAuth({
+            getAccessToken,
+            refresh,
+            logout,
+        });
+    }, [accessToken, getAccessToken, refresh, logout]);
 
     // -----------------------------------------------------
     // HOOKS
     // -----------------------------------------------------
-    useTokenRefresh(refreshToken, refresh, setAuthLoading);
+    useTokenRefresh(accessToken, refreshToken, refresh, setAuthLoading);
 
     const { showSessionWarning, countdown, extendSession, declineSession } = useSessionTimers(
-        refreshToken,
+        accessToken,
         remember,
         refresh,
         logout
@@ -136,5 +175,3 @@ function AuthProvider({ children }) {
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-
-export { AuthProvider };

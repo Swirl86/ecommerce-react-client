@@ -1,25 +1,53 @@
-import { SESSION_DURATION } from "@config/constants";
-import { useEffect } from "react";
+import { getMsUntilExpiry } from "@utils/jwt";
+import { useEffect, useRef } from "react";
 
-export function useTokenRefresh(refreshToken, refreshFn, setAuthLoading) {
-    // AUTO REFRESH
+const REFRESH_OFFSET_MS = 60 * 1000; // refresh 60s before expiry
+
+export function useTokenRefresh(accessToken, refreshToken, refreshFn, setAuthLoading) {
+    const timeoutRef = useRef(null);
+
     useEffect(() => {
-        if (!refreshToken) return;
+        // Always clear previous timer
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
 
-        const interval = setInterval(() => {
-            refreshFn();
-        }, SESSION_DURATION);
-
-        return () => clearInterval(interval);
-    }, [refreshToken, refreshFn]);
-
-    // REFRESH ON PAGE LOAD
-    useEffect(() => {
-        const run = async () => {
-            if (refreshToken) await refreshFn();
+        // No tokens → no refresh logic
+        if (!accessToken || !refreshToken) {
             setAuthLoading(false);
-        };
+            return;
+        }
 
-        run();
-    }, []);
+        const msUntilExpiry = getMsUntilExpiry(accessToken);
+
+        // Token already expired → refresh immediately
+        if (msUntilExpiry == null || msUntilExpiry <= 0) {
+            (async () => {
+                await refreshFn();
+                setAuthLoading(false);
+            })();
+            return;
+        }
+
+        // Calculate refresh time
+        const refreshIn = Math.max(msUntilExpiry - REFRESH_OFFSET_MS, 0);
+
+        // Schedule refresh
+        timeoutRef.current = setTimeout(async () => {
+            await refreshFn();
+            setAuthLoading(false);
+        }, refreshIn);
+
+        // Mark loading complete
+        setAuthLoading(false);
+
+        // Cleanup
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
+            }
+        };
+    }, [accessToken, refreshToken, refreshFn, setAuthLoading]);
 }

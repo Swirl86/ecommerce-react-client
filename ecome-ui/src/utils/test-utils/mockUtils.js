@@ -235,3 +235,21 @@ export function createMockFormHook(overrides = {}) {
         })),
     };
 }
+
+/* ---------------------------------------------------------
+ * Mock JWT factory
+ * ---------------------------------------------------------
+ * Creates a fake JWT with a configurable expiry time.
+ *
+ * Example:
+ *   const token = createMockJwt(5000); // expires in 5s
+ *
+ * Useful for testing hooks that depend on JWT expiry:
+ *   - useTokenRefresh
+ *   - useSessionTimers
+ * --------------------------------------------------------- */
+export function createMockJwt(expMsFromNow) {
+    const exp = Math.floor((Date.now() + expMsFromNow) / 1000);
+    const payload = btoa(JSON.stringify({ exp }));
+    return `header.${payload}.sig`;
+}
