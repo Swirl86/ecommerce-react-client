@@ -27,3 +27,10 @@ export function getOrderById(orderId, token) {
 export function getActiveOrders(token) {
     return apiGet("/orders/active", token);
 }
+
+// ---------------------------------------------------------
+// GET ORDER HISTORY (GET /orders/history)
+// ---------------------------------------------------------
+export function getOrderHistory(token, page = 0, size = 20) {
+    return apiGet(`/orders/history?page=${page}&size=${size}`, token);
+}

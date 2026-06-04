@@ -3,7 +3,7 @@ export default function ProfileTabs({ activeTab, setActiveTab }) {
         { id: "profile", label: "Profile" },
         { id: "wishlist", label: "Wishlist" },
         { id: "activeOrders", label: "Active Orders" },
-        { id: "orders", label: "Order History" },
+        { id: "history", label: "Order History" },
     ];
 
     return (

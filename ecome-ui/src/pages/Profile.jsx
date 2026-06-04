@@ -1,6 +1,7 @@
 import {
     ProfileActiveOrders,
     ProfileDetails,
+    ProfileOrderHistory,
     ProfileOrders,
     ProfileTabs,
     ProfileWishlist,
@@ -42,6 +43,7 @@ export default function Profile() {
                     {activeTab === "wishlist" && <ProfileWishlist />}
                     {activeTab === "activeOrders" && <ProfileActiveOrders />}
                     {activeTab === "orders" && <ProfileOrders />}
+                    {activeTab === "history" && <ProfileOrderHistory />}
                 </div>
             </div>
         </PageContainer>

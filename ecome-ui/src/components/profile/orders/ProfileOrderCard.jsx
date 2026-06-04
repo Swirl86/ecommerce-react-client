@@ -1,7 +1,13 @@
 import { IMAGE_PLACEHOLDER } from "@config/constants";
 import { CartUtils, getOrderStatusUI } from "@utils";
 
-export default function ProfileOrderCard({ order, isOpen, onToggle }) {
+export default function ProfileOrderCard({
+    order,
+    isOpen,
+    onToggle,
+    showCancelButton = true,
+    onCancel,
+}) {
     const ui = getOrderStatusUI(order.status);
 
     const { items } = order;
@@ -151,13 +157,15 @@ export default function ProfileOrderCard({ order, isOpen, onToggle }) {
                     </div>
 
                     {/* Cancel order button */}
-                    <button
-                        disabled
-                        onClick={() => onCancel(order.id)}
-                        className="mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition"
-                    >
-                        ✖️ Cancel order DUMMY BUTTON
-                    </button>
+                    {showCancelButton && (
+                        <button
+                            disabled
+                            onClick={() => onCancel(order.id)}
+                            className="mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition"
+                        >
+                            ✖️ Cancel order DUMMY BUTTON
+                        </button>
+                    )}
                 </div>
             </div>
         </div>
