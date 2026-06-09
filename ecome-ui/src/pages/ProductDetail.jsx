@@ -96,7 +96,10 @@ export default function ProductDetail() {
                     <div className="flex gap-4 mt-4">
                         <button
                             disabled={!product}
-                            onClick={() => addItem(product, quantity)}
+                            onClick={() => {
+                                addItem(product, quantity);
+                                setQuantity(0);
+                            }}
                             className="px-6 py-3 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition"
                         >
                             Add to cart

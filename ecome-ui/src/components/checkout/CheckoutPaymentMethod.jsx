@@ -13,17 +13,12 @@ export default function CheckoutPaymentMethod() {
                         defaultChecked
                         className="h-4 w-4 text-blue-600"
                     />
-                    <div className="flex items-center gap-3">
-                        <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Visa_acceptance_logo_%282015_onwards%29.svg"
-                            alt="Visa"
-                            className="h-5"
-                        />
-                        <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
-                            alt="Mastercard"
-                            className="h-5"
-                        />
+                    <div className="flex gap-3">
+                        <div className="flex flex-col gap-1">
+                            <img src="/payment-icons/mastercard.svg" className="h-5" alt="Mastercard" />
+                            <img src="/payment-icons/visa.svg" className="h-5" alt="Visa" />
+                        </div>
+
                         <div>
                             <p className="font-medium">Card</p>
                             <p className="text-sm text-[var(--color-text-muted)]">
@@ -43,7 +38,7 @@ export default function CheckoutPaymentMethod() {
                     />
                     <div className="flex items-center gap-3">
                         <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Swish_Logo.png"
+                            src="/payment-icons/swish.svg"
                             alt="Swish"
                             className="h-6"
                         />
@@ -66,7 +61,7 @@ export default function CheckoutPaymentMethod() {
                     />
                     <div className="flex items-center gap-3">
                         <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/4/40/Klarna_Payment_Badge.svg"
+                            src="/payment-icons/klarna.svg"
                             alt="Klarna"
                             className="h-5"
                         />

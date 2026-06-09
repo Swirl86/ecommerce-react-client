@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 26">
+  <!-- Bakgrund -->
+  <rect x="0" y="0" width="110" height="26" rx="4"
+        fill="rgba(255,255,255,0.9)"
+        stroke="rgba(0,0,0,0.08)"/>
+
+  <!-- Mastercard-cirklar -->
+  <circle cx="22" cy="13" r="10" fill="#EB001B"/>
+  <circle cx="36" cy="13" r="10" fill="#F79E1B"/>
+
+  <!-- Text -->
+  <text x="52" y="17"
+        font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+        font-size="11"
+        font-weight="600"
+        fill="#111">
+    Mastercard
+  </text>
+</svg>

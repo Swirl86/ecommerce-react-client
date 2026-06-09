@@ -23,9 +23,9 @@ export function useCachedFetch(
         return () => (mountedRef.current = false);
     }, []);
 
-    // -----------------------------------------------------
+    // -----------------------------
     // Helpers
-    // -----------------------------------------------------
+    // -----------------------------
     const applyData = (value) => {
         if (!mountedRef.current) return;
         setLocalLoading(false);
@@ -39,9 +39,9 @@ export function useCachedFetch(
         showError(msg);
     };
 
-    // -----------------------------------------------------
+    // -----------------------------
     // Fetch fresh data
-    // -----------------------------------------------------
+    // -----------------------------
     async function fetchFreshData(hasLocalCache) {
         if (disabled) return;
 
@@ -65,27 +65,27 @@ export function useCachedFetch(
         }
     }
 
-    // -----------------------------------------------------
+    // -----------------------------
     // Invalidate cache
-    // -----------------------------------------------------
+    // -----------------------------
     function invalidate() {
         if (disabled) return;
         cacheBustedRef.current = true;
         deleteCached(url);
     }
 
-    // -----------------------------------------------------
-    // Manual refetch (used by EditProfileForm / EditAddressForm)
-    // -----------------------------------------------------
+    // -----------------------------
+    // Manual refetch
+    // -----------------------------
     async function refetch() {
         if (disabled) return;
         invalidate();
         await fetchFreshData(false);
     }
 
-    // -----------------------------------------------------
+    // -----------------------------
     // Main loader
-    // -----------------------------------------------------
+    // -----------------------------
     useEffect(() => {
         if (disabled) return;
         if (online === null) return;
@@ -93,28 +93,31 @@ export function useCachedFetch(
         // 1. Memory cache
         const memoryCached = getCached(url);
         if (memoryCached) {
-            const canUseMemory = !cacheBustedRef.current || offlineMode || online === false;
-            if (canUseMemory) return applyData(memoryCached.data);
+            const canUseMemory =
+                !cacheBustedRef.current || offlineMode || online === false;
+
+            if (canUseMemory) {
+                return applyData(memoryCached.data);
+            }
         }
 
         // 2. Local cache
         const localCached = getLocalCache(url, maxAge);
         const hasLocalCache = Boolean(localCached);
 
-        // 3. Offline
+        // 3. Offline → always return local cache or null
         if (online === false || offlineMode) {
-            if (hasLocalCache) return applyData(localCached);
-            return applyError("Offline and no cached data available");
+            return applyData(localCached);
         }
 
-        // 4. Online with local cache → SWR
+        // 4. Online + local cache → SWR
         if (hasLocalCache) {
             applyData(localCached);
             fetchFreshData(true);
             return;
         }
 
-        // 5. Online without cache
+        // 5. Online + no cache → fresh fetch
         setLocalLoading(true);
         fetchFreshData(false);
     }, [url, offlineMode, online, maxAge, token]);
