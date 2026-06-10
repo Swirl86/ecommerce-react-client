@@ -4,11 +4,13 @@ import { useProduct } from "@hooks/domain/useProduct";
 import PageContainer from "@layout/PageContainer";
 import CollapsibleDescription from "@products/CollapsibleDescription";
 import ProductImageViewer from "@products/ProductImageViewer";
+import ProductReview from "@products/ProductReview";
 import { H2, H3, Muted } from "@typography";
 import BackButtonFloating from "@ui/BackButtonFloating";
 import Breadcrumbs from "@ui/Breadcrumbs";
 import QuantitySelector from "@ui/QuantitySelector";
 import SkeletonCard from "@ui/SkeletonCard";
+import StarRating from "@ui/StarRating";
 import WishlistButton from "@ui/WishlistButton";
 import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -47,6 +49,26 @@ export default function ProductDetail() {
         );
     }
 
+    const dummyReviews = [
+        {
+            id: 1,
+            rating: 4,
+            comment: "Great product!",
+            createdAt: "2024-05-01",
+            lastEditedAt: "2024-05-02",
+            user: "Alice",
+        },
+        {
+            id: 2,
+            rating: 3,
+            comment: "Pretty good",
+            createdAt: "2024-04-20",
+            lastEditedAt: null,
+            user: "Bob",
+        },
+    ];
+    const dummyRating = product.averageRating ?? Math.random() * (5 - 1) + 1; // TODO implement real ratings
+
     return (
         <PageContainer>
             <div className="relative mb-6">
@@ -80,7 +102,18 @@ export default function ProductDetail() {
 
                 {/* RIGHT: Product info */}
                 <div className="flex flex-col gap-6">
-                    <H2>{product.name}</H2>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                        {/* Title */}
+                        <H2 className="m-0">{product.name}</H2>
+                        {/* Rating */}
+                        <div className="flex items-center gap-1">
+                            <StarRating rating={dummyRating} />
+                            <span className="text-sm text-gray-500">
+                                ({dummyRating.toFixed(1)})
+                            </span>
+                        </div>
+                    </div>
+
                     <Muted className="text-xl">${product.price}</Muted>
 
                     {/* Description */}
@@ -128,6 +161,12 @@ export default function ProductDetail() {
                         </div>
                     )}
                 </div>
+            </div>
+            {/* Reviews */}
+            <div className="mt-8">
+                {dummyReviews.length > 0 && (
+                    <ProductReview reviews={dummyReviews} rating={dummyRating} />
+                )}
             </div>
         </PageContainer>
     );
