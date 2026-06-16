@@ -1,6 +1,7 @@
 import { useCart } from "@hooks/cart/useCart";
 import { useCategories } from "@hooks/domain/useCategories";
 import { useProduct } from "@hooks/domain/useProduct";
+import { useReviews } from "@hooks/domain/useReviews";
 import PageContainer from "@layout/PageContainer";
 import CollapsibleDescription from "@products/CollapsibleDescription";
 import ProductImageViewer from "@products/ProductImageViewer";
@@ -22,7 +23,8 @@ export default function ProductDetail() {
 
     // Load product data (with caching)
     const { product, loading } = useProduct(id);
-
+    // Load reviews and average rating
+    const { reviews, rating, loading: loadingReviews } = useReviews(id);
     // Load categories for breadcrumbs
     const { categories } = useCategories();
 
@@ -48,26 +50,6 @@ export default function ProductDetail() {
             </PageContainer>
         );
     }
-
-    const dummyReviews = [
-        {
-            id: 1,
-            rating: 4,
-            comment: "Great product!",
-            createdAt: "2024-05-01",
-            lastEditedAt: "2024-05-02",
-            user: "Alice",
-        },
-        {
-            id: 2,
-            rating: 3,
-            comment: "Pretty good",
-            createdAt: "2024-04-20",
-            lastEditedAt: null,
-            user: "Bob",
-        },
-    ];
-    const dummyRating = product.averageRating ?? Math.random() * (5 - 1) + 1; // TODO implement real ratings
 
     return (
         <PageContainer>
@@ -106,12 +88,12 @@ export default function ProductDetail() {
                         {/* Title */}
                         <H2 className="m-0">{product.name}</H2>
                         {/* Rating */}
-                        <div className="flex items-center gap-1">
-                            <StarRating rating={dummyRating} />
-                            <span className="text-sm text-gray-500">
-                                ({dummyRating.toFixed(1)})
-                            </span>
-                        </div>
+                        {rating > 0 && (
+                            <div className="flex items-center gap-1">
+                                <StarRating rating={rating} />
+                                <span className="text-sm text-gray-500">({rating.toFixed(1)})</span>
+                            </div>
+                        )}
                     </div>
 
                     <Muted className="text-xl">${product.price}</Muted>
@@ -164,9 +146,7 @@ export default function ProductDetail() {
             </div>
             {/* Reviews */}
             <div className="mt-8">
-                {dummyReviews.length > 0 && (
-                    <ProductReview reviews={dummyReviews} rating={dummyRating} />
-                )}
+                {reviews.length > 0 && <ProductReview reviews={reviews} rating={rating} />}
             </div>
         </PageContainer>
     );

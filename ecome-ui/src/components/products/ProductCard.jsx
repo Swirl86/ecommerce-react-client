@@ -14,8 +14,6 @@ export default function ProductCard({ product, selectedCategory, sort }) {
     const query = params.toString();
     const link = `/products/${product.id}${query ? `?${query}` : ""}`;
 
-    const dummyRating = product.averageRating ?? Math.random() * (5 - 1) + 1; // TODO implement real ratings
-
     return (
         <Link to={link}>
             <div
@@ -56,10 +54,14 @@ export default function ProductCard({ product, selectedCategory, sort }) {
                 <H3>{product?.name || "Unnamed Product"}</H3>
 
                 {/* Rating */}
-                <div className="flex justify-center items-center gap-1 mt-1">
-                    <StarRating rating={dummyRating} />
-                    <span className="text-sm text-gray-500">({dummyRating.toFixed(1)})</span>
-                </div>
+                {product.averageRating > 0 && (
+                    <div className="flex justify-center items-center gap-1 mt-1">
+                        <StarRating rating={product.averageRating} />
+                        <span className="text-sm text-gray-500">
+                            ({product.averageRating.toFixed(1)})
+                        </span>
+                    </div>
+                )}
 
                 {/* Price */}
                 <Muted>{product?.price ? `$${product.price}` : "No price available"}</Muted>

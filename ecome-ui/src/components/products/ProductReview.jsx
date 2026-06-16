@@ -88,11 +88,14 @@ export default function ProductReview({ reviews, rating }) {
 
                                     <span className="text-xs text-gray-400">
                                         {new Date(r.createdAt).toLocaleDateString()}
-                                        {r.lastEditedAt && (
-                                            <span className="italic ml-1 text-gray-500">
-                                                (edited)
-                                            </span>
-                                        )}
+                                        {r.lastEditedAt &&
+                                            new Date(r.lastEditedAt).getTime() !==
+                                                new Date(r.createdAt).getTime() && (
+                                                <span className="italic ml-1 text-gray-500">
+                                                    (edited{" "}
+                                                    {new Date(r.lastEditedAt).toLocaleDateString()})
+                                                </span>
+                                            )}
                                     </span>
                                 </div>
 
@@ -104,7 +107,7 @@ export default function ProductReview({ reviews, rating }) {
                                 )}
 
                                 {/* User */}
-                                <p className="text-xs text-gray-500 mt-3">— {r.user}</p>
+                                <p className="text-xs text-gray-500 mt-3">— {r.username}</p>
                             </div>
                         ))}
                     </div>
